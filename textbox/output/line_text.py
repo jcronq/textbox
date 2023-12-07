@@ -1,12 +1,22 @@
 from typing import List
+from dataclasses import dataclass
+
 from .rich_text import RichText
 from . import Printable
 
 
+@dataclass
 class LineText(Printable):
-    def __init__(self, rich_text_list: List[RichText]):
-        assert isinstance(rich_text_list, list)
-        self.rich_text_list = rich_text_list
+    rich_texts: List[RichText] = None
+
+    @property
+    def rich_text_list(self):
+        for rich_text in self.rich_texts:
+            if rich_text.background_color is None:
+                rich_text.background_color = self.background_color
+            if rich_text.foreground_color is None:
+                rich_text.foreground_color = self.foreground_color
+            yield rich_text
 
     def __len__(self):
         return sum([len(rich_text) for rich_text in self.text])

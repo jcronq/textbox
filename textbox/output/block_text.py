@@ -1,28 +1,30 @@
 from typing import List
+from dataclasses import dataclass
+
+
 from .line_text import LineText
 from .rich_text import RichText
 from . import Printable
 
 
+@dataclass
 class BlockText(Printable):
-    def __init__(
-        self,
-        width: int,
-        padding_char: str = " ",
-        border_char: str = "*",
-        padding_thickness: int = 0,
-        border_thickness: int = 0,
-        border_color: str = "red",
-        padding_color: str = "white",
-    ):
-        # Text blocks have a max width, the height however is variable. Height will expand to fit the text.
-        self.width = width
-        self.padding_char = padding_char
-        self.border_char = border_char
-        self.padding_thickness = padding_thickness
-        self.border_thickness = border_thickness
-        self.border_color = border_color
-        self.padding_color = padding_color
+    width: int = 80
+
+    border_color: str = None
+    background_color: str = None
+
+    padding_char: str = " "
+    padding_top: int = 0
+    padding_left: int = 0
+    padding_right: int = 0
+    padding_bottom: int = 0
+
+    border_char: str = "*"
+    border_top: int = 0
+    border_left: int = 0
+    border_right: int = 0
+    border_bottom: int = 0
 
     def __len__(self):
         return sum([len(rich_text) for rich_text in self.text])
@@ -30,17 +32,17 @@ class BlockText(Printable):
     def format_text_line(self, line: LineText, pad_with_border=False):
         if pad_with_border:
             padding = self.border_char
-            padding_color = self.border_color
+            background_color = self.border_color
         else:
             padding = self.padding_char
-            padding_color = self.padding_color
+            background_color = self.background_color
         if self.border_thickness > 0:
-            line.prepend(RichText(text=padding * self.padding_thickness, color=padding_color))
+            line.prepend(RichText(text=padding * self.padding_thickness, color=background_color))
             if len(line) <= self.width:
                 rich_text = line.rich_text_list[-1].clone_settings()
                 rich_text.append(" " * (self.width - len(line) + 1))
                 line.append(rich_text)
-            line.append(RichText(text=padding * self.padding_thickness, color=padding_color))
+            line.append(RichText(text=padding * self.padding_thickness, color=background_color))
         if self.border_thickness > 0:
             line.prepend(RichText(text=self.border_char * self.border_thickness, color=self.border_color))
             line.append(RichText(text=self.border_char * self.border_thickness, color=self.border_color))
@@ -55,7 +57,7 @@ class BlockText(Printable):
 
     @property
     def horizontal_padding(self):
-        text = RichText(text=self.padding_char * self.width, color=self.padding_color)
+        text = RichText(text=self.padding_char * self.width, color=self.background_color)
         text_line = LineText([text])
         padding = self.format_text_line(text_line)
         return padding
@@ -103,62 +105,3 @@ class BlockText(Printable):
             yield self.horizontal_padding
         if self.border_thickness > 0:
             yield self.horizontal_border
-
-
-# def faux_type_print(txt, wordsPerMinute):
-#     for ch in txt:
-#         print(ch, end = "")
-#         time.sleep((1/wordsPerMinute)/60)
-#     print("")
-
-# def print_game_block(txt, blockSize=60, offset=0):
-#     new_txt = []
-#     if isinstance(txt, list):
-#         for i, line in enumerate(txt):
-#             new_txt.append(remove_newline(line).replace("<br>", " \n"))
-#             if i != len(txt) -1:
-#                 new_txt.append(' ')
-#     else:
-#         new_txt.append(remove_newline(txt))
-#     wrappedText = wrap_text_block(new_txt, blockSize, offset)
-#     block = wrap_in_block(wrappedText, blockSize)
-#     faux_type_print(block, 60)
-
-# def replace_with_colors(line):
-#     line = replace_with_color(line, '*', color_map['color_nar'])
-#     line = replace_with_color(line, '@', color_map['color_item'])
-#     line = replace_with_color(line, '^', color_map['color_loc'])
-#     line = replace_with_color(line, '#', color_map['color_env'])
-#     return line
-
-# def replace_with_color(line, splitOn, color):
-#     splits = line.split(splitOn)
-#     result_list = []
-#     in_color_blk = False
-#     for index, split in enumerate(splits):
-#         if index == 0:
-#             result_list.append(split)
-#         elif in_color_blk:
-#             result_list.append(split)
-#             in_color_blk = False
-#         elif not in_color_blk:
-#             result_list.append(add_color(split, color))
-#             in_color_blk = True
-
-#     return ''.join(result_list)
-
-# def format_html_block(msg_block):
-#     new_txt = []
-#     if isinstance(msg_block, list):
-#         for i, line in enumerate(msg_block):
-#             normal_line = remove_newline(line)
-#             colored_line = replace_with_colors(normal_line)
-#             new_txt.append(colored_line)
-#             if i != len(msg_block) -1:
-#                 new_txt.append(' ')
-#     else:
-#         colored_line = replace_with_colors(
-#             remove_newline(msg_block)
-#         )
-#         new_txt.append(colored_line)
-#     return new_txt

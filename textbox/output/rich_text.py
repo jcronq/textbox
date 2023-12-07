@@ -9,11 +9,7 @@ tab_width = 2
 class RichText(Printable):
     """The base unit of text in the textbox library. RichText is a string with formatting information."""
 
-    text: str
-    color: str = "primary_foreground"
-    background_color: str = "primary_background"
-    bold: bool = False
-    underline: bool = False
+    text: str = ""
 
     @staticmethod
     def is_whitespace(word: str):
@@ -39,10 +35,13 @@ class RichText(Printable):
     def clone_settings(self):
         return RichText(
             text="",
-            color=self.color,
+            foreground_color=self.foreground_color,
             background_color=self.background_color,
             bold=self.bold,
             underline=self.underline,
+            italic=self.italic,
+            strikethrough=self.strikethrough,
+            inverse=self.inverse,
         )
 
     def __eq__(self, other: "RichText"):

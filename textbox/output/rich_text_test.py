@@ -1,64 +1,29 @@
 from .rich_text import RichText
 
+
 def test_rich_text_word_gen():
-    expected_words = [
-        "Hello,",
-        " ",
-        "world!",
-        "\n",
-        "This",
-        " ",
-        "is",
-        " ",
-        "a",
-        " ",
-        "test."
-    ]
+    expected_words = ["Hello,", " ", "world!", "\n", "This", " ", "is", " ", "a", " ", "test."]
     rt = RichText(text="Hello, world!  \nThis is a test.")
 
     words = list(rt.words())
     assert words == expected_words
 
+
 def test_rich_text_word_gen_start_spacing():
-    expected_words = [
-        "  ",
-        "Hello,",
-        " ",
-        "world!",
-        "\n",
-        "This",
-        " ",
-        "is",
-        " ",
-        "a",
-        " ",
-        "test."
-    ]
+    expected_words = ["  ", "Hello,", " ", "world!", "\n", "This", " ", "is", " ", "a", " ", "test."]
     rt = RichText(text="  Hello, world!  \nThis is a test.")
 
     words = list(rt.words())
     assert words == expected_words
 
+
 def test_rich_text_word_gen_newline_spacing():
-    expected_words = [
-        "  ",
-        "Hello,",
-        " ",
-        "world!",
-        "\n",
-        "  ",
-        "This",
-        " ",
-        "is",
-        " ",
-        "a",
-        " ",
-        "test."
-    ]
+    expected_words = ["  ", "Hello,", " ", "world!", "\n", "  ", "This", " ", "is", " ", "a", " ", "test."]
     rt = RichText(text="  Hello, world!  \n  This is a test.")
 
     words = list(rt.words())
     assert words == expected_words
+
 
 def test_rich_text_concatenation():
     rt1 = RichText(text="Hello, ")
@@ -69,6 +34,7 @@ def test_rich_text_concatenation():
     rt1 += rt3
     assert rt1.text == "Hello, world!  \nThis is a test."
 
+
 def test_clone_settings():
     rt1 = RichText(text="Hello, ")
     rt2 = rt1.clone_settings()
@@ -78,13 +44,20 @@ def test_clone_settings():
 
     # No shared variables.
     rt2.text = "world"
-    rt2.color = "red"
+    rt2.foreground_color = "red"
     rt2.background_color = "blue"
     rt2.bold = True
     rt2.underline = True
+    rt2.italic = True
+    rt2.strikethrough = True
+    rt2.inverse = True
+    assert rt1.text == "Hello, "
+    assert rt2.text == "world"
     assert rt1.text != rt2.text
-    assert rt1.color != rt2.color
+    assert rt1.foreground_color != rt2.foreground_color
     assert rt1.background_color != rt2.background_color
     assert rt1.bold != rt2.bold
     assert rt1.underline != rt2.underline
-    
+    assert rt1.italic != rt2.italic
+    assert rt1.strikethrough != rt2.strikethrough
+    assert rt1.inverse != rt2.inverse
