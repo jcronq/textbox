@@ -11,3 +11,14 @@ class Printable:
     underline: Optional[bool] = None
     strikethrough: Optional[bool] = None
     inverse: Optional[bool] = None
+
+    def __eq__(self, other):
+        return (
+            self.background_color == other.background_color
+            and self.foreground_color == other.foreground_color
+            and self.bold == other.bold
+            and self.italic == other.italic
+            and self.underline == other.underline
+            and self.strikethrough == other.strikethrough
+            and self.inverse == other.inverse
+        )

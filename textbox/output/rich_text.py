@@ -44,20 +44,20 @@ class RichText(Printable):
             inverse=self.inverse,
         )
 
+    def clone(self):
+        text = self.clone_settings()
+        text.text = self.text
+        return text
+
     def __eq__(self, other: "RichText"):
         if isinstance(other, RichText):
-            return (
-                self.text == other.text
-                and self.color == other.color
-                and self.background_color == other.background_color
-                and self.bold == other.bold
-                and self.underline == other.underline
-            )
+            return self.text == other.text and super().__eq__(other)
         else:
             return False
 
     def __repr__(self):
-        return f'RichText("{str(self)}")'
+        options = ", ".join([f"{key}={value}" for key, value in self.__dict__.items() if value is not None])
+        return f"RichText({options})"
 
     def __str__(self):
         return self.text
