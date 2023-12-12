@@ -73,9 +73,7 @@ class INPUT_MODE(Enum):
 
 
 class InputBox:
-    focus: "InputBox" = None
-
-    def __init__(self, parent_window: Window, box: BoundingBox):
+    def __init__(self, parent_window: Window, box: BoundingBox, color_pair: int = 0):
         self.input_mode = INPUT_MODE.INSERT
         self.text_ptr = 0
         self.text = ""
@@ -87,18 +85,26 @@ class InputBox:
         self.parent_window = parent_window
         self.window = parent_window.create_newwindow(box)
         self.on_submit = lambda x: None
+        self.attributes = [curses.color_pair(color_pair)]
+
+    @property
+    def top_line(self):
+        return self.window.height
 
     def focus(self):
-        self.window.move(Coordinate(self.text_ptr, 0))
+        self.window.move(Coordinate(self.text_ptr, self.top_line))
         self.window.refresh()
 
     def refresh(self):
         self.window.refresh()
 
+    def hline(self, coord):
+        self.window.hline(coord)
+
     def set_text(self, text: str):
         self.text = text
         self.window.clear()
-        self.window.addstr(self.text, Coordinate(0, 0))
+        self.window.addstr(self.text, Coordinate(0, self.top_line), attributes=self.attributes)
         self.text_ptr = len(self.text)
         self.window.refresh()
 
@@ -131,14 +137,14 @@ class InputBox:
         pass
 
     def cursor_left(self):
-        new_coord = self.window.cursor_coord - Coordinate(1, 0)
+        new_coord = self.window.cursor_coord - Coordinate(1, self.top_line)
         if new_coord.x >= 0:
             self.text_ptr -= 1
             self.window.move(new_coord)
             self.window.refresh()
 
     def cursor_right(self):
-        new_coord = self.window.cursor_coord + Coordinate(1, 0)
+        new_coord = self.window.cursor_coord + Coordinate(1, self.top_line)
         if new_coord.x <= len(self.text):
             self.text_ptr += 1
             self.window.move(new_coord)
@@ -148,8 +154,8 @@ class InputBox:
         self.text = ""
         self.text_ptr = 0
         self.window.clear()
-        self.window.addch(" ", Coordinate(0, 0))
-        self.window.move(Coordinate(0, 0))
+        self.window.addch(" ", Coordinate(0, self.top_line))
+        self.window.move(Coordinate(0, self.top_line))
         self.window.refresh()
 
     def handle_backspace(self):
@@ -157,9 +163,9 @@ class InputBox:
             return
         self.text = self.text[: self.text_ptr - 1] + self.text[self.text_ptr :]
         self.text_ptr -= 1
-        self.window.addstr(self.text, Coordinate(0, 0))
-        self.window.addch(" ", Coordinate(len(self.text), 0))
-        self.window.move(Coordinate(self.text_ptr, 0))
+        self.window.addstr(self.text, Coordinate(0, self.top_line), attributes=self.attributes)
+        self.window.addch(" ", Coordinate(len(self.text), self.top_line))
+        self.window.move(Coordinate(self.text_ptr, self.top_line))
         self.window.refresh()
 
     def insert_character_at_cursor(self, ch: str):
@@ -168,13 +174,13 @@ class InputBox:
         else:
             self.text = self.text[: self.text_ptr] + ch + self.text[self.text_ptr :]
         self.text_ptr += 1
-        self.window.addch(ch, Coordinate(self.text_ptr - 1, 0))
-        self.window.addstr(self.text[self.text_ptr :], self.window.cursor_coord)
-        self.window.move(Coordinate(self.text_ptr, 0))
+        self.window.addch(ch, Coordinate(self.text_ptr - 1, self.top_line), attributes=self.attributes)
+        self.window.addstr(self.text[self.text_ptr :], self.window.cursor_coord, attributes=self.attributes)
+        self.window.move(Coordinate(self.text_ptr, self.top_line))
         self.window.refresh()
 
     def replace_character_at_cursor(self, ch: str):
         self.text = self.text[: self.text_ptr] + ch + self.text[self.text_ptr + 1 :]
         self.text_ptr += 1
-        self.window.addch(ch, self.window.cursor_coord)
+        self.window.addch(ch, self.window.cursor_coord, attributes=self.attributes)
         self.window.refresh()

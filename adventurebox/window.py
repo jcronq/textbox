@@ -113,29 +113,33 @@ class Window:
         self.addstr(msg, Coordinate(0, 0))
         self.refresh()
 
-    def addch(self, ch: str, coord: Coordinate = None):
+    def addch(self, ch: str, coord: Coordinate = None, attributes: list = None):
         if type(ch) is not str:
             raise ValueError(f"ch must be a string, not {type(ch)}")
         if len(ch) != 1:
             raise ValueError(f"ch must be a single character, not {len(ch)}")
+        if attributes is None:
+            attributes = []
         if coord is not None:
             self.validate_contains_coordinate(coord)
             curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
             try:
-                self._local_window.addch(*curses_coord, ch)
+                self._local_window.addch(*curses_coord, ch, *attributes)
             except curses.error:
                 pass
 
         else:
             self._local_window.addch(str(ch))
 
-    def addstr(self, text: str, coord: Coordinate = None):
+    def addstr(self, text: str, coord: Coordinate = None, attributes: list = None):
+        if attributes is None:
+            attributes = []
         if coord is not None:
             self.validate_contains_coordinate(coord)
             curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
-            self._local_window.addstr(*curses_coord, text)
+            self._local_window.addstr(*curses_coord, text, *attributes)
         else:
-            self._local_window.addstr(text)
+            self._local_window.addstr(text, *attributes)
 
     def getkey(self) -> str:
         return self._local_window.getkey()
@@ -153,6 +157,13 @@ class Window:
     def resize(self, width: int, height: int):
         self.addstr(0, 0, "Resizing...")
         self._local_window.resize(height, width)
+
+    def hline(self, coord: Coordinate, ch: str = None, length: int = None):
+        if length is None:
+            length = self.width
+        if ch is None:
+            ch = curses.ACS_HLINE
+        self._local_window.hline(*self._translate_local_coordinate_to_local_curses_coord(coord), ch, length)
 
     def __del__(self):
         for subwin in self._subwindows:

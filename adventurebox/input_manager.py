@@ -27,7 +27,7 @@ class AsyncInputManager:
         logger.debug("InputManager: Complete")
 
     async def __async_input_loop(self):
-        sleep_time = 0.16
+        sleep_time = 0.015
         while self.running:
             try:
                 key = self.window.getch()

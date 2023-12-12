@@ -5,9 +5,10 @@ from enum import Enum
 from adventurebox.window import Window
 from adventurebox.input_manager import AsyncInputManager
 from adventurebox.input_box import InputBox
-from adventurebox.box_types import BoundingBox
+from adventurebox.text_box import TextBox
+from adventurebox.box_types import BoundingBox, Coordinate
 from adventurebox.signals import WindowQuit
-from adventurebox.box_types import Coordinate
+from adventurebox.color_code import ColorCode
 
 import logging
 
@@ -23,22 +24,27 @@ class INPUT_MODE(Enum):
 
 class VimLikeInputBox:
     def __init__(self, main_window: Window, input_manager: AsyncInputManager):
-        self.text_box = InputBox(main_window, BoundingBox(0, 1, main_window.width, 3))
-        self.command_box = InputBox(main_window, BoundingBox(0, 0, main_window.width, 1))
+        self.command_box = InputBox(main_window, BoundingBox(0, 0, main_window.width, 1), ColorCode.GREY)
+        self.user_box = InputBox(main_window, BoundingBox(0, 1, main_window.width, 3), ColorCode.WHITE)
+        self.output_box = TextBox(
+            main_window, BoundingBox(0, 4, main_window.width, main_window.height - 4), ColorCode.OUPTUT_TEXT
+        )
 
-        self.focused_box: InputBox = self.text_box
+        self.output_box.hline(Coordinate(0, 0))
+        self.output_box.refresh()
+        self.focused_box: InputBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
 
     def enter_replace_mode(self):
         self.input_mode = INPUT_MODE.REPLACE
-        self.focused_box = self.text_box
+        self.focused_box = self.user_box
         self.command_box.set_text("-- REPLACE --")
         logger.info("Input Mode: REPLACE")
         self.focused_box.refresh()
 
     def enter_insert_mode(self):
         self.input_mode = INPUT_MODE.INSERT
-        self.focused_box = self.text_box
+        self.focused_box = self.user_box
         self.command_box.set_text("-- INSERT --")
         logger.info("Input Mode: INSERT")
         self.focused_box.refresh()
@@ -46,7 +52,7 @@ class VimLikeInputBox:
     def enter_command_mode(self):
         self.input_mode = INPUT_MODE.COMMAND
         self.command_box.set_text("")
-        self.focused_box = self.text_box
+        self.focused_box = self.user_box
         logger.info("Input Mode: COMMAND")
         self.focused_box.refresh()
 
@@ -89,7 +95,7 @@ class VimLikeInputBox:
     def submit(self):
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
-        self.on_submit(self.focused_box.text)
+        self.output_box.add_line(self.focused_box.text)
         self.focused_box.clear_text()
 
     def execute_command(self, text):

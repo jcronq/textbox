@@ -9580,3 +9580,2665 @@ Input Mode: COMMAND_ENTRY
 key: w
 key: q
 Command: Enter
+Creating new window: [0, 1, 162, 3]
+top_left: [0, 3]
+(3, 162, 13, 0)
+Creating new window: [0, 0, 162, 1]
+top_left: [0, 0]
+(1, 162, 16, 0)
+Input Mode: INSERT
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Key: Right
+Key: Left
+Key: Right
+Key: Down
+Key: Up
+Key: Left
+Key: Right
+Key: Down
+Key: Left
+Key: Right
+Key: Up
+key: q
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Key: Down
+Key: Up
+Key: Left
+Key: Right
+Key: Down
+Key: Up
+Key: Left
+key: :
+key: q
+Key: Enter
+on_submit: :q
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+key: a
+key: s
+key: f
+key: a
+key: s
+key: n
+key: o
+key: p
+key: a
+key: s
+key: a
+key: s
+key: d
+key: d
+key: d
+key: d
+key: d
+key: d
+key: d
+key: d
+key: d
+key: d
+key: d
+key: n
+key: o
+key:  
+key: w
+key: a
+key: y
+key:  
+key: j
+key: o
+key: s
+key: e
+Key: Enter
+on_submit: asfasnopasasdddddddddddno way jose
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+key: O
+key: k
+key: ,
+key:  
+key: m
+key: a
+key: y
+key: b
+key: e
+key:  
+key: y
+key: o
+key: u
+key:  
+key: h
+key: a
+key: v
+key: e
+key:  
+key: a
+key:  
+key: p
+key: o
+key: i
+key: n
+key: t
+key: ?
+Key: Escape
+Input Mode: COMMAND
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Key: Up
+Key: Down
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+key: a
+key: t
+key: h
+key: i
+key: s
+key:  
+key: s
+key: h
+key: o
+key: s
+key: u
+key: l
+key: d
+key:  
+key: b
+key: e
+key:  
+key: a
+key:  
+key: l
+key: o
+key: t
+key:  
+key: f
+key: a
+key: s
+key: t
+key: e
+key: r
+key: .
+key:  
+key:  
+key: I
+key: t
+key:  
+key: i
+key: s
+key: !
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+key: H
+key: e
+key: l
+key: l
+key: o
+Key: Enter
+on_submit: Hello
+key: H
+key: o
+key: w
+key:  
+key: g
+key: o
+key: e
+key: s
+key:  
+key: i
+key: t
+key:  
+key: f
+key: a
+key: i
+key: r
+key:  
+key: g
+key: r
+key: t
+key: r
+key: a
+key: v
+key: e
+key: l
+key: e
+key: r
+key: ?
+Key: Enter
+on_submit: How goes it fair traveler?
+key: :
+key: q
+Key: Enter
+on_submit: :q
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Key: Escape
+Input Mode: COMMAND
+Command: Escape
+Command: i
+Input Mode: INSERT
+Input Mode: INPUT_MODE.INSERT
+key: o
+key: k
+Key: Escape
+Input Mode: COMMAND
+Command: h
+Command: h
+Command: l
+Command: l
+Command: l
+Command: R
+Input Mode: REPLACE
+Input Mode: INPUT_MODE.REPLACE
+key: ,
+key:  
+key: n
+key: o
+key: w
+key:  
+key: w
+key: y
+key: h
+key: y
+key:  
+key: d
+key: o
+key: e
+key: s
+key:  
+key: t
+key: h
+key: i
+key: s
+key:  
+key: w
+key: o
+key: r
+key: k
+key: ?
+Key: Enter
+on_submit: ok, now why does this work?
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+key: T
+key: h
+key: a
+key: t
+key: '
+key: s
+key:  
+key: u
+key: n
+key: f
+key: o
+key: r
+key: t
+key: u
+key: n
+key: a
+key: t
+key: e
+key: .
+Key: Enter
+on_submit: That's unfortunate.
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+key: s
+key: t
+key: r
+key: a
+key: n
+key: g
+key: e
+key: r
+Key: Enter
+on_submit: stranger
+Key: Escape
+Input Mode: COMMAND
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Input Mode: INSERT
+Key: Escape
+Input Mode: COMMAND
+Command: Escape
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 145, 1]
+top_left: [0, 0]
+(1, 145, 16, 0)
+Creating new window: [0, 1, 145, 3]
+top_left: [0, 3]
+(3, 145, 13, 0)
+Input Mode: INSERT
+key: a
+key: T
+key: h
+key: i
+key: s
+key:  
+key: w
+key: i
+key: s
+key:  
+key: w
+key: h
+key: e
+key: r
+key: e
+key:  
+key: w
+key: e
+key:  
+key: t
+key: y
+key: p
+key: .
+Key: Enter
+on_submit: This is where we typ.
+key: q
+key: T
+key: h
+key: i
+key: s
+key:  
+key: i
+key: s
+key:  
+key: w
+key: h
+key: e
+key: r
+key: e
+key:  
+key: w
+key: e
+key:  
+key: t
+key: y
+key: p
+key: e
+key: .
+Key: Enter
+on_submit: This is where we type.
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Window [0, 0, 145, 16] does not contain bounding box [0, 16, 145, 13]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 26, in __init__
+    self.output_box = InputBox(
+                      ^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 92, in create_newwindow
+    self.validate_contains_bounding_box(box)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 79, in validate_contains_bounding_box
+    raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
+ValueError: Window [0, 0, 145, 16] does not contain bounding box [0, 16, 145, 13]
+Window [0, 0, 145, 16] does not contain bounding box [0, 16, 145, 13]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 49, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 26, in __init__
+    self.output_box = InputBox(
+                      ^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 92, in create_newwindow
+    self.validate_contains_bounding_box(box)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 79, in validate_contains_bounding_box
+    raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
+ValueError: Window [0, 0, 145, 16] does not contain bounding box [0, 16, 145, 13]
+Window [0, 0, 56, 16] does not contain bounding box [0, 15, 56, 12]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 26, in __init__
+    self.output_box = InputBox(
+                      ^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 92, in create_newwindow
+    self.validate_contains_bounding_box(box)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 79, in validate_contains_bounding_box
+    raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
+ValueError: Window [0, 0, 56, 16] does not contain bounding box [0, 15, 56, 12]
+Window [0, 0, 56, 16] does not contain bounding box [0, 15, 56, 12]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 49, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 26, in __init__
+    self.output_box = InputBox(
+                      ^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 92, in create_newwindow
+    self.validate_contains_bounding_box(box)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 79, in validate_contains_bounding_box
+    raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
+ValueError: Window [0, 0, 56, 16] does not contain bounding box [0, 15, 56, 12]
+Window [0, 0, 56, 16] does not contain bounding box [0, 15, 55, 12]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 26, in __init__
+    self.output_box = InputBox(
+                      ^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 92, in create_newwindow
+    self.validate_contains_bounding_box(box)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 79, in validate_contains_bounding_box
+    raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
+ValueError: Window [0, 0, 56, 16] does not contain bounding box [0, 15, 55, 12]
+Window [0, 0, 56, 16] does not contain bounding box [0, 15, 55, 12]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 49, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 26, in __init__
+    self.output_box = InputBox(
+                      ^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 92, in create_newwindow
+    self.validate_contains_bounding_box(box)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 79, in validate_contains_bounding_box
+    raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
+ValueError: Window [0, 0, 56, 16] does not contain bounding box [0, 15, 55, 12]
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+InputBox.hline() takes 2 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 30, in __init__
+    self.output_box.hline(Coordinate(0, 2), curses.ACS_HLINE, main_window.width)
+TypeError: InputBox.hline() takes 2 positional arguments but 4 were given
+InputBox.hline() takes 2 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 49, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 30, in __init__
+    self.output_box.hline(Coordinate(0, 2), curses.ACS_HLINE, main_window.width)
+TypeError: InputBox.hline() takes 2 positional arguments but 4 were given
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+Input Mode: INSERT
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Down
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+key: l
+key: s
+Key: Enter
+on_submit: ls
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Up
+Key: Down
+Key: Down
+Key: Down
+Key: Escape
+Input Mode: COMMAND
+Command: Up
+Key: Up (History) - First Press
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Key: Down
+Key: Down (History) - Press
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Command: Up
+Key: Up (History) - First Press
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Command: Up
+Key: Up (No History)
+Key: Down
+Key: Down (History) - Press
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Key: Down
+Key: Down (History) - No further history
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+Input Mode: INSERT
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+Input Mode: INSERT
+key: a
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+Input Mode: INSERT
+key: j
+key: a
+key: s
+key: d
+key: f
+key: a
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+Input Mode: INSERT
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 2, 56, 13]
+top_left: [0, 14]
+(13, 56, 2, 0)
+Input Mode: INSERT
+key: a
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 4, 56, 13]
+top_left: [0, 16]
+(13, 56, 0, 0)
+Window [0, 4, 55, 12] is not contained within parent window [0, 0, 56, 16]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 28, in __init__
+    self.output_box = InputBox(main_window, BoundingBox(0, 4, main_window.width, main_window.height - 3))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 99, in create_newwindow
+    return Window(subwin, box.coordinate, box.dimensions, parent_window=self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 36, in __init__
+    raise ValueError(
+ValueError: Window [0, 4, 55, 12] is not contained within parent window [0, 0, 56, 16]
+Window [0, 4, 55, 12] is not contained within parent window [0, 0, 56, 16]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 49, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 28, in __init__
+    self.output_box = InputBox(main_window, BoundingBox(0, 4, main_window.width, main_window.height - 3))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 88, in __init__
+    self.window = parent_window.create_newwindow(box)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 99, in create_newwindow
+    return Window(subwin, box.coordinate, box.dimensions, parent_window=self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 36, in __init__
+    raise ValueError(
+ValueError: Window [0, 4, 55, 12] is not contained within parent window [0, 0, 56, 16]
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 4, 56, 12]
+top_left: [0, 15]
+(12, 56, 1, 0)
+Input Mode: INSERT
+key: H
+key: e
+key: l
+key: l
+key: o
+key: ,
+key:  
+key: t
+key: r
+key: a
+key: v
+key: e
+key: l
+key: e
+key: r
+key: .
+Key: Enter
+on_submit: Hello, traveler.
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 56, 1]
+top_left: [0, 0]
+(1, 56, 16, 0)
+Creating new window: [0, 1, 56, 3]
+top_left: [0, 3]
+(3, 56, 13, 0)
+Creating new window: [0, 4, 56, 12]
+top_left: [0, 15]
+(12, 56, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: h
+key: e
+key: l
+key: l
+key: o
+Key: Enter
+key: I
+key: '
+key: m
+key:  
+key: t
+key: h
+key: e
+key: a
+key:  
+key: w
+key: e
+key: a
+key: r
+key:  
+key: y
+key:  
+key: t
+key: r
+key: a
+key: v
+key: e
+key: l
+key: e
+key: r
+key: .
+Key: Enter
+key: ƚ
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+Key: Enter
+'_curses.window' object has no attribute '_local_window'
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 23, in amain
+    async with AsyncInputManager(window) as input_manager:
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 25, in __aexit__
+    await self.input_future
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 38, in __async_input_loop
+    self.on_keypress(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 67, in handle_keypress
+    self.text_handler(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 130, in text_handler
+    self.submit()
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 95, in submit
+    self.output_box.window._local_window._local_window.scroll(1)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: '_curses.window' object has no attribute '_local_window'
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: h
+key: i
+Key: Enter
+key: h
+key: i
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+Key: Enter
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: h
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: n
+key: o
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+No Scroll
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: I
+Key: Enter
+No Scroll
+key: H
+key: i
+Key: Enter
+No Scroll
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+'TextBox' object has no attribute 'add_text'
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 23, in amain
+    async with AsyncInputManager(window) as input_manager:
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 25, in __aexit__
+    await self.input_future
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 38, in __async_input_loop
+    self.on_keypress(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 67, in handle_keypress
+    self.text_handler(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 129, in text_handler
+    self.submit()
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 95, in submit
+    self.output_box.add_text(self.focused_box.text)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'TextBox' object has no attribute 'add_text'
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: H
+key: o
+key: w
+key:  
+key: a
+key: r
+key: e
+key:  
+key: y
+key: o
+key: u
+key: ?
+Key: Enter
+key: W
+key: a
+key: n
+key: t
+key:  
+key: t
+key: o
+key:  
+key: g
+key: e
+key: t
+key:  
+key: s
+key: o
+key: m
+key: e
+key: t
+key: h
+key: i
+key: n
+key: g
+key:  
+key: t
+key: o
+key:  
+key: e
+key: a
+key: t
+key: ?
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+'TextBox' object has no attribute 'height'
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 23, in amain
+    async with AsyncInputManager(window) as input_manager:
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 25, in __aexit__
+    await self.input_future
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 38, in __async_input_loop
+    self.on_keypress(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 67, in handle_keypress
+    self.text_handler(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 129, in text_handler
+    self.submit()
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 95, in submit
+    self.output_box.add_line(self.focused_box.text)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/text_box.py", line 21, in add_line
+    for idx, line in enumerate(self.lines[self.height - 1 :: -1]):
+                                          ^^^^^^^^^^^
+AttributeError: 'TextBox' object has no attribute 'height'
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: h
+key: e
+key: l
+key: l
+key: o
+Key: Enter
+key: H
+key: o
+key: w
+key:  
+key: a
+key: r
+key: e
+key:  
+key: y
+key: o
+key: u
+key:  
+key: d
+key: o
+key: i
+key: n
+key: g
+key:  
+key: t
+key: o
+key: d
+key: a
+key: y
+key: ?
+Key: Enter
+key: I
+key:  
+key: l
+key: o
+key: v
+key: e
+key:  
+key: t
+key: h
+key: a
+key: t
+key:  
+key: t
+key: h
+key: i
+key: s
+key:  
+key: w
+key: o
+key: r
+key: k
+key: s
+Key: Enter
+key: l
+key: e
+key: t
+key: s
+Key: Enter
+key: a
+key: d
+key: d
+Key: Enter
+key: a
+key: n
+key: o
+key: t
+key: h
+key: e
+key: r
+Key: Enter
+key: a
+key: n
+key: d
+Key: Enter
+key: s
+key: e
+key: e
+key:  
+key: i
+key: f
+key:  
+Key: Enter
+key: i
+key: t
+key:  
+key: c
+key: o
+key: n
+key: t
+key: i
+key: n
+key: u
+key: e
+key: s
+Key: Enter
+key: t
+key: o
+Key: Enter
+key: w
+key: o
+key: r
+key: k
+key:  
+key: s
+key: o
+Key: Enter
+key: g
+key: r
+key: e
+key: a
+key: t
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: 1
+Key: Enter
+key: 2
+Key: Enter
+key: 3
+Key: Enter
+key: 4
+Key: Enter
+key: 5
+Key: Enter
+key: 6
+Key: Enter
+key: 7
+Key: Enter
+key: 8
+Key: Enter
+key: 9
+Key: Enter
+key: 0
+Key: Enter
+key: 1
+Key: Enter
+key: 2
+Key: Enter
+key: 3
+Key: Enter
+key: 4
+Key: Enter
+key: 5
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: 1
+Key: Enter
+self.lines: ['1']
+key: 2
+Key: Enter
+self.lines: ['1', '2']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3']
+key: 3
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3']
+key: 3
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3']
+key: 1
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3', '1']
+key: 1
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3', '1', '1']
+key: 1
+key: 1
+key: 2
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3', '1', '1', '112']
+key: 2
+key: 1
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3', '1', '1', '112', '21']
+key: 2
+key: 1
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3', '1', '1', '112', '21', '21']
+key: 2
+key: 1
+Key: Enter
+self.lines: ['1', '2', '3', '3', '3', '3', '3', '33', '3', '3', '1', '1', '112', '21', '21', '21']
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+self.lines: ['hi']
+key: 1
+Key: Enter
+self.lines: ['hi', '1']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '2', '2', '2', '2']
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+self.lines: ['hi']
+key: 1
+Key: Enter
+self.lines: ['hi', '1']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2']
+key: 3
+Key: Enter
+self.lines: ['hi', '1', '2', '3']
+key: 3
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3']
+key: 3
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2']
+key: 2
+key: 3
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23']
+key: 3
+key: 3
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33']
+key: 3
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3']
+key: t
+key: h
+key: a
+key: t
+key: s
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats']
+key: h
+key: o
+key: w
+key:  
+key: t
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t', '2', '2']
+key: 2
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t', '2', '2', '22']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t', '2', '2', '22', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t', '2', '2', '22', '2', '2']
+key: 2
+Key: Enter
+self.lines: ['hi', '1', '2', '3', '3', '3', '2', '2', '2', '2', '2', '2', '2', '2', '23', '33', '3', 'thats', 'how t', '2', '2', '22', '2', '2', '2']
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: e
+key: l
+key: l
+key: o
+Key: Enter
+key: H
+key: o
+key: w
+key: a
+key: r
+key: e
+Key: Enter
+key: 2
+Key: Enter
+key: 2
+key: 2
+Key: Enter
+key: 2
+Key: Enter
+key: 2
+key: f
+Key: Enter
+key: 2
+key: f
+Key: Enter
+key: 2
+key: f
+key: 2
+Key: Enter
+key: 2
+key: 2
+key: 2
+key: 2
+key: 2
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: h
+key: e
+key: l
+key: l
+key: o
+Key: Enter
+key: 1
+Key: Enter
+key: 1
+key: 2
+Key: Enter
+key: 1
+key: 2
+key: 3
+key: 1
+Key: Enter
+key: 2
+key: 4
+Key: Enter
+key: T
+key: h
+key: i
+key: s
+key:  
+key: i
+key: s
+key:  
+key: c
+key: o
+key: r
+key: r
+key: e
+key: c
+key: t
+Key: Enter
+key: i
+key: s
+key:  
+key: i
+key: t
+key:  
+key: n
+key: o
+key: w
+key: t
+key: ?
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+Command: Enter
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: T
+key: h
+key: i
+key: s
+key:  
+key: i
+key: s
+key:  
+key: g
+key: o
+key: i
+key: n
+key: g
+key:  
+key: t
+key: o
+key:  
+key: b
+key: e
+key:  
+key: a
+key:  
+key: r
+key: e
+key: a
+key: l
+key: l
+key: y
+key:  
+key: l
+key: o
+key: n
+key: g
+key:  
+key: l
+key: i
+key: n
+key: e
+key:  
+key: o
+key: f
+key:  
+key: t
+key: e
+key: s
+key: x
+key: x
+key: t
+key: .
+key:  
+key:  
+key: H
+key: o
+key: w
+key: e
+key: v
+key: e
+key: r
+key:  
+key: I
+key:  
+key: d
+key: o
+key: n
+key: '
+key: t
+key:  
+key: t
+key: h
+key: i
+key: n
+key: k
+key:  
+key: i
+key: t
+key:  
+key: w
+key: i
+key: l
+key: l
+key:  
+key: l
+key: e
+key: t
+key:  
+key: m
+key: e
+key:  
+key: e
+key: x
+key: c
+Window [0, 1, 87, 2] does not contain coordinate [88, 0]
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 23, in amain
+    async with AsyncInputManager(window) as input_manager:
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 25, in __aexit__
+    await self.input_future
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_manager.py", line 38, in __async_input_loop
+    self.on_keypress(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 67, in handle_keypress
+    self.text_handler(key)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 139, in text_handler
+    self.focused_box.insert_character_at_cursor(chr(key))
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 177, in insert_character_at_cursor
+    self.window.addch(ch, Coordinate(self.text_ptr - 1, 0))
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 122, in addch
+    self.validate_contains_coordinate(coord)
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/window.py", line 83, in validate_contains_coordinate
+    raise ValueError(f"Window {self.bounding_box} does not contain coordinate {coord}")
+ValueError: Window [0, 1, 87, 2] does not contain coordinate [88, 0]
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Window.addstr() takes from 2 to 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 28, in amain
+    input_box.enter_insert_mode()
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 45, in enter_insert_mode
+    self.command_box.set_text("-- INSERT --")
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 103, in set_text
+    self.window.addstr(self.text, Coordinate(0, 0), *self.attributes)
+TypeError: Window.addstr() takes from 2 to 3 positional arguments but 4 were given
+Window.addstr() takes from 2 to 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 47, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 37, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 28, in amain
+    input_box.enter_insert_mode()
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 45, in enter_insert_mode
+    self.command_box.set_text("-- INSERT --")
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/input_box.py", line 103, in set_text
+    self.window.addstr(self.text, Coordinate(0, 0), *self.attributes)
+TypeError: Window.addstr() takes from 2 to 3 positional arguments but 4 were given
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+Key: Enter
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: k
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: i
+Input Mode: INSERT
+Input Mode: INPUT_MODE.INSERT
+Color Initialized
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+WARN: Color not available.
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: :
+key: q
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+WARN: Color not available.
+'ColorCode' object cannot be interpreted as an integer
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 28, in __init__
+    main_window, BoundingBox(0, 0, main_window.width, 1), curses.color_pair(ColorCode.GREY)
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'ColorCode' object cannot be interpreted as an integer
+'ColorCode' object cannot be interpreted as an integer
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 50, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 43, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 37, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/main.py", line 27, in amain
+    input_box = VimLikeInputBox(window, input_manager)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/adventure_input.py", line 28, in __init__
+    main_window, BoundingBox(0, 0, main_window.width, 1), curses.color_pair(ColorCode.GREY)
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'ColorCode' object cannot be interpreted as an integer
+WARN: Color not available.
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+key:  
+key: t
+key: h
+key: e
+key: r
+key: e
+Key: Enter
+key: D
+key: e
+key: f
+key: i
+key: n
+key: i
+key: t
+key: e
+key: l
+key: y
+key:  
+key: o
+key: t
+key:  
+key: n
+key: o
+key: t
+key:  
+key: w
+key: h
+key: i
+key: t
+key: e
+Key: Enter
+WARN: Color not available.
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+key: i
+key: l
+key: e
+Key: Enter
+WARN: Color not available.
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: w
+key: h
+key: y
+Key: Enter
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+key:  
+key: h
+key: o
+key: w
+key:  
+key: g
+key: o
+key: e
+key: s
+key:  
+key: i
+key: t
+key: ?
+Key: Enter
+Color Initialized: 256
+WARN: Color not available.
+WARN: Color not available.
+Color Initialized: 256
+Color Initialized: 256
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+key:  
+key: T
+key: h
+key: e
+key: r
+key: e
+key: .
+Key: Enter
+key: H
+key: o
+key: w
+key:  
+key: g
+key: o
+key: e
+key: s
+key:  
+key: t
+key: h
+key: i
+key: n
+key: g
+key: s
+key: ?
+Key: Enter
+Color Initialized: 256
+addwstr() returned ERR
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/scratch.py", line 26, in amain
+    window._local_window.addstr(f"str(i) ", curses.color_pair(i))
+_curses.error: addwstr() returned ERR
+addwstr() returned ERR
+Traceback (most recent call last):
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/curses_utils.py", line 50, in run
+    return func(stdscr, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/scratch.py", line 36, in main
+    asyncio.run(amain(window))
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/jasoncronquist/miniforge3/envs/textbox/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1517, in uvloop.loop.Loop.run_until_complete
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/scratch.py", line 30, in amain
+    raise e
+  File "/Users/jasoncronquist/dev/textbox/adventurebox/scratch.py", line 26, in amain
+    window._local_window.addstr(f"str(i) ", curses.color_pair(i))
+_curses.error: addwstr() returned ERR
+Color Initialized: 256
+Color Initialized: 256
+Color Initialized: 256
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+key: H
+key: e
+key: l
+key: l
+key: o
+Key: Enter
+key: H
+key: o
+key: w
+key:  
+key: a
+key: r
+key: e
+key:  
+key: y
+key: o
+key: u
+key:  
+key: d
+key: o
+key: i
+key: n
+key: g
+key: ?
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: o
+key: k
+Command: Enter
+Input Mode: COMMAND
+Command: i
+Input Mode: INSERT
+Input Mode: INPUT_MODE.INSERT
+key: N
+key: o
+key: w
+key:  
+key: t
+key: h
+key: a
+key: t
+key:  
+key: I
+key:  
+key: h
+key: a
+key: v
+key: e
+key:  
+key: y
+key: o
+key: u
+key: r
+key:  
+key: a
+key: t
+key: t
+key: e
+key: n
+key: t
+key: i
+key: o
+key: n
+key: .
+Key: Escape
+Input Mode: COMMAND
+Command: R
+Input Mode: REPLACE
+Input Mode: INPUT_MODE.REPLACE
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Left
+Key: Right
+Key: Right
+Key: Right
+Key: Right
+Key: Right
+Key: Right
+Key: Right
+Key: Right
+Key: Left
+key: t
+key: h
+key: a
+key: t
+Key: Escape
+Input Mode: COMMAND
+Command: Escape
+Command: i
+Input Mode: INSERT
+Input Mode: INPUT_MODE.INSERT
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+key:  
+key: h
+key: o
+key: w
+key:  
+key: a
+key: r
+key: e
+key:  
+key: y
+key: o
+key: u
+key:  
+key: d
+key: o
+key: i
+key: n
+key: g
+key:  
+key: t
+key: o
+key: d
+key: a
+key: y
+key: ?
+Key: Enter
+key: I
+key: '
+key: m
+key:  
+key: n
+key: o
+key: t
+key:  
+key: d
+key: o
+key: i
+key: n
+key: g
+key:  
+key: t
+key: a
+key: l
+key: l
+key:  
+key: t
+key: h
+key: a
+key: t
+key:  
+key: b
+key: a
+key: d
+key: .
+key:  
+key:  
+key: T
+key: h
+key: a
+key: n
+key: k
+key: s
+key:  
+key: f
+key: o
+key: r
+key:  
+key: a
+key: s
+key: k
+key: i
+key: n
+key: g
+key: .
+Key: Enter
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Command: Escape
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: h
+key: i
+Key: Enter
+Key: Escape
+Input Mode: COMMAND
+Command: :
+Input Mode: COMMAND_ENTRY
+key: q
+Command: Enter
+Color Initialized: 256
+Creating new window: [0, 0, 88, 1]
+top_left: [0, 0]
+(1, 88, 16, 0)
+Creating new window: [0, 1, 88, 3]
+top_left: [0, 3]
+(3, 88, 13, 0)
+Creating new window: [0, 4, 88, 12]
+top_left: [0, 15]
+(12, 88, 1, 0)
+Input Mode: INSERT
+key: H
+key: i
+key: ,
+key:  
+key: t
+key: h
+key: o
+key: w
+key:  
+key: i
+key: s
+key:  
+key: t
+key: h
+key: i
+key: s
+key:  
+key: w
+key: o
+key: r
+key: k
+key: i
+key: n
+key: g
+key: ?
+Key: Enter

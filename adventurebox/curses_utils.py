@@ -40,8 +40,11 @@ def curses_wrapper(func):
             # module -- the error return from C start_color() is ignorable.
             try:
                 curses.start_color()
+                for i in range(0, curses.COLORS):
+                    curses.init_pair(i + 1, i, 0)
+                logger.info("Color Initialized: %i", curses.COLORS)
             except:
-                pass
+                logger.warn("WARN: Color not available.")
             curses.set_escdelay(15)
             state = 1
             return func(stdscr, *args, **kwargs)
