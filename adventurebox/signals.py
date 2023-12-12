@@ -1,0 +1,2 @@
+class WindowQuit(BaseException):
+    pass
