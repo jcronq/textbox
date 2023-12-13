@@ -25,7 +25,7 @@ class TextBox:
         self.top_to_bottom = top_to_bottom
         self.draw_box = draw_box
         if self.draw_box:
-            self.window._local_window.box()
+            self.window.box()
             self.refresh()
 
     @property
@@ -82,6 +82,12 @@ class TextBox:
         return self.width
 
     @property
+    def printable_height(self):
+        if self.draw_box:
+            return self.height - 2
+        return self.height
+
+    @property
     def cursor_coord(self) -> Coordinate:
         if self.top_to_bottom:
             x = self.column_ptr % self.printable_width
@@ -108,6 +114,8 @@ class TextBox:
     def redraw(self, with_cursor: bool = False):
         logger.info("Redrawing %s", self.lines[0])
         self.window.clear()
+        if self.draw_box:
+            self.window.box()
         logger.info("cleared")
         self.update()
         logger.info("updated")
@@ -177,7 +185,7 @@ class TextBox:
             if total_lines_used == 0:
                 printable_lines.append(line)
             else:
-                for split_idx in range(total_lines_used + 1):
+                for split_idx in range(total_lines_used, -1, -1):
                     if len(printable_lines) >= self.height:
                         break
                     printable_lines.append(
@@ -187,11 +195,14 @@ class TextBox:
         step_direction = -1 if self.top_to_bottom else 1
         for idx, line in enumerate(printable_lines[::step_direction]):
             # line += " " * (self.printable_width - len(line))
+            if idx >= self.printable_height:
+                break
             x_offset = 1 if self.draw_box else 0
             if self.top_to_bottom:
                 y_offset = self.top_line - idx
             else:
                 y_offset = idx
+            y_offset += 1 if self.draw_box else 0
             coord = Coordinate(x_offset, y_offset)
             logger.info("Line: %s, %s, %s, %s", idx, coord, line, self.draw_box)
             self.window.addstr(line, coord, attributes=self.attributes)

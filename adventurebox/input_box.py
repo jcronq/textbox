@@ -100,6 +100,7 @@ class InputBox(TextBox):
         else:
             logger.info("Key: Up (History) - Press")
         self.set_text(self._history.previous())
+        self.column_ptr = len(self.text)
 
     def history_scroll_down(self):
         if self._history.at_present():
@@ -108,6 +109,7 @@ class InputBox(TextBox):
         else:
             logger.info("Key: Down (History) - Press")
             self.set_text(self._history.next())
+            self.column_ptr = len(self.text)
 
     def append_history(self):
         self._history.append(self.text)

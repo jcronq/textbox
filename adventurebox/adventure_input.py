@@ -41,6 +41,7 @@ class VimLikeInputBox:
             BoundingBox(0, 4, main_window.width, main_window.height - 4),
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
+            draw_box=True,
         )
 
         self.focused_box: InputBox = self.user_box
@@ -96,9 +97,9 @@ class VimLikeInputBox:
     def submit(self):
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
-        self.output_box.print_line(self.focused_box.text)
-        self.focused_box.clear()
-        self.focused_box.redraw()
+            self.output_box.print_line(self.focused_box.text)
+            self.focused_box.clear()
+            self.focused_box.redraw()
 
     def execute_command(self, text):
         match text:
@@ -189,6 +190,10 @@ class VimLikeInputBox:
         elif key == ord(":"):
             logger.info("Command: :")
             self.enter_command_entry_mode()
+
+        elif key == ord("\n") or key == ord("\r"):
+            logger.info("Key: Enter")
+            self.submit()
 
         elif key in [27]:
             logger.info("Command: Escape")

@@ -167,6 +167,9 @@ class Window:
             ch = curses.ACS_HLINE
         self._local_window.hline(*self._translate_local_coordinate_to_local_curses_coord(coord), ch, length)
 
+    def box(self):
+        self._local_window.box()
+
     def __del__(self):
         for subwin in self._subwindows:
             del subwin
