@@ -32,9 +32,10 @@ class VimLikeInputBox:
         )
         self.user_box = InputBox(
             main_window,
-            BoundingBox(0, 1, main_window.width, 2),
+            BoundingBox(0, 1, main_window.width, 3),
             ColorCode.WHITE,
             top_to_bottom=True,
+            has_box=True,
         )
         self.output_box = TextBox(
             main_window,

@@ -67,15 +67,8 @@ class InputHistory:
 
 
 class InputBox(TextBox):
-    def __init__(
-        self,
-        parent_window: Window,
-        box: BoundingBox,
-        color_pair: int = 0,
-        top_to_bottom: bool = True,
-        draw_box: bool = False,
-    ):
-        super().__init__(parent_window, box, color_pair, top_to_bottom, draw_box)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._history = InputHistory()
 
     def set_text(self, text: str):

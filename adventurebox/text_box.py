@@ -60,7 +60,7 @@ class TextBox:
 
         # Position the view if the cursor is out of view
         if self.top_to_bottom:
-            if self.apparent_line_number > (self.height - 1):
+            if self.apparent_line_number > (self.printable_height - 1):
                 logger.info("View violation: %s > %s", self.apparent_line_number, self.height - 1)
                 self._view_line += 1
                 logger.info("Moved view (add): %s", self._view_line)
@@ -85,7 +85,7 @@ class TextBox:
 
     @property
     def top_line(self):
-        return self.window.height - 1
+        return self.printable_height - 1
 
     @property
     def height(self):
@@ -113,7 +113,7 @@ class TextBox:
 
     @property
     def top_viewable_line(self):
-        return self._view_line
+        return self._view_line  # - (1 if self.has_box else 0)
 
     @property
     def bottom_viewable_line(self):
@@ -125,7 +125,8 @@ class TextBox:
             x = self.column_ptr % self.printable_width
             y = self.top_line - self.apparent_line_number
         else:
-            raise NotImplementedError("Bottom to top not implemented")
+            x = self.column_ptr % self.printable_width
+            y = self.apparent_line_number
         if self.has_box:
             logger.debug("Moving + 1")
             return Coordinate(x + 1, y + 1)
@@ -218,15 +219,19 @@ class TextBox:
 
         for idx, line in enumerate(visible_lines):
             x_offset = 1 if self.has_box else 0
-            y_offset = self.top_line - idx if self.top_to_bottom else idx
+            if self.top_to_bottom:
+                y_offset = self.top_line - idx + (1 if self.has_box else 0)
+            else:
+                y_offset = len(visible_lines) - idx
             coord = Coordinate(x_offset, y_offset)
             logger.info(
-                "draw line[%s] (%s%s) at Coord(%s): %s/%s char",
+                "draw line[%s] (%s%s) at Coord(%s): %s/%s char w/ box=%s",
                 y_offset,
                 line[:5],
                 "..." if len(line) > 5 else "",
                 coord,
                 len(line),
                 self.printable_width,
+                self.has_box,
             )
             self.window.addstr(line, coord, attributes=self.attributes)
