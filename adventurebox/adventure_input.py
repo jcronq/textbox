@@ -20,6 +20,7 @@ class INPUT_MODE(Enum):
     REPLACE = 1
     COMMAND = 2
     COMMAND_ENTRY = 3
+    READ_ONLY = 4
 
 
 class VimLikeInputBox:
@@ -47,7 +48,6 @@ class VimLikeInputBox:
             top_to_bottom=False,
             has_box=True,
         )
-        self.output_box.box_visible = True
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
@@ -60,14 +60,22 @@ class VimLikeInputBox:
     @focused_box.setter
     def focused_box(self, value: TextBox):
         self._focused_box.box_visible = False
+        self.focused_box.redraw()
         self._focused_box = value
         self._focused_box.box_visible = True
 
     def cycle_focus(self):
         if self.focused_box == self.user_box:
-            self.focused_box = self.command_box
-        elif self.focused_box == self.command_box:
-            self.focused_box = self.user_box
+            self.enter_reading_mode()
+        elif self.focused_box == self.output_box:
+            self.enter_command_mode()
+
+    def enter_reading_mode(self):
+        logger.info("Input Mode: READ_ONLY")
+        self.input_mode = INPUT_MODE.READ_ONLY
+        self.focused_box = self.output_box
+        self.command_box.set_text("-- READING --")
+        self.focused_box.refresh()
 
     def enter_replace_mode(self):
         self.input_mode = INPUT_MODE.REPLACE
@@ -114,6 +122,8 @@ class VimLikeInputBox:
             self.text_handler(key)
         elif self.input_mode == INPUT_MODE.COMMAND_ENTRY:
             self.command_entry_handler(key)
+        elif self.input_mode == INPUT_MODE.READ_ONLY:
+            self.read_only_handler(key)
 
     def submit(self):
         self.focused_box: InputBox
@@ -129,6 +139,11 @@ class VimLikeInputBox:
                 raise WindowQuit()
             case _:
                 pass
+
+    def read_only_handler(self, key: int):
+        if key == ord("\t"):
+            logger.info("Command: Tab")
+            self.cycle_focus()
 
     def text_handler(self, key: int):
         logger.debug("text_handler.key_pressed: %s", chr(key))
@@ -175,6 +190,10 @@ class VimLikeInputBox:
         elif key == curses.KEY_DOWN:
             logger.info("Key: Down")
             self.focused_box.history_scroll_down()
+
+        elif key == ord("\t"):
+            logger.info("Command: Tab")
+            self.cycle_focus()
 
         elif key == ord("j"):
             logger.info("Command: j (cursor down)")
