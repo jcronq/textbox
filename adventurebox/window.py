@@ -39,11 +39,11 @@ class Window:
 
     @property
     def width(self):
-        return self.dimensions.width - 1
+        return self.dimensions.width
 
     @property
     def height(self):
-        return self.dimensions.height - 1
+        return self.dimensions.height
 
     @property
     def x(self):
@@ -69,7 +69,7 @@ class Window:
         return self._translate_curses_coord_to_local_coordinate(curses_coord)
 
     def _translate_local_coordinate_to_local_curses_coord(self, coord: Coordinate) -> (int, int):
-        return self.height - coord.y, coord.x
+        return self.height - (coord.y + 1), coord.x
 
     def _translate_curses_coord_to_local_coordinate(self, coord: Tuple[int, int]) -> Coordinate:
         return Coordinate(coord[1], self.height - coord[0])
@@ -86,7 +86,7 @@ class Window:
         return self.main_window.contains_coordinate_locally(coord)
 
     def contains_coordinate_locally(self, coord: Coordinate):
-        return 0 <= coord.y < self.dimensions.height and 0 <= coord.x < self.dimensions.width
+        return 0 <= coord.y <= self.dimensions.height and 0 <= coord.x <= self.dimensions.width
 
     def create_newwindow(self, box: BoundingBox) -> "Window":
         self.validate_contains_bounding_box(box)
@@ -137,6 +137,7 @@ class Window:
         if coord is not None:
             self.validate_contains_coordinate(coord)
             curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
+            logger.info(f"Adding string at {curses_coord}")
             self._local_window.addstr(*curses_coord, text, *attributes)
         else:
             self._local_window.addstr(text, *attributes)
@@ -152,6 +153,7 @@ class Window:
 
     def move(self, coord: Coordinate):
         curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
+        logger.info(f"Moving to {curses_coord}")
         self._local_window.move(*curses_coord)
 
     def resize(self, width: int, height: int):

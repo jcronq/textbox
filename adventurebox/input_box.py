@@ -5,6 +5,7 @@ from adventurebox.window import Window
 from adventurebox.box_types import BoundingBox
 from adventurebox.signals import WindowQuit
 from adventurebox.box_types import Coordinate
+from adventurebox.text_box import TextBox
 
 import logging
 
@@ -65,48 +66,29 @@ class InputHistory:
         return len(self.history)
 
 
-class INPUT_MODE(Enum):
-    INSERT = 0
-    REPLACE = 1
-    COMMAND = 2
-    COMMAND_ENTRY = 2
-
-
-class InputBox:
-    def __init__(self, parent_window: Window, box: BoundingBox, color_pair: int = 0):
-        self.input_mode = INPUT_MODE.INSERT
-        self.text_ptr = 0
-        self.text = ""
-        self.tmp_text = ""
-        self.tmp_history_ptr = -1
+class InputBox(TextBox):
+    def __init__(
+        self,
+        parent_window: Window,
+        box: BoundingBox,
+        color_pair: int = 0,
+        top_to_bottom: bool = True,
+        draw_box: bool = False,
+    ):
+        super().__init__(parent_window, box, color_pair, top_to_bottom, draw_box)
         self._history = InputHistory()
-        self.history = []
-        self._history_ptr = -1
-        self.parent_window = parent_window
-        self.window = parent_window.create_newwindow(box)
-        self.on_submit = lambda x: None
-        self.attributes = [curses.color_pair(color_pair)]
-
-    @property
-    def top_line(self):
-        return self.window.height
-
-    def focus(self):
-        self.window.move(Coordinate(self.text_ptr, self.top_line))
-        self.window.refresh()
-
-    def refresh(self):
-        self.window.refresh()
-
-    def hline(self, coord):
-        self.window.hline(coord)
 
     def set_text(self, text: str):
         self.text = text
-        self.window.clear()
-        self.window.addstr(self.text, Coordinate(0, self.top_line), attributes=self.attributes)
-        self.text_ptr = len(self.text)
-        self.window.refresh()
+        self.redraw()
+
+    @property
+    def text(self):
+        return self.lines[0]
+
+    @text.setter
+    def text(self, value):
+        self.lines[0] = value
 
     def history_scroll_up(self):
         if not self._history.has_history():
@@ -131,56 +113,44 @@ class InputBox:
         self._history.append(self.text)
 
     def cursor_down(self):
-        pass
+        self.column_ptr += self.printable_width
+        self.window.move(self.cursor_coord)
+        self.window.refresh()
 
     def cursor_up(self):
-        pass
+        self.column_ptr -= self.printable_width
+        self.window.move(self.cursor_coord)
+        self.window.refresh()
 
     def cursor_left(self):
-        new_coord = self.window.cursor_coord - Coordinate(1, self.top_line)
-        if new_coord.x >= 0:
-            self.text_ptr -= 1
-            self.window.move(new_coord)
-            self.window.refresh()
+        self.column_ptr -= 1
+        logger.info("Cursor Left: %s, %s", self.column_ptr, self.cursor_coord)
+        self.window.move(self.cursor_coord)
+        logger.info("Cursor moved")
+        self.window.refresh()
 
     def cursor_right(self):
-        new_coord = self.window.cursor_coord + Coordinate(1, self.top_line)
-        if new_coord.x <= len(self.text):
-            self.text_ptr += 1
-            self.window.move(new_coord)
-            self.window.refresh()
-
-    def clear_text(self):
-        self.text = ""
-        self.text_ptr = 0
-        self.window.clear()
-        self.window.addch(" ", Coordinate(0, self.top_line))
-        self.window.move(Coordinate(0, self.top_line))
+        # new_coord = self.window.cursor_coord + Coordinate(1, 0)
+        logger.info("Cursor Right: %s, %s", self.column_ptr, len(self.text))
+        self.column_ptr += 1
+        logger.info("Cursor Right: %s, %s", self.column_ptr, self.cursor_coord)
+        self.window.move(self.cursor_coord)
+        logger.info("Cursor moved")
         self.window.refresh()
 
     def handle_backspace(self):
-        if self.text_ptr == 0:
+        if self.column_ptr == 0:
             return
-        self.text = self.text[: self.text_ptr - 1] + self.text[self.text_ptr :]
-        self.text_ptr -= 1
-        self.window.addstr(self.text, Coordinate(0, self.top_line), attributes=self.attributes)
-        self.window.addch(" ", Coordinate(len(self.text), self.top_line))
-        self.window.move(Coordinate(self.text_ptr, self.top_line))
-        self.window.refresh()
+        self.text = self.text[: self.column_ptr - 1] + self.text[self.column_ptr :]
+        self.column_ptr -= 1
+        self.redraw(with_cursor=True)
 
     def insert_character_at_cursor(self, ch: str):
-        if self.text_ptr == len(self.text):
-            self.text += ch
-        else:
-            self.text = self.text[: self.text_ptr] + ch + self.text[self.text_ptr :]
-        self.text_ptr += 1
-        self.window.addch(ch, Coordinate(self.text_ptr - 1, self.top_line), attributes=self.attributes)
-        self.window.addstr(self.text[self.text_ptr :], self.window.cursor_coord, attributes=self.attributes)
-        self.window.move(Coordinate(self.text_ptr, self.top_line))
-        self.window.refresh()
+        self.text = self.text[: self.column_ptr] + ch + self.text[self.column_ptr :]
+        self.column_ptr += 1
+        self.redraw(with_cursor=True)
 
     def replace_character_at_cursor(self, ch: str):
-        self.text = self.text[: self.text_ptr] + ch + self.text[self.text_ptr + 1 :]
-        self.text_ptr += 1
-        self.window.addch(ch, self.window.cursor_coord, attributes=self.attributes)
-        self.window.refresh()
+        self.text = self.text[: self.column_ptr] + ch + self.text[self.column_ptr + 1 :]
+        self.column_ptr += 1
+        self.redraw(with_cursor=True)

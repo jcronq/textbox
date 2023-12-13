@@ -22,12 +22,9 @@ logger.setLevel(logging.INFO)
 async def amain(window: Window):
     async with AsyncInputManager(window) as input_manager:
         try:
-            await asyncio.sleep(0.05)
-            input_box = VimLikeInputBox(window, input_manager)
-            input_box.enter_insert_mode()
-            window.refresh()
-            input_box.focused_box.refresh()
-
+            for i in range(0, 255):
+                window._local_window.addstr(str(i), curses.color_pair(i))
+                window._local_window.addstr(" ", curses.color_pair(i))
         except Exception as e:
             logger.exception(e)
             input_manager.stop()
