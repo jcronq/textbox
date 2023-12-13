@@ -25,25 +25,29 @@ class INPUT_MODE(Enum):
 class VimLikeInputBox:
     def __init__(self, main_window: Window, input_manager: AsyncInputManager):
         self.command_box = InputBox(
+            "command_box",
             main_window,
             BoundingBox(0, 0, main_window.width, 1),
             ColorCode.GREY,
             top_to_bottom=True,
         )
         self.user_box = InputBox(
+            "user_box",
             main_window,
-            BoundingBox(0, 1, main_window.width, 3),
+            BoundingBox(0, 1, main_window.width, 4),
             ColorCode.WHITE,
             top_to_bottom=True,
             has_box=True,
         )
         self.output_box = TextBox(
+            "output_box",
             main_window,
             BoundingBox(0, 4, main_window.width, main_window.height - 4),
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
             has_box=True,
         )
+        self.output_box.box_visible = True
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
@@ -74,10 +78,10 @@ class VimLikeInputBox:
 
     def enter_insert_mode(self, append: bool = False):
         self.focused_box = self.user_box
-        if append and self.input_mode != INPUT_MODE.INSERT:
-            self.focused_box.column_ptr += 1
-            self.focused_box.window.move(self.focused_box.cursor_coord)
-            self.focused_box.window.refresh()
+        # if append and self.input_mode != INPUT_MODE.INSERT:
+        self.focused_box.column_ptr += 1
+        self.focused_box.window.move(self.focused_box.cursor_coord)
+        self.focused_box.window.refresh()
         self.input_mode = INPUT_MODE.INSERT
         self.command_box.set_text("-- INSERT --")
         logger.info("Input Mode: INSERT")
@@ -112,11 +116,12 @@ class VimLikeInputBox:
             self.command_entry_handler(key)
 
     def submit(self):
+        self.focused_box: InputBox
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
             self.output_box.print_line(self.focused_box.text)
             self.focused_box.clear()
-            self.focused_box.redraw()
+            self.focused_box.redraw(with_cursor=True)
 
     def execute_command(self, text):
         match text:

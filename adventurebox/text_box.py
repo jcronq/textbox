@@ -10,22 +10,28 @@ logger = logging.getLogger()
 class TextBox:
     def __init__(
         self,
+        name: str,
         parent_window: Window,
         box: BoundingBox,
         color_pair: int = 0,
         top_to_bottom: bool = True,
         has_box: bool = False,
     ):
+        self.name = name
         self.lines = [""]
         self._column_ptr = 0
         self._line_ptr = 0
         self._view_line = 0
         self.parent_window = parent_window
         self.window = parent_window.create_newwindow(box)
-        self.attributes = [curses.color_pair(color_pair)]
+        self.color_pair = color_pair
         self.top_to_bottom = top_to_bottom
         self.has_box = has_box
         self._box_visible = False
+
+    @property
+    def attributes(self):
+        return [curses.color_pair(self.color_pair)]
 
     @property
     def box_visible(self):
@@ -60,13 +66,14 @@ class TextBox:
 
         # Position the view if the cursor is out of view
         # if self.top_to_bottom:
-        if self.apparent_line_number > (self.printable_height - 1):
-            logger.info("View violation: %s > %s", self.apparent_line_number, self.height - 1)
-            self._view_line += 1
+        # apparent_number =
+        if self.apparent_line_number > (self.printable_height):
+            logger.info("View violation: %s > %s", self.apparent_line_number, self.printable_height)
+            self._view_line += self.apparent_line_number - (self.printable_height)
             logger.info("Moved view (add): %s", self._view_line)
         elif self.apparent_line_number < 0:
             logger.info("View violation: %s < 0", self.apparent_line_number)
-            self._view_line -= 1
+            self._view_line += self.apparent_line_number
             logger.info("Moved view (sub): %s", self._view_line)
         logger.info("column_ptr set to %s, Coordinate(%s)", value, self.cursor_coord)
 
@@ -85,7 +92,15 @@ class TextBox:
 
     @property
     def top_line(self):
-        return self.printable_height - 1
+        if self.has_box:
+            return self.height - 1
+        return self.height
+
+    @property
+    def bottom_line(self):
+        if self.has_box:
+            return 1
+        return 0
 
     @property
     def height(self):
@@ -110,32 +125,35 @@ class TextBox:
     @property
     def apparent_line_number(self):
         apparent_ptr = 0
-        for text_line in self.lines[: self.line_ptr]:
+        if self.lines[self.line_ptr] == "" and self.line_ptr == len(self.lines) - 1:
+            lines = self.lines[:-1]
+        else:
+            logger.info("line_ptr: %s, len(lines): %s", self.line_ptr, len(self.lines))
+        lines = self.lines[: self.line_ptr + 1]
+
+        for text_line in lines:
             apparent_ptr += (len(text_line) // self.printable_width) + 1
         return apparent_ptr - self._view_line
 
     @property
     def top_viewable_line(self):
-        return self._view_line  # - (1 if self.has_box else 0)
+        return self._view_line
 
     @property
     def bottom_viewable_line(self):
-        return self._view_line + (self.printable_height - 1)
+        return self._view_line + self.printable_height
 
     @property
     def cursor_coord(self) -> Coordinate:
+        x = self.column_ptr % self.printable_width + 1 if self.has_box else 0
         if self.top_to_bottom:
-            x = self.column_ptr % self.printable_width
+            logger.debug(
+                "name: %s, top_line: %s, apparent_line: %s", self.name, self.top_line, self.apparent_line_number
+            )
             y = self.top_line - self.apparent_line_number
         else:
-            x = self.column_ptr % self.printable_width
-            y = self.apparent_line_number
-        if self.has_box:
-            logger.debug("Moving + 1")
-            return Coordinate(x + 1, y + 1)
-        else:
-            logger.debug("Moving")
-            return Coordinate(x, y)
+            y = self.bottom_line + self.apparent_line_number
+        return Coordinate(x, y)
 
     def clear(self):
         self.lines = [""]
@@ -160,6 +178,7 @@ class TextBox:
         logger.info("updated")
         if with_cursor:
             self.window.move(self.cursor_coord)
+            logger.info("Cursor moved to %s", self.cursor_coord)
         self.refresh()
         logger.info("refreshed")
 
@@ -206,30 +225,42 @@ class TextBox:
         if len(self.lines) == 0:
             return
 
+        lines = self.lines
+        if len(lines[-1]) == 0:
+            lines = lines[:-1]
         printable_lines = []
-        for idx, line in enumerate(self.lines):
+        for idx, line in enumerate(lines):
             sub_line_count = len(line) // self.printable_width
             for split_idx in range(sub_line_count + 1):
                 printable_lines.append(line[split_idx * self.printable_width : (split_idx + 1) * self.printable_width])
 
+        visible_lines = printable_lines[self.top_viewable_line : self.bottom_viewable_line]
         logger.info(
             "Viewable Bounds: %s - %s : cursor on apparent line %s",
             self.top_viewable_line,
             self.bottom_viewable_line,
             self.apparent_line_number,
         )
-        visible_lines = printable_lines[self.top_viewable_line : self.bottom_viewable_line + 1]
-
+        logger.info("self.lines: %s", self.lines)
+        logger.info("lines: %s", lines)
+        logger.info("printable_lines: %s", printable_lines)
+        logger.info("visible_lines: %s", visible_lines)
+        if not self.top_to_bottom:
+            logger.info("reversed printable set")
+            visible_lines.reverse()
         for idx, line in enumerate(visible_lines):
             x_offset = 1 if self.has_box else 0
+            box_offset = 1 if self.has_box else 0
+            line_num = idx
             if self.top_to_bottom:
-                y_offset = self.top_line - idx + (1 if self.has_box else 0)
-            else:
-                y_offset = len(visible_lines) - idx
+                line_num = self.printable_height - (idx + 1)
+            y_offset = line_num + box_offset
             coord = Coordinate(x_offset, y_offset)
             logger.info(
-                "draw line[%s] (%s%s) at Coord(%s): %s/%s char w/ box=%s",
+                "draw line %ss: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
+                idx,
                 y_offset,
+                self.printable_height,
                 line[:5],
                 "..." if len(line) > 5 else "",
                 coord,

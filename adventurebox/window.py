@@ -137,7 +137,7 @@ class Window:
         if coord is not None:
             self.validate_contains_coordinate(coord)
             curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
-            logger.info(f"Adding string at {curses_coord}")
+            logger.info(f"Adding string at Coord({coord}); curses{curses_coord}")
             try:
                 self._local_window.addstr(*curses_coord, text, *attributes)
             except curses.error:

@@ -82,6 +82,7 @@ class InputBox(TextBox):
     @text.setter
     def text(self, value):
         self.lines[0] = value
+        self._view_line = 0
 
     def history_scroll_up(self):
         if not self._history.has_history():
@@ -98,11 +99,11 @@ class InputBox(TextBox):
     def history_scroll_down(self):
         if self._history.at_present():
             logger.info("Key: Down (History) - No further history")
-            return
         else:
             logger.info("Key: Down (History) - Press")
             self.set_text(self._history.next())
             self.column_ptr = len(self.text)
+            self.synchronize_cursor()
 
     def append_history(self):
         self._history.append(self.text)
