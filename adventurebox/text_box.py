@@ -14,19 +14,28 @@ class TextBox:
         box: BoundingBox,
         color_pair: int = 0,
         top_to_bottom: bool = True,
-        draw_box: bool = False,
+        has_box: bool = False,
     ):
         self.lines = [""]
         self._column_ptr = 0
         self._line_ptr = 0
+        self._view_line = 0
         self.parent_window = parent_window
         self.window = parent_window.create_newwindow(box)
         self.attributes = [curses.color_pair(color_pair)]
         self.top_to_bottom = top_to_bottom
-        self.draw_box = draw_box
-        if self.draw_box:
-            self.window.box()
-            self.refresh()
+        self.has_box = has_box
+        self._box_visible = False
+
+    @property
+    def box_visible(self):
+        return self._box_visible
+
+    @box_visible.setter
+    def box_visible(self, value: bool):
+        self._box_visible = value
+        self.window.box()
+        self.refresh()
 
     @property
     def column_ptr(self):
@@ -34,9 +43,8 @@ class TextBox:
 
     @column_ptr.setter
     def column_ptr(self, value):
-        logger.info("Setting column_ptr to %s, %s, %s", value, self.line_ptr, len(self.lines))
         if value < 0:
-            if self.line_ptr == 0:
+            if self.line_ptr <= 0:
                 self._column_ptr = 0
             else:
                 self.line_ptr -= 1
@@ -49,6 +57,18 @@ class TextBox:
                 self._column_ptr = 0
         else:
             self._column_ptr = value
+
+        # Position the view if the cursor is out of view
+        if self.top_to_bottom:
+            if self.apparent_line_number > (self.height - 1):
+                logger.info("View violation: %s > %s", self.apparent_line_number, self.height - 1)
+                self._view_line += 1
+                logger.info("Moved view (add): %s", self._view_line)
+            elif self.apparent_line_number < 0:
+                logger.info("View violation: %s < 0", self.apparent_line_number)
+                self._view_line -= 1
+                logger.info("Moved view (sub): %s", self._view_line)
+        logger.info("column_ptr set to %s, Coordinate(%s)", value, self.cursor_coord)
 
     @property
     def line_ptr(self):
@@ -77,29 +97,40 @@ class TextBox:
 
     @property
     def printable_width(self):
-        if self.draw_box:
+        if self.has_box:
             return self.width - 2
         return self.width
 
     @property
     def printable_height(self):
-        if self.draw_box:
+        if self.has_box:
             return self.height - 2
         return self.height
+
+    @property
+    def apparent_line_number(self):
+        return (self.column_ptr // self.printable_width) - self._view_line
+
+    @property
+    def top_viewable_line(self):
+        return self._view_line
+
+    @property
+    def bottom_viewable_line(self):
+        return self._view_line + (self.printable_height - 1)
 
     @property
     def cursor_coord(self) -> Coordinate:
         if self.top_to_bottom:
             x = self.column_ptr % self.printable_width
-            apparent_line_number = self.column_ptr // self.printable_width
-            y = self.top_line - apparent_line_number
+            y = self.top_line - self.apparent_line_number
         else:
             raise NotImplementedError("Bottom to top not implemented")
-        if self.draw_box:
-            logger.info("Moving + 1")
+        if self.has_box:
+            logger.debug("Moving + 1")
             return Coordinate(x + 1, y + 1)
         else:
-            logger.info("Moving")
+            logger.debug("Moving")
             return Coordinate(x, y)
 
     def clear(self):
@@ -108,13 +139,17 @@ class TextBox:
         self.line_ptr = 0
         self.window.clear()
 
+    def synchronize_cursor(self):
+        self.window.move(self.cursor_coord)
+        self.window.refresh()
+
     def refresh(self):
         self.window.refresh()
 
     def redraw(self, with_cursor: bool = False):
-        logger.info("Redrawing %s", self.lines[0])
+        logger.info("Redrawing %s%s", self.lines[0][:5], "..." if len(self.lines[0]) > 5 else "")
         self.window.clear()
-        if self.draw_box:
+        if self._box_visible:
             self.window.box()
         logger.info("cleared")
         self.update()
@@ -167,42 +202,31 @@ class TextBox:
         if len(self.lines) == 0:
             return
 
-        focused_line = self.line_ptr
-        # If the curosor is at the start of an empty line, move cursor back one.
-        if self.column_ptr == 0 and self.lines[self.line_ptr] == "" and self.line_ptr == len(self.lines) - 1:
-            focused_line = self.line_ptr - 1
-
         printable_lines = []
-        start_line = focused_line
-        end_line = max(
-            (start_line - self.height) - 1, -1
-        )  # the number of lines taht will fill the height, or -1 if there are fewer lines than the height
-        for idx in range(start_line, end_line, -1):
-            if len(printable_lines) >= self.height:
-                break
-            line = self.lines[idx]
-            total_lines_used = len(line) // (self.printable_width)
-            if total_lines_used == 0:
-                printable_lines.append(line)
-            else:
-                for split_idx in range(total_lines_used, -1, -1):
-                    if len(printable_lines) >= self.height:
-                        break
-                    printable_lines.append(
-                        line[split_idx * self.printable_width : (split_idx + 1) * self.printable_width]
-                    )
+        for idx, line in enumerate(self.lines):
+            sub_line_count = len(line) // self.printable_width
+            for split_idx in range(sub_line_count + 1):
+                printable_lines.append(line[split_idx * self.printable_width : (split_idx + 1) * self.printable_width])
 
-        step_direction = -1 if self.top_to_bottom else 1
-        for idx, line in enumerate(printable_lines[::step_direction]):
-            # line += " " * (self.printable_width - len(line))
-            if idx >= self.printable_height:
-                break
-            x_offset = 1 if self.draw_box else 0
-            if self.top_to_bottom:
-                y_offset = self.top_line - idx
-            else:
-                y_offset = idx
-            y_offset += 1 if self.draw_box else 0
+        logger.info(
+            "Viewable Bounds: %s - %s : cursor on apparent line %s",
+            self.top_viewable_line,
+            self.bottom_viewable_line,
+            self.apparent_line_number,
+        )
+        visible_lines = printable_lines[self.top_viewable_line : self.bottom_viewable_line + 1]
+
+        for idx, line in enumerate(visible_lines):
+            x_offset = 1 if self.has_box else 0
+            y_offset = self.top_line - idx if self.top_to_bottom else idx
             coord = Coordinate(x_offset, y_offset)
-            logger.info("Line: %s, %s, %s, %s", idx, coord, line, self.draw_box)
+            logger.info(
+                "draw line[%s] (%s%s) at Coord(%s): %s/%s char",
+                y_offset,
+                line[:5],
+                "..." if len(line) > 5 else "",
+                coord,
+                len(line),
+                self.printable_width,
+            )
             self.window.addstr(line, coord, attributes=self.attributes)

@@ -32,7 +32,7 @@ class VimLikeInputBox:
         )
         self.user_box = InputBox(
             main_window,
-            BoundingBox(0, 1, main_window.width, 3),
+            BoundingBox(0, 1, main_window.width, 2),
             ColorCode.WHITE,
             top_to_bottom=True,
         )
@@ -41,12 +41,28 @@ class VimLikeInputBox:
             BoundingBox(0, 4, main_window.width, main_window.height - 4),
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
-            draw_box=True,
+            has_box=True,
         )
 
-        self.focused_box: InputBox = self.user_box
+        self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
         input_manager.on_keypress = self.handle_keypress
+
+    @property
+    def focused_box(self):
+        return self._focused_box
+
+    @focused_box.setter
+    def focused_box(self, value: TextBox):
+        self._focused_box.box_visible = False
+        self._focused_box = value
+        self._focused_box.box_visible = True
+
+    def cycle_focus(self):
+        if self.focused_box == self.user_box:
+            self.focused_box = self.command_box
+        elif self.focused_box == self.command_box:
+            self.focused_box = self.user_box
 
     def enter_replace_mode(self):
         self.input_mode = INPUT_MODE.REPLACE
@@ -155,17 +171,19 @@ class VimLikeInputBox:
             self.focused_box.history_scroll_down()
 
         elif key == ord("j"):
+            logger.info("Command: j (cursor down)")
             self.focused_box.cursor_down()
 
         elif key == ord("k"):
+            logger.info("Command: k (cursor up)")
             self.focused_box.cursor_up()
 
         elif key == ord("h"):
-            logger.info("Command: h")
+            logger.info("Command: h (cursor left)")
             self.focused_box.cursor_left()
 
         elif key == ord("l"):
-            logger.info("Command: l")
+            logger.info("Command: l (cursor right)")
             self.focused_box.cursor_right()
 
         elif key == ord("a"):
@@ -196,7 +214,7 @@ class VimLikeInputBox:
             self.submit()
 
         elif key in [27]:
-            logger.info("Command: Escape")
+            logger.info("Command: Escape (nop)")
 
     def command_entry_handler(self, key: int):
         logger.debug("command_entry_handler.key_pressed: %s", chr(key))

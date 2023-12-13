@@ -116,29 +116,19 @@ class InputBox(TextBox):
 
     def cursor_down(self):
         self.column_ptr += self.printable_width
-        self.window.move(self.cursor_coord)
-        self.window.refresh()
+        self.redraw(True)
 
     def cursor_up(self):
         self.column_ptr -= self.printable_width
-        self.window.move(self.cursor_coord)
-        self.window.refresh()
+        self.redraw(True)
 
     def cursor_left(self):
         self.column_ptr -= 1
-        logger.info("Cursor Left: %s, %s", self.column_ptr, self.cursor_coord)
-        self.window.move(self.cursor_coord)
-        logger.info("Cursor moved")
-        self.window.refresh()
+        self.redraw(True)
 
     def cursor_right(self):
-        # new_coord = self.window.cursor_coord + Coordinate(1, 0)
-        logger.info("Cursor Right: %s, %s", self.column_ptr, len(self.text))
         self.column_ptr += 1
-        logger.info("Cursor Right: %s, %s", self.column_ptr, self.cursor_coord)
-        self.window.move(self.cursor_coord)
-        logger.info("Cursor moved")
-        self.window.refresh()
+        self.redraw(True)
 
     def handle_backspace(self):
         if self.column_ptr == 0:

@@ -138,7 +138,10 @@ class Window:
             self.validate_contains_coordinate(coord)
             curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
             logger.info(f"Adding string at {curses_coord}")
-            self._local_window.addstr(*curses_coord, text, *attributes)
+            try:
+                self._local_window.addstr(*curses_coord, text, *attributes)
+            except curses.error:
+                pass
         else:
             self._local_window.addstr(text, *attributes)
 
@@ -153,7 +156,7 @@ class Window:
 
     def move(self, coord: Coordinate):
         curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
-        logger.info(f"Moving to {curses_coord}")
+        logger.info(f"Window: Moving to Curses{curses_coord}")
         self._local_window.move(*curses_coord)
 
     def resize(self, width: int, height: int):
