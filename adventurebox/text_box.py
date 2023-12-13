@@ -59,15 +59,15 @@ class TextBox:
             self._column_ptr = value
 
         # Position the view if the cursor is out of view
-        if self.top_to_bottom:
-            if self.apparent_line_number > (self.printable_height - 1):
-                logger.info("View violation: %s > %s", self.apparent_line_number, self.height - 1)
-                self._view_line += 1
-                logger.info("Moved view (add): %s", self._view_line)
-            elif self.apparent_line_number < 0:
-                logger.info("View violation: %s < 0", self.apparent_line_number)
-                self._view_line -= 1
-                logger.info("Moved view (sub): %s", self._view_line)
+        # if self.top_to_bottom:
+        if self.apparent_line_number > (self.printable_height - 1):
+            logger.info("View violation: %s > %s", self.apparent_line_number, self.height - 1)
+            self._view_line += 1
+            logger.info("Moved view (add): %s", self._view_line)
+        elif self.apparent_line_number < 0:
+            logger.info("View violation: %s < 0", self.apparent_line_number)
+            self._view_line -= 1
+            logger.info("Moved view (sub): %s", self._view_line)
         logger.info("column_ptr set to %s, Coordinate(%s)", value, self.cursor_coord)
 
     @property
@@ -109,7 +109,10 @@ class TextBox:
 
     @property
     def apparent_line_number(self):
-        return (self.column_ptr // self.printable_width) - self._view_line
+        apparent_ptr = 0
+        for text_line in self.lines[: self.line_ptr]:
+            apparent_ptr += (len(text_line) // self.printable_width) + 1
+        return apparent_ptr - self._view_line
 
     @property
     def top_viewable_line(self):
