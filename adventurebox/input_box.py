@@ -140,3 +140,41 @@ class InputBox(TextBox):
         self.text = self.text[: self.column_ptr] + ch + self.text[self.column_ptr + 1 :]
         self.column_ptr += 1
         self.redraw(with_cursor=True)
+
+    def word_forward(self):
+        if self.column_ptr == len(self.text):
+            return
+        splits = self.text[self.column_ptr :].split(" ")
+        accumulated_distance = 0
+        for split in splits:
+            accumulated_distance += len(split) + 1
+            if split != "":
+                self.column_ptr += accumulated_distance
+                self.redraw(with_cursor=True)
+                return
+
+    def word_backward(self):
+        if self.column_ptr == 0:
+            return
+        splits = reversed(self.text[: self.column_ptr].split(" "))
+        accumulated_distance = 0
+        for split in splits:
+            accumulated_distance += len(split) + 1
+            if split != "":
+                self.column_ptr -= accumulated_distance - 1
+                self.redraw(with_cursor=True)
+                return
+
+    def end_of_line(self):
+        lines = self.text.split("\n")
+        accumulated_distance = 0
+        for line in lines:
+            accumulated_distance += len(line) + 1
+            if accumulated_distance > self.column_ptr:
+                self.column_ptr = len(line)
+                self.redraw(with_cursor=True)
+                return
+
+    def start_of_line(self):
+        self.column_ptr = 0
+        self.redraw(with_cursor=True)

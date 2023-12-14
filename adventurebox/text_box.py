@@ -69,14 +69,14 @@ class TextBox:
 
         # Position the view if the cursor is out of view
         # if self.top_to_bottom:
-        # apparent_number =
-        if self.apparent_line_number > (self.printable_height):
-            logger.debug("View violation: %s > %s", self.apparent_line_number, self.printable_height)
-            self._view_line += self.apparent_line_number - (self.printable_height)
+        apparent_line_number, _ = self.apparent_line_col_number
+        if apparent_line_number > (self.printable_height):
+            logger.debug("View violation: %s > %s", apparent_line_number, self.printable_height)
+            self._view_line += apparent_line_number - (self.printable_height)
             logger.debug("Moved view (add): %s", self._view_line)
-        elif self.apparent_line_number < 0:
-            logger.debug("View violation: %s < 0", self.apparent_line_number)
-            self._view_line += self.apparent_line_number
+        elif apparent_line_number < 0:
+            logger.debug("View violation: %s < 0", apparent_line_number)
+            self._view_line += apparent_line_number
             logger.debug("Moved view (sub): %s", self._view_line)
         logger.debug("column_ptr set to %s, Coordinate(%s)", value, self.cursor_coord)
 
@@ -126,6 +126,32 @@ class TextBox:
         return self.height
 
     @property
+    def emergent_line_col_ptrs(self):
+        lines = self.lines[: self.line_ptr + 1]
+
+        emergent_line_ptr = 0
+        emergent_col_ptr = self.column_ptr
+        for idx, text_line in enumerate(lines):
+            if idx == self.line_ptr:
+                # logger.info("idx: %s, text_line: %s", idx, text_line)
+                for sub_line in text_line.split("\n"):
+                    emergent_line_ptr += (len(sub_line) // self.printable_width) + 1
+                    if emergent_col_ptr > len(sub_line):
+                        # logger.info("emergent_col_ptr: %s, len(sub_line): %s", emergent_col_ptr, len(sub_line))
+                        emergent_col_ptr -= len(sub_line) + 1
+            else:
+                # logger.info("idx: %s", idx)
+                for sub_line in text_line.split("\n"):
+                    emergent_line_ptr += (len(sub_line) // self.printable_width) + 1
+        # logger.info("emergent_line_ptr: %s, emergent_col_ptr: %s", emergent_line_ptr, emergent_col_ptr)
+        return emergent_line_ptr, emergent_col_ptr % self.printable_width
+
+    @property
+    def apparent_line_col_number(self):
+        emergent_line_ptr, emergent_col_ptr = self.emergent_line_col_ptrs
+        return emergent_line_ptr - self._view_line, emergent_col_ptr
+
+    @property
     def apparent_line_number(self):
         apparent_ptr = 0
         if self.lines[self.line_ptr] == "" and self.line_ptr == len(self.lines) - 1:
@@ -148,14 +174,23 @@ class TextBox:
 
     @property
     def cursor_coord(self) -> Coordinate:
-        x = self.column_ptr % self.printable_width + 1 if self.has_box else 0
+        # apparent_line_number = self.apparent_line_number
+        # x = self.column_ptr % self.printable_width + 1 if self.has_box else 0
+
+        apparent_line_number, emergent_col_number = self.apparent_line_col_number
+        x = emergent_col_number + 1 if self.has_box else 0
+
         if self.top_to_bottom:
-            logger.debug(
-                "name: %s, top_line: %s, apparent_line: %s", self.name, self.top_line, self.apparent_line_number
+            logger.info(
+                "name: %s, has_box %s, top_line: %s, apparent_line: %s",
+                self.name,
+                self.has_box,
+                self.top_line,
+                apparent_line_number,
             )
-            y = self.top_line - self.apparent_line_number
+            y = self.top_line - apparent_line_number
         else:
-            y = self.bottom_line + self.apparent_line_number
+            y = self.bottom_line + apparent_line_number
         return Coordinate(x, y)
 
     def clear(self):
@@ -175,6 +210,7 @@ class TextBox:
         logger.info("Redrawing %s%s", self.lines[0][:5], "..." if len(self.lines[0]) > 5 else "")
         self.window.clear()
         if self._box_visible:
+            logger.info("Drawing box")
             self.window.box()
         logger.info("cleared")
         self.update()
@@ -233,21 +269,23 @@ class TextBox:
             lines = lines[:-1]
         printable_lines = []
         for idx, line in enumerate(lines):
-            sub_line_count = len(line) // self.printable_width
-            for split_idx in range(sub_line_count + 1):
-                printable_lines.append(line[split_idx * self.printable_width : (split_idx + 1) * self.printable_width])
+            for sub_line in line.split("\n"):
+                sub_line_count = len(sub_line) // self.printable_width
+                for split_idx in range(sub_line_count + 1):
+                    printable_lines.append(
+                        sub_line[split_idx * self.printable_width : (split_idx + 1) * self.printable_width]
+                    )
 
         visible_lines = printable_lines[self.top_viewable_line : self.bottom_viewable_line]
         logger.debug(
             "Viewable Bounds: %s - %s : cursor on apparent line %s",
             self.top_viewable_line,
             self.bottom_viewable_line,
-            self.apparent_line_number,
         )
-        logger.debug("self.lines: %s", self.lines)
-        logger.debug("lines: %s", lines)
-        logger.debug("printable_lines: %s", printable_lines)
-        logger.debug("visible_lines: %s", visible_lines)
+        logger.info("self.lines: %s", self.lines)
+        logger.info("lines: %s", lines)
+        logger.info("printable_lines: %s", printable_lines)
+        logger.info("visible_lines: %s", visible_lines)
         if not self.top_to_bottom:
             logger.debug("reversed printable set")
             visible_lines.reverse()
@@ -259,8 +297,8 @@ class TextBox:
                 line_num = self.printable_height - (idx + 1)
             y_offset = line_num + box_offset
             coord = Coordinate(x_offset, y_offset)
-            logger.debug(
-                "draw line %ss: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
+            logger.info(
+                "draw line %s: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
                 idx,
                 y_offset,
                 self.printable_height,

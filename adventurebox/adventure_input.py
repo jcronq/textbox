@@ -27,7 +27,7 @@ class INPUT_MODE(Enum):
 class VimLikeInputBox:
     def __init__(self, main_window: Window, input_manager: AsyncInputManager):
         self.main_window = main_window
-        self.input_box_height = 4
+        self.input_box_height = 5
         self.command_box = InputBox(
             "command_box",
             main_window,
@@ -46,7 +46,7 @@ class VimLikeInputBox:
         self.output_box = TextBox(
             "output_box",
             main_window,
-            BoundingBox(0, 4, main_window.width, main_window.height - self.input_box_height),
+            BoundingBox(0, self.input_box_height, main_window.width, main_window.height - self.input_box_height),
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
             has_box=True,
@@ -81,11 +81,14 @@ class VimLikeInputBox:
         return self._focused_box
 
     @focused_box.setter
-    def focused_box(self, value: TextBox):
-        self._focused_box.box_visible = False
-        self.focused_box.redraw()
-        self._focused_box = value
-        self._focused_box.box_visible = True
+    def focused_box(self, box_to_focus: TextBox):
+        if box_to_focus != self.command_box:
+            self._focused_box.box_visible = False
+            self.focused_box.redraw()
+            self._focused_box = box_to_focus
+            self._focused_box.box_visible = True
+        else:
+            self._focused_box = box_to_focus
 
     def cycle_focus(self):
         if self.focused_box == self.user_box:
@@ -109,8 +112,8 @@ class VimLikeInputBox:
 
     def enter_insert_mode(self, append: bool = False):
         self.focused_box = self.user_box
-        # if append and self.input_mode != INPUT_MODE.INSERT:
-        self.focused_box.column_ptr += 1
+        if append and self.input_mode != INPUT_MODE.INSERT:
+            self.focused_box.column_ptr += 1
         self.focused_box.window.move(self.focused_box.cursor_coord)
         self.focused_box.window.refresh()
         self.input_mode = INPUT_MODE.INSERT
@@ -121,13 +124,12 @@ class VimLikeInputBox:
     def enter_command_mode(self):
         if self.input_mode == INPUT_MODE.INSERT:
             self.focused_box.column_ptr -= 1
-            self.focused_box.window.move(self.focused_box.cursor_coord)
-            self.focused_box.window.refresh()
         self.input_mode = INPUT_MODE.COMMAND
         self.command_box.set_text("")
-        self.focused_box = self.user_box
+        if self.focused_box != self.user_box:
+            self.focused_box = self.user_box
         logger.info("Input Mode: COMMAND")
-        self.focused_box.refresh()
+        self.focused_box.redraw(with_cursor=True)
 
     def enter_command_entry_mode(self):
         self.input_mode = INPUT_MODE.COMMAND_ENTRY
@@ -150,11 +152,12 @@ class VimLikeInputBox:
         elif self.input_mode == INPUT_MODE.READ_ONLY:
             self.read_only_handler(key)
 
-    def submit(self):
+    def submit(self, print=True):
         self.focused_box: InputBox
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
-            self.output_box.print_line(self.focused_box.text)
+            if print:
+                self.output_box.print_line(self.focused_box.text)
             self.focused_box.clear()
             self.focused_box.redraw(with_cursor=True)
 
@@ -192,9 +195,9 @@ class VimLikeInputBox:
             logger.info("Key: Escape")
             self.enter_command_mode()
 
-        elif key == ord("\n") or key == ord("\r"):
-            logger.info("Key: Enter")
-            self.submit()
+        # elif key == ord("\n") or key == ord("\r"):
+        #     logger.info("Key: Enter")
+        #     self.submit()
 
         elif key == curses.KEY_BACKSPACE or key == 127:  # 127 is the delete key.  Macs use delete instead of backspace.
             self.focused_box.handle_backspace()
@@ -246,6 +249,22 @@ class VimLikeInputBox:
             self.enter_insert_mode()
             logger.info("Input Mode: %s", self.input_mode)
 
+        elif key == ord("b"):
+            logger.info("Command: b (word backward)")
+            self.focused_box.word_backward()
+
+        elif key == ord("w"):
+            logger.info("Command: w (word forward)")
+            self.focused_box.word_forward()
+
+        elif key == ord("$"):
+            logger.info("Command: $ (end of line)")
+            self.focused_box.end_of_line()
+
+        elif key == ord("0"):
+            logger.info("Command: 0 (start of line)")
+            self.focused_box.start_of_line()
+
         elif key == ord("R"):
             logger.info("Command: R")
             self.enter_replace_mode()
@@ -282,9 +301,8 @@ class VimLikeInputBox:
 
         elif key in [ord("\n"), ord("\r")]:
             logger.info("Command: Enter")
-            if len(self.command_box.text) > 0:
-                self.command_box.append_history()
             self.execute_command(self.command_box.text[1:])
+            self.submit(print=False)
             self.enter_command_mode()
 
         else:

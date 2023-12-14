@@ -159,7 +159,7 @@ class Window:
 
     def move(self, coord: Coordinate):
         curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
-        logger.info(f"Window: Moving to Curses{curses_coord}")
+        logger.info(f"Window: Moving to Coord({coord}) Curses{curses_coord} within {self.dimensions}")
         self._local_window.move(*curses_coord)
 
     def resize(self, box: BoundingBox):
