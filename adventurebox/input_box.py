@@ -86,21 +86,21 @@ class InputBox(TextBox):
 
     def history_scroll_up(self):
         if not self._history.has_history():
-            logger.info("Key: Up (No History)")
+            logger.debug("Key: Up (No History)")
             return
         elif self._history.at_present():
-            logger.info("Key: Up (History) - First Press")
+            logger.debug("Key: Up (History) - First Press")
             self._history.set_short_term_memory(self.text)
         else:
-            logger.info("Key: Up (History) - Press")
+            logger.debug("Key: Up (History) - Press")
         self.set_text(self._history.previous())
         self.column_ptr = len(self.text)
 
     def history_scroll_down(self):
         if self._history.at_present():
-            logger.info("Key: Down (History) - No further history")
+            logger.debug("Key: Down (History) - No further history")
         else:
-            logger.info("Key: Down (History) - Press")
+            logger.debug("Key: Down (History) - Press")
             self.set_text(self._history.next())
             self.column_ptr = len(self.text)
             self.synchronize_cursor()

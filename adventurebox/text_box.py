@@ -29,6 +29,9 @@ class TextBox:
         self.has_box = has_box
         self._box_visible = False
 
+    def resize(self, box: BoundingBox):
+        self.window.resize(box)
+
     @property
     def attributes(self):
         return [curses.color_pair(self.color_pair)]
@@ -68,14 +71,14 @@ class TextBox:
         # if self.top_to_bottom:
         # apparent_number =
         if self.apparent_line_number > (self.printable_height):
-            logger.info("View violation: %s > %s", self.apparent_line_number, self.printable_height)
+            logger.debug("View violation: %s > %s", self.apparent_line_number, self.printable_height)
             self._view_line += self.apparent_line_number - (self.printable_height)
-            logger.info("Moved view (add): %s", self._view_line)
+            logger.debug("Moved view (add): %s", self._view_line)
         elif self.apparent_line_number < 0:
-            logger.info("View violation: %s < 0", self.apparent_line_number)
+            logger.debug("View violation: %s < 0", self.apparent_line_number)
             self._view_line += self.apparent_line_number
-            logger.info("Moved view (sub): %s", self._view_line)
-        logger.info("column_ptr set to %s, Coordinate(%s)", value, self.cursor_coord)
+            logger.debug("Moved view (sub): %s", self._view_line)
+        logger.debug("column_ptr set to %s, Coordinate(%s)", value, self.cursor_coord)
 
     @property
     def line_ptr(self):
@@ -128,7 +131,7 @@ class TextBox:
         if self.lines[self.line_ptr] == "" and self.line_ptr == len(self.lines) - 1:
             lines = self.lines[:-1]
         else:
-            logger.info("line_ptr: %s, len(lines): %s", self.line_ptr, len(self.lines))
+            logger.debug("line_ptr: %s, len(lines): %s", self.line_ptr, len(self.lines))
         lines = self.lines[: self.line_ptr + 1]
 
         for text_line in lines:
@@ -235,18 +238,18 @@ class TextBox:
                 printable_lines.append(line[split_idx * self.printable_width : (split_idx + 1) * self.printable_width])
 
         visible_lines = printable_lines[self.top_viewable_line : self.bottom_viewable_line]
-        logger.info(
+        logger.debug(
             "Viewable Bounds: %s - %s : cursor on apparent line %s",
             self.top_viewable_line,
             self.bottom_viewable_line,
             self.apparent_line_number,
         )
-        logger.info("self.lines: %s", self.lines)
-        logger.info("lines: %s", lines)
-        logger.info("printable_lines: %s", printable_lines)
-        logger.info("visible_lines: %s", visible_lines)
+        logger.debug("self.lines: %s", self.lines)
+        logger.debug("lines: %s", lines)
+        logger.debug("printable_lines: %s", printable_lines)
+        logger.debug("visible_lines: %s", visible_lines)
         if not self.top_to_bottom:
-            logger.info("reversed printable set")
+            logger.debug("reversed printable set")
             visible_lines.reverse()
         for idx, line in enumerate(visible_lines):
             x_offset = 1 if self.has_box else 0
@@ -256,7 +259,7 @@ class TextBox:
                 line_num = self.printable_height - (idx + 1)
             y_offset = line_num + box_offset
             coord = Coordinate(x_offset, y_offset)
-            logger.info(
+            logger.debug(
                 "draw line %ss: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
                 idx,
                 y_offset,

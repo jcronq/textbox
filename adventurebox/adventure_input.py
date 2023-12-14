@@ -1,3 +1,4 @@
+import asyncio
 import curses
 from enum import Enum
 
@@ -6,8 +7,8 @@ from adventurebox.window import Window
 from adventurebox.input_manager import AsyncInputManager
 from adventurebox.input_box import InputBox
 from adventurebox.text_box import TextBox
-from adventurebox.box_types import BoundingBox, Coordinate
-from adventurebox.signals import WindowQuit
+from adventurebox.box_types import BoundingBox, Dimensions
+from adventurebox.signals import WindowQuit, DelayedRedraw
 from adventurebox.color_code import ColorCode
 
 import logging
@@ -25,6 +26,8 @@ class INPUT_MODE(Enum):
 
 class VimLikeInputBox:
     def __init__(self, main_window: Window, input_manager: AsyncInputManager):
+        self.main_window = main_window
+        self.input_box_height = 4
         self.command_box = InputBox(
             "command_box",
             main_window,
@@ -35,7 +38,7 @@ class VimLikeInputBox:
         self.user_box = InputBox(
             "user_box",
             main_window,
-            BoundingBox(0, 1, main_window.width, 4),
+            BoundingBox(0, 1, main_window.width, self.input_box_height),
             ColorCode.WHITE,
             top_to_bottom=True,
             has_box=True,
@@ -43,7 +46,7 @@ class VimLikeInputBox:
         self.output_box = TextBox(
             "output_box",
             main_window,
-            BoundingBox(0, 4, main_window.width, main_window.height - 4),
+            BoundingBox(0, 4, main_window.width, main_window.height - self.input_box_height),
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
             has_box=True,
@@ -52,6 +55,26 @@ class VimLikeInputBox:
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
         input_manager.on_keypress = self.handle_keypress
+        input_manager.redraw = self.redraw
+
+    async def resize(self):
+        logger.info("Event: Resize")
+        curses.update_lines_cols()
+        curses.resize_term(curses.LINES, curses.COLS)
+        self.main_window.resize(BoundingBox(0, 0, curses.COLS, curses.LINES))
+        self.command_box.resize(BoundingBox(0, 0, self.main_window.width, 1))
+        self.user_box.resize(BoundingBox(0, 1, self.main_window.width, self.input_box_height))
+        self.output_box.resize(
+            BoundingBox(0, 4, self.main_window.width, self.main_window.height - self.input_box_height)
+        )
+        raise DelayedRedraw()
+
+    def redraw(self):
+        logger.info("redraw")
+        self.command_box.redraw()
+        self.user_box.redraw()
+        self.output_box.redraw()
+        self.focused_box.redraw()
 
     @property
     def focused_box(self):
@@ -113,8 +136,10 @@ class VimLikeInputBox:
         logger.info("Input Mode: COMMAND_ENTRY")
         self.focused_box.redraw()
 
-    def handle_keypress(self, key: int):
-        if self.input_mode == INPUT_MODE.COMMAND:
+    async def handle_keypress(self, key: int):
+        if key == curses.KEY_RESIZE:
+            await self.resize()
+        elif self.input_mode == INPUT_MODE.COMMAND:
             self.command_handler(key)
         elif self.input_mode == INPUT_MODE.INSERT:
             self.text_handler(key)

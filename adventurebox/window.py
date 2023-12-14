@@ -21,7 +21,7 @@ class Window:
     ):
         if parent_window is None and (coordinate is not None or dimensions is not None):
             raise ValueError("Cannot specify coordinate or dimensions without a parent window")
-        self._subwindows = []
+        self.__children = []
         self.coordinate = coordinate if coordinate is not None else Coordinate(0, 0)
         self.dimensions = dimensions if dimensions is not None else Dimensions(curses.COLS, curses.LINES)
         self._local_window = local_window
@@ -88,26 +88,29 @@ class Window:
     def contains_coordinate_locally(self, coord: Coordinate):
         return 0 <= coord.y <= self.dimensions.height and 0 <= coord.x <= self.dimensions.width
 
-    def create_newwindow(self, box: BoundingBox) -> "Window":
-        self.validate_contains_bounding_box(box)
+    def create_newwindow(self, box: BoundingBox, validate_input=True) -> "Window":
+        if validate_input:
+            self.main_window.validate_contains_bounding_box(box)
         logger.info("Creating new window: %s", box)
         logger.info("top_left: %s", box.top_left)
-        y, x = self._translate_local_coordinate_to_local_curses_coord(box.top_left)
+        y, x = self.main_window._translate_local_coordinate_to_local_curses_coord(box.top_left)
         logger.info(f"({box.height}, {box.width}, {y}, {x})")
         subwin = curses.newwin(box.height, box.width, y, x)
-        self._subwindows.append(subwin)
-        return Window(subwin, box.coordinate, box.dimensions, parent_window=self)
+        new_window = Window(subwin, box.coordinate, box.dimensions, parent_window=self)
+        self.__children.append(new_window)
+        return new_window
 
     def refresh(self):
         self._local_window.refresh()
 
     def refresh_all(self):
         self._local_window.refresh()
-        for subwin in self._subwindows:
+        for subwin in self.__children:
             subwin.refresh()
 
     def clear(self):
-        self._local_window.clear()
+        logger.info("Cleared window")
+        self._local_window.erase()
 
     def alert(self, msg):
         self.addstr(msg, Coordinate(0, 0))
@@ -159,9 +162,31 @@ class Window:
         logger.info(f"Window: Moving to Curses{curses_coord}")
         self._local_window.move(*curses_coord)
 
-    def resize(self, width: int, height: int):
-        self.addstr(0, 0, "Resizing...")
-        self._local_window.resize(height, width)
+    def resize(self, box: BoundingBox):
+        logger.info("Resizing window to %s, %s, %s", box, box.coordinate, box.dimensions)
+        self.dimensions = box.dimensions
+        self.coordinate = box.coordinate
+        try:
+            self._local_window.resize(box.height, box.width)
+            self.dimensions = box.dimensions
+        except curses.error:
+            logger.error("Failed to resize window to %s", box.dimensions)
+        curses_coord = self.main_window._translate_local_coordinate_to_local_curses_coord(box.top_left)
+        try:
+            self._local_window.mvwin(*curses_coord)
+            self.coordinate = box.coordinate
+        except curses.error:
+            logger.error("Failed to move window to coord(%s), curses(%s)", box.coordinate, curses_coord)
+
+    # def resize(self, box: BoundingBox):
+    #     y, x = self.main_window._translate_local_coordinate_to_local_curses_coord(box.top_left)
+    #     del self._local_window
+    #     new_win = self.main_window.create_newwindow(box, False)
+    #     self._local_window = new_win._local_window
+    #     self.coordinate = new_win.coordinate
+    #     self.dimensions = new_win.dimensions
+    #     logger.info("New Window: %s", self)
+    #     # self.indow = curses.newwin(box.height, box.width, y, x)
 
     def hline(self, coord: Coordinate, ch: str = None, length: int = None):
         if length is None:
@@ -174,8 +199,11 @@ class Window:
         self._local_window.box()
 
     def __del__(self):
-        for subwin in self._subwindows:
+        for subwin in self.__children:
             del subwin
 
     def __repr__(self):
         return f"Window(x={self.x}, y={self.y}, width={self.width}, height={self.height})"
+
+    def __str__(self):
+        return self.__repr__()
