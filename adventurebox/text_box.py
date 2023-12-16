@@ -38,12 +38,14 @@ class TextBox:
         self.verbose = False
 
     def resize(self, box: BoundingBox):
-        if self.top_to_bottom:
+        total_line_count = self._text_list.line_count
+        if self.last_viewable_lineno <= total_line_count:
             value = self.last_viewable_lineno
+        else:
+            value = total_line_count
         self.window.resize(box, self.verbose)
         self._text_list.max_line_width = self.printable_width
-        if self.top_to_bottom:
-            self.last_viewable_lineno = value
+        self.last_viewable_lineno = value
 
     @property
     def attributes(self):

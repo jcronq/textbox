@@ -43,9 +43,9 @@ class VimLikeInputBox:
             self.output_bounding_box,
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
-            has_box=False,
+            has_box=True,
         )
-        # self.user_box.verbose = True
+        self.output_box.verbose = True
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
@@ -124,9 +124,11 @@ class VimLikeInputBox:
         self.input_mode = INPUT_MODE.READ_ONLY
         self.focused_box = self.output_box
         self.command_box.set_text_to_str("-- READING --")
+        curses.curs_set(0)
         self.focused_box.refresh()
 
     def enter_replace_mode(self):
+        curses.curs_set(1)
         self.input_mode = INPUT_MODE.REPLACE
         self.focused_box = self.user_box
         self.command_box.set_text_to_str("-- REPLACE --")
@@ -134,6 +136,7 @@ class VimLikeInputBox:
         self.focused_box.refresh()
 
     def enter_insert_mode(self, append: bool = False):
+        curses.curs_set(1)
         self.focused_box = self.user_box
         self.focused_box.text.edit_mode = True
         if append and self.input_mode != INPUT_MODE.INSERT:
@@ -145,6 +148,7 @@ class VimLikeInputBox:
         self.focused_box.refresh()
 
     def enter_command_mode(self):
+        curses.curs_set(1)
         self.input_mode = INPUT_MODE.COMMAND
         self.command_box.set_text_to_str("")
         if self.focused_box != self.user_box:
@@ -154,6 +158,7 @@ class VimLikeInputBox:
         self.focused_box.redraw(with_cursor=True)
 
     def enter_command_entry_mode(self):
+        curses.curs_set(2)
         self.input_mode = INPUT_MODE.COMMAND_ENTRY
         self.focused_box = self.command_box
         self.command_box.set_text_to_str(":")

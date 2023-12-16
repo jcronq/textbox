@@ -90,7 +90,7 @@ class BoundingBox(NamedTuple):
 
     @property
     def top_right(self):
-        return Position(self.first_lineno, self.last_lineno)
+        return Position(self.first_lineno, self.last_colno)
 
     @property
     def bottom_left(self):
