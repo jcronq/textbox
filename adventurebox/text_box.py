@@ -117,45 +117,58 @@ class TextBox:
         return self._first_lineno_in_window + self.printable_height
 
     @property
-    def cursor_position(self) -> Position:
-        position = self._text_list.current_text.cursor_position
-
+    def box_offset(self):
         if self._has_box:
-            position += Position(1, 1)
+            return Position(1, 1)
+        return Position(0, 0)
+
+    @property
+    def cursor_position(self) -> Position:
+        position = self._text_list.cursor_position
+
+        position += self.box_offset
         position -= Position(self._first_lineno_in_window, 0)
+
+        if self.verbose:
+            logger.info(
+                "Current position: %s, first_line: %s, box_offset %s",
+                position,
+                self._first_lineno_in_window,
+                self.box_offset,
+            )
+            logger.info("TextList: %s", self._text_list)
 
         return position
 
     def adjust_screen_position(self):
-        position = self._text_list.current_text.cursor_position
+        position = self._text_list.cursor_position
+        position = position + self.box_offset - Position(self._first_lineno_in_window, 0)
         if self.verbose:
-            logger.info("Current position: %s", position)
-        if self._has_box:
-            position += Position(1, 1)
-        position -= Position(self._first_lineno_in_window, 0)
+            logger.info(
+                "Cursor Position in Window: %s, Limits[%s, %s]",
+                position,
+                self.last_printable_lineno,
+                self.first_printable_lineno,
+            )
         if position.lineno > self.last_printable_lineno:
             self.scroll_down(position.lineno - self.last_printable_lineno)
             position = Position(self.last_printable_lineno, position.colno)
         elif position.lineno < self.first_printable_lineno:
-            if self.verbose:
-                logger.info(
-                    "position %s is above first printable line %s", position.lineno, self.first_printable_lineno
-                )
             self.scroll_up(self.first_printable_lineno - position.lineno)
             position = Position(self.first_printable_lineno, position.colno)
-            if self.verbose:
-                logger.info("New position in window: %s", position)
 
     def scroll_down(self, n_lines):
         self._first_lineno_in_window += n_lines
         if self.verbose:
-            logger.info("New first line in window: %s", self._first_lineno_in_window)
+            logger.info("Scroll down: %s, first_line @ %s", n_lines, self._first_lineno_in_window)
         self.redraw()
 
     def scroll_up(self, n_lines):
         self._first_lineno_in_window -= n_lines
         if self.verbose:
-            logger.info("New first line in window: %s", self._first_lineno_in_window)
+            logger.info("Scroll up: %s, first_line @ %s", n_lines, self._first_lineno_in_window)
+        if self._first_lineno_in_window < 0:
+            raise ValueError("Cannot scroll up past first line")
         self.redraw()
 
     def erase(self):

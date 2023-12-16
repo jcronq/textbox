@@ -1,6 +1,6 @@
 from typing import List, Union
 from adventurebox.text import Text
-from adventurebox.box_types import LineSpan
+from adventurebox.box_types import LineSpan, Position
 
 
 class TextList:
@@ -44,6 +44,16 @@ class TextList:
         if len(self._texts) == 0:
             return Text("", max_line_width=self._max_line_width)
         return self._texts[self._text_ptr - 1]
+
+    @property
+    def cursor_position(self):
+        if len(self._texts) == 0:
+            return Position(0, 0)
+        elif len(self._texts) == 1:
+            return self.current_text.cursor_position
+        else:
+            lines_before = sum([text.line_count for text in self._texts[: self._text_ptr - 1]])
+            return self.current_text.cursor_position + Position(lines_before, 0)
 
     def insert(self, text: str):
         if self._text_ptr >= len(self._texts):
@@ -134,3 +144,6 @@ class TextList:
                 break
 
         return result
+
+    def __repr__(self):
+        return f"TextList({self._texts}, max_line_width={self._max_line_width}, text_ptr={self._text_ptr})"
