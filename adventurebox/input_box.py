@@ -1,11 +1,5 @@
-import curses
-from enum import Enum
-
-from adventurebox.window import Window
-from adventurebox.box_types import BoundingBox
-from adventurebox.signals import WindowQuit
-from adventurebox.box_types import Coordinate
 from adventurebox.text_box import TextBox
+from adventurebox.text import Text
 
 import logging
 
@@ -69,20 +63,37 @@ class InputHistory:
 class InputBox(TextBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if not self.top_to_bottom:
+            raise ValueError("InputBox must be top-to-bottom")
+
+        # Initialize the text list with a single empty text.
+        self._text_list.insert("")
+        self._text_ptr = 0
         self._history = InputHistory()
 
-    def set_text(self, text: str):
-        self.text = text
+    def set_text(self, text: Text):
+        if not isinstance(text, Text):
+            raise ValueError("Text must be a Text object")
+        text.to_end_of_text()
+        self._text_list.set_first_text(text)
+
+    def set_text_to_str(self, text: str):
+        if not isinstance(text, str):
+            raise ValueError("Text must be a string")
+        self.text.set_text_to_str(text)
         self.redraw()
 
     @property
-    def text(self):
-        return self.lines[0]
+    def edit_mode(self):
+        self.text.edit_mode = True
 
-    @text.setter
-    def text(self, value):
-        self.lines[0] = value
-        self._view_line = 0
+    @edit_mode.setter
+    def edit_mode(self, value: bool):
+        self.text.edit_mode = value
+
+    @property
+    def text(self) -> Text:
+        return self._text_list.texts[0]
 
     def history_scroll_up(self):
         if not self._history.has_history():
@@ -94,7 +105,7 @@ class InputBox(TextBox):
         else:
             logger.debug("Key: Up (History) - Press")
         self.set_text(self._history.previous())
-        self.column_ptr = len(self.text)
+        # self.column_ptr = len(self.text)
 
     def history_scroll_down(self):
         if self._history.at_present():
@@ -102,79 +113,51 @@ class InputBox(TextBox):
         else:
             logger.debug("Key: Down (History) - Press")
             self.set_text(self._history.next())
-            self.column_ptr = len(self.text)
-            self.synchronize_cursor()
+            self.update_cursor()
 
     def append_history(self):
         self._history.append(self.text)
 
     def cursor_down(self):
-        self.column_ptr += self.printable_width
+        self.text.increment_line_ptr()
         self.redraw(True)
 
     def cursor_up(self):
-        self.column_ptr -= self.printable_width
+        self.text.decrement_line_ptr()
         self.redraw(True)
 
     def cursor_left(self):
-        self.column_ptr -= 1
+        self.text.decrement_column_ptr()
         self.redraw(True)
 
     def cursor_right(self):
-        self.column_ptr += 1
+        self.text.increment_column_ptr()
         self.redraw(True)
 
     def handle_backspace(self):
-        if self.column_ptr == 0:
-            return
-        self.text = self.text[: self.column_ptr - 1] + self.text[self.column_ptr :]
-        self.column_ptr -= 1
+        self.text.backspace()
         self.redraw(with_cursor=True)
 
     def insert_character_at_cursor(self, ch: str):
-        self.text = self.text[: self.column_ptr] + ch + self.text[self.column_ptr :]
-        self.column_ptr += 1
+        self.text.insert(ch)
         self.redraw(with_cursor=True)
 
     def replace_character_at_cursor(self, ch: str):
-        self.text = self.text[: self.column_ptr] + ch + self.text[self.column_ptr + 1 :]
-        self.column_ptr += 1
+        self.text.replace_character(ch)
         self.redraw(with_cursor=True)
 
     def word_forward(self):
-        if self.column_ptr == len(self.text):
-            return
-        splits = self.text[self.column_ptr :].split(" ")
-        accumulated_distance = 0
-        for split in splits:
-            accumulated_distance += len(split) + 1
-            if split != "":
-                self.column_ptr += accumulated_distance
-                self.redraw(with_cursor=True)
-                return
+        self.text.to_start_of_next_word()
+        self.redraw(with_cursor=True)
 
     def word_backward(self):
-        if self.column_ptr == 0:
-            return
-        splits = reversed(self.text[: self.column_ptr].split(" "))
-        accumulated_distance = 0
-        for split in splits:
-            accumulated_distance += len(split) + 1
-            if split != "":
-                self.column_ptr -= accumulated_distance - 1
-                self.redraw(with_cursor=True)
-                return
+        print("not implemented")
+        self.redraw(with_cursor=True)
 
     def end_of_line(self):
-        lines = self.text.split("\n")
-        accumulated_distance = 0
-        for line in lines:
-            accumulated_distance += len(line) + 1
-            if accumulated_distance > self.column_ptr:
-                self.column_ptr = len(line)
-                self.redraw(with_cursor=True)
-                return
+        self.text.to_end_of_line()
+        self.redraw(with_cursor=True)
 
     def start_of_line(self):
-        self.column_ptr = 0
+        self.text.to_start_of_line()
         self.redraw(with_cursor=True)

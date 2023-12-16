@@ -1,10 +1,10 @@
-from typing import Optional, Tuple
+from typing import Optional, Union
 from collections import namedtuple
 
 import curses
 from curses import window
 
-from adventurebox.box_types import Coordinate, BoundingBox, Dimensions
+from adventurebox.box_types import Position, BoundingBox, Dimensions
 
 import logging
 
@@ -15,24 +15,21 @@ class Window:
     def __init__(
         self,
         local_window: window,
-        coordinate: Optional[Coordinate] = None,
+        position: Optional[Position] = None,
         dimensions: Optional[Dimensions] = None,
         parent_window: Optional["Window"] = None,
     ):
-        if parent_window is None and (coordinate is not None or dimensions is not None):
-            raise ValueError("Cannot specify coordinate or dimensions without a parent window")
+        if parent_window is None and (position is not None or dimensions is not None):
+            raise ValueError("Cannot specify position or dimensions without a parent window")
         self.__children = []
-        self.coordinate = coordinate if coordinate is not None else Coordinate(0, 0)
-        self.dimensions = dimensions if dimensions is not None else Dimensions(curses.COLS, curses.LINES)
+        self.position = position if position is not None else Position(0, 0)
+        self.dimensions = dimensions if dimensions is not None else Dimensions(height=curses.LINES, width=curses.COLS)
         self._local_window = local_window
         self.__parent = parent_window
 
         # Validate bounding box of the window
         if self.__parent is not None:
-            if not (
-                self.__parent.contains_coordinate_locally(self.coordinate)
-                and self.__parent.contains_coordinate_locally(self.coordinate + self.dimensions)
-            ):
+            if not (self.bounding_box in self.__parent):
                 raise ValueError(
                     f"Window {self.bounding_box} is not contained within parent window {self.__parent.bounding_box}"
                 )
@@ -46,16 +43,20 @@ class Window:
         return self.dimensions.height
 
     @property
-    def x(self):
-        return self.coordinate.x
+    def start_lineno(self):
+        return self.position.lineno
 
     @property
-    def y(self):
-        return self.coordinate.y
+    def start_colno(self):
+        return self.position.colno
 
     @property
     def bounding_box(self):
-        return BoundingBox(self.x, self.y, self.width, self.height)
+        return BoundingBox(self.start_lineno, self.start_colno, self.height, self.width)
+
+    @property
+    def local_box(self):
+        return BoundingBox(0, 0, self.height, self.width)
 
     @property
     def main_window(self):
@@ -64,39 +65,16 @@ class Window:
         return self.__parent.main_window
 
     @property
-    def cursor_coord(self) -> Coordinate:
-        curses_coord = self._local_window.getyx()
-        return self._translate_curses_coord_to_local_coordinate(curses_coord)
+    def cursor_position(self) -> Position:
+        return Position(*self._local_window.getyx())
 
-    def _translate_local_coordinate_to_local_curses_coord(self, coord: Coordinate) -> (int, int):
-        return self.height - (coord.y + 1), coord.x
+    def create_new_window(self, box: BoundingBox, validate_input=True) -> "Window":
+        if validate_input and not box in self:
+            raise ValueError(f"New window {box} is not contained within {self.bounding_box}")
 
-    def _translate_curses_coord_to_local_coordinate(self, coord: Tuple[int, int]) -> Coordinate:
-        return Coordinate(coord[1], self.height - coord[0])
-
-    def validate_contains_bounding_box(self, box: BoundingBox):
-        if not (self.contains_coordinate_locally(box.bottom_left) and self.contains_coordinate_locally(box.top_right)):
-            raise ValueError(f"Window {self.bounding_box} does not contain bounding box {box}")
-
-    def validate_contains_coordinate(self, coord: Coordinate):
-        if not self.contains_coordinate_locally(coord):
-            raise ValueError(f"Window {self.bounding_box} does not contain coordinate {coord}")
-
-    def contains_coordinate_globally(self, coord):
-        return self.main_window.contains_coordinate_locally(coord)
-
-    def contains_coordinate_locally(self, coord: Coordinate):
-        return 0 <= coord.y <= self.dimensions.height and 0 <= coord.x <= self.dimensions.width
-
-    def create_newwindow(self, box: BoundingBox, validate_input=True) -> "Window":
-        if validate_input:
-            self.main_window.validate_contains_bounding_box(box)
         logger.info("Creating new window: %s", box)
-        logger.info("top_left: %s", box.top_left)
-        y, x = self.main_window._translate_local_coordinate_to_local_curses_coord(box.top_left)
-        logger.info(f"({box.height}, {box.width}, {y}, {x})")
-        subwin = curses.newwin(box.height, box.width, y, x)
-        new_window = Window(subwin, box.coordinate, box.dimensions, parent_window=self)
+        subwin = curses.newwin(*box.dimensions, *box.position)
+        new_window = Window(subwin, box.position, box.dimensions, parent_window=self)
         self.__children.append(new_window)
         return new_window
 
@@ -108,45 +86,42 @@ class Window:
         for subwin in self.__children:
             subwin.refresh()
 
-    def clear(self):
-        logger.info("Cleared window")
+    def erase(self):
+        logger.info("Erased window")
         self._local_window.erase()
 
-    def alert(self, msg):
-        self.addstr(msg, Coordinate(0, 0))
-        self.refresh()
-
-    def addch(self, ch: str, coord: Coordinate = None, attributes: list = None):
+    def addch(self, ch: str, position: Position = None, attributes: list = None):
         if type(ch) is not str:
             raise ValueError(f"ch must be a string, not {type(ch)}")
         if len(ch) != 1:
             raise ValueError(f"ch must be a single character, not {len(ch)}")
         if attributes is None:
             attributes = []
-        if coord is not None:
-            self.validate_contains_coordinate(coord)
-            curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
+        if position is not None:
+            if not position in self.local_box:
+                raise ValueError(f"Position {position} is not contained within {self.bounding_box}")
             try:
-                self._local_window.addch(*curses_coord, ch, *attributes)
+                self._local_window.addch(*position, ch, *attributes)
             except curses.error:
                 pass
 
         else:
             self._local_window.addch(str(ch))
 
-    def addstr(self, text: str, coord: Coordinate = None, attributes: list = None):
+    def addstr(self, text: str, position: Position = None, attributes: list = None):
         if attributes is None:
             attributes = []
-        if coord is not None:
-            self.validate_contains_coordinate(coord)
-            curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
-            logger.info(f"Adding string at Coord({coord}); curses{curses_coord}")
-            try:
-                self._local_window.addstr(*curses_coord, text, *attributes)
-            except curses.error:
-                pass
-        else:
-            self._local_window.addstr(text, *attributes)
+        if position is None:
+            logger.info(f"Adding string at cursor_position")
+            position = self.cursor_position
+        str_box = BoundingBox(position.lineno, position.colno, height=1, width=len(text))
+        if str_box not in self.local_box:
+            raise ValueError(f"String '{text}' @ {position} will not fit within {self.bounding_box}")
+        logger.info(f"Adding string at {position}")
+        try:
+            self._local_window.addstr(*position, text, *attributes)
+        except curses.error:
+            pass
 
     def getkey(self) -> str:
         return self._local_window.getkey()
@@ -154,48 +129,28 @@ class Window:
     def getch(self) -> str:
         return self._local_window.getch()
 
-    def getstr(self, coord: Coordinate, n: int) -> str:
-        return self._local_window.getstr(*self._translate_local_coordinate_to_local_curses_coord(coord), n)
+    def move_cursor(self, position: Position):
+        if not position in self.local_box:
+            raise ValueError(f"Cursor Position {position} is not contained within {self.bounding_box}")
 
-    def move(self, coord: Coordinate):
-        curses_coord = self._translate_local_coordinate_to_local_curses_coord(coord)
-        logger.info(f"Window: Moving to Coord({coord}) Curses{curses_coord} within {self.dimensions}")
-        self._local_window.move(*curses_coord)
+        logger.info(f"Window: Moving cursor to {position}")
+        self._local_window.move(*position)
 
     def resize(self, box: BoundingBox):
-        logger.info("Resizing window to %s, %s, %s", box, box.coordinate, box.dimensions)
+        logger.info("Resizing window to %s", box)
         self.dimensions = box.dimensions
-        self.coordinate = box.coordinate
+        self.position = box.position
         try:
-            self._local_window.resize(box.height, box.width)
-            self.dimensions = box.dimensions
+            self._local_window.resize(*box.dimensions)
         except curses.error:
-            logger.error("Failed to resize window to %s", box.dimensions)
-        curses_coord = self.main_window._translate_local_coordinate_to_local_curses_coord(box.top_left)
+            raise ValueError("Failed to resize window to %s", box.dimensions)
+
         try:
-            self._local_window.mvwin(*curses_coord)
-            self.coordinate = box.coordinate
+            self._local_window.mvwin(*box.position)
         except curses.error:
-            logger.error("Failed to move window to coord(%s), curses(%s)", box.coordinate, curses_coord)
+            raise ValueError("Failed to move window to %s", box.position)
 
-    # def resize(self, box: BoundingBox):
-    #     y, x = self.main_window._translate_local_coordinate_to_local_curses_coord(box.top_left)
-    #     del self._local_window
-    #     new_win = self.main_window.create_newwindow(box, False)
-    #     self._local_window = new_win._local_window
-    #     self.coordinate = new_win.coordinate
-    #     self.dimensions = new_win.dimensions
-    #     logger.info("New Window: %s", self)
-    #     # self.indow = curses.newwin(box.height, box.width, y, x)
-
-    def hline(self, coord: Coordinate, ch: str = None, length: int = None):
-        if length is None:
-            length = self.width
-        if ch is None:
-            ch = curses.ACS_HLINE
-        self._local_window.hline(*self._translate_local_coordinate_to_local_curses_coord(coord), ch, length)
-
-    def box(self):
+    def add_box(self):
         self._local_window.box()
 
     def __del__(self):
@@ -203,7 +158,17 @@ class Window:
             del subwin
 
     def __repr__(self):
-        return f"Window(x={self.x}, y={self.y}, width={self.width}, height={self.height})"
+        return f"Window(x={self.start_lineno}, y={self.start_colno}, height={self.height}, width={self.width})"
 
     def __str__(self):
         return self.__repr__()
+
+    def __contains__(self, other: Union[Position, BoundingBox, "Window"]):
+        if isinstance(other, Position) or isinstance(other, BoundingBox):
+            return other in self.bounding_box
+
+        elif isinstance(other, Window):
+            return other.bounding_box in self.bounding_box
+
+        else:
+            raise ValueError(f"Invalid type {type(other)}. Expected Position, BoundingBox, or Window.")
