@@ -79,18 +79,20 @@ class TextList:
             start = self.line_count + start
 
         # Find the first text that contains the line number we're looking for.
-        first_text_in_span = None
+        first_text_in_slice = None
         text_line_spans: List[LineSpan] = self._text_line_spans
-        for idx, span in enumerate(text_line_spans):
+        for text_idx, span in enumerate(text_line_spans):
             if start in span:
                 if return_single:
-                    return str(self._texts[idx][start - span.first_lineno])
+                    for sub_lineno, line in enumerate(self._texts[text_idx].lines):
+                        if sub_lineno + span.first_lineno == start:
+                            return str(line)
                 else:
-                    first_text_in_span = idx
+                    first_text_in_slice = text_idx
                     break
 
         # If we didn't find a text that contains the line number we're looking for, raise an error.
-        if first_text_in_span is None:
+        if first_text_in_slice is None:
             raise IndexError(f"Line number {start} is out of range for TextList.")
 
         # Gauranteed to be a slice if we get here.
@@ -106,20 +108,21 @@ class TextList:
             text_step = -1
 
         # Find the last text that contains the line number we're looking for.
-        last_text_in_span = first_text_in_span
-        for idx, span in enumerate(text_line_spans[first_text_in_span::text_step], start=first_text_in_span):
+        last_text_in_span = first_text_in_slice
+        for idx, span in enumerate(text_line_spans[first_text_in_slice::text_step], start=first_text_in_slice):
             last_text_in_span = idx
             if stop in span:
                 break
 
         # Get the lines from the texts.
         result = []
-        global_lineno = start
-        for idx, text in enumerate(
-            self._texts[first_text_in_span : last_text_in_span + text_step : text_step], start=first_text_in_span
+        global_lineno = text_line_spans[first_text_in_slice].first_lineno  # start
+        for text_idx, text in enumerate(
+            self._texts[first_text_in_slice : last_text_in_span + text_step : text_step], start=first_text_in_slice
         ):
-            for _, line in enumerate(text):
-                result.append(line)
+            for _, line in enumerate(text.lines):
+                if global_lineno >= start:
+                    result.append(str(line))
                 global_lineno += step
                 if global_lineno >= stop:
                     break
