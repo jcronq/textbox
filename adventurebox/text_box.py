@@ -136,7 +136,7 @@ class TextBox:
                 self._first_lineno_in_window,
                 self.box_offset,
             )
-            logger.info("TextList: %s", self._text_list)
+            logger.debug("TextList: %s", self._text_list)
 
         return position
 

@@ -71,7 +71,7 @@ class VimLikeInputBox:
             top_to_bottom=False,
             has_box=True,
         )
-        self.output_box.verbose = True
+        # self.user_box.verbose = True
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
@@ -91,7 +91,7 @@ class VimLikeInputBox:
         raise DelayedRedraw()
 
     def redraw(self):
-        logger.info("redraw")
+        logger.info("Redraw All Boxes")
         self.command_box.redraw()
         self.user_box.redraw()
         self.output_box.redraw()
@@ -178,7 +178,6 @@ class VimLikeInputBox:
         logger.info("Submit(print=%s)", print)
         self.focused_box: InputBox
         if len(self.focused_box.text) > 0:
-            logger.info("appending history")
             self.focused_box.append_history()
             if print:
                 logger.info("Adding text to output box")
