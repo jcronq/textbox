@@ -1,6 +1,4 @@
-import time
 import asyncio
-import functools
 import curses
 
 import uvloop
@@ -8,9 +6,6 @@ import logging
 
 from adventurebox.input_manager import AsyncInputManager
 from adventurebox.window import Window
-from adventurebox.input_box import InputBox
-from adventurebox.box_types import BoundingBox, Coordinate
-from adventurebox.signals import WindowQuit
 from adventurebox.adventure_input import VimLikeInputBox
 from adventurebox.curses_utils import curses_wrapper
 

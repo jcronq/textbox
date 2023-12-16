@@ -27,18 +27,30 @@ class INPUT_MODE(Enum):
 class VimLikeInputBox:
     def __init__(self, main_window: Window, input_manager: AsyncInputManager):
         self.main_window = main_window
-        self.input_box_height = 5
+        self.command_box_height = 1
+        self.user_box_height = 5
         self.command_box = InputBox(
             "command_box",
             main_window,
-            BoundingBox(0, 0, main_window.width, 1),
+            BoundingBox(
+                main_window.height - self.command_box_height,
+                0,
+                self.command_box_height,
+                main_window.width,
+            ),
             ColorCode.GREY,
             top_to_bottom=True,
         )
+        logger.info("command_box: %s", self.command_box)
         self.user_box = InputBox(
             "user_box",
             main_window,
-            BoundingBox(0, 1, main_window.width, self.input_box_height),
+            BoundingBox(
+                main_window.height - self.command_box.height - self.user_box_height - 1,
+                0,
+                height=self.user_box_height,
+                width=main_window.width,
+            ),
             ColorCode.WHITE,
             top_to_bottom=True,
             has_box=True,
@@ -46,7 +58,12 @@ class VimLikeInputBox:
         self.output_box = TextBox(
             "output_box",
             main_window,
-            BoundingBox(0, self.input_box_height, main_window.width, main_window.height - self.input_box_height),
+            BoundingBox(
+                0,
+                0,
+                height=main_window.height - self.user_box.height - self.command_box.height - 1,
+                width=main_window.width,
+            ),
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
             has_box=True,
@@ -112,9 +129,10 @@ class VimLikeInputBox:
 
     def enter_insert_mode(self, append: bool = False):
         self.focused_box = self.user_box
+        self.focused_box.text.edit_mode = True
         if append and self.input_mode != INPUT_MODE.INSERT:
-            self.focused_box.column_ptr += 1
-        self.focused_box.window.move(self.focused_box.cursor_coord)
+            self.focused_box.text.increment_column_ptr()
+        self.focused_box.update_cursor()
         self.focused_box.window.refresh()
         self.input_mode = INPUT_MODE.INSERT
         self.command_box.set_text("-- INSERT --")
@@ -122,9 +140,8 @@ class VimLikeInputBox:
         self.focused_box.refresh()
 
     def enter_command_mode(self):
-        if self.input_mode == INPUT_MODE.INSERT:
-            self.focused_box.column_ptr -= 1
         self.input_mode = INPUT_MODE.COMMAND
+        self.focused_box.text.edit_mode = False
         self.command_box.set_text("")
         if self.focused_box != self.user_box:
             self.focused_box = self.user_box
@@ -134,7 +151,9 @@ class VimLikeInputBox:
     def enter_command_entry_mode(self):
         self.input_mode = INPUT_MODE.COMMAND_ENTRY
         self.focused_box = self.command_box
-        self.command_box.add_str(":")
+        self.command_box.set_text(":")
+        self.focused_box.text.edit_mode = True
+        self.focused_box.text.increment_column_ptr()
         logger.info("Input Mode: COMMAND_ENTRY")
         self.focused_box.redraw()
 
@@ -157,11 +176,12 @@ class VimLikeInputBox:
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
             if print:
-                self.output_box.print_line(self.focused_box.text)
-            self.focused_box.clear()
+                self.output_box.add_text(self.focused_box.text.copy())
+            self.focused_box.text.erase()
             self.focused_box.redraw(with_cursor=True)
 
     def execute_command(self, text):
+        logger.info(f"Command: {text}")
         match text:
             case "q":
                 raise WindowQuit()
@@ -301,7 +321,7 @@ class VimLikeInputBox:
 
         elif key in [ord("\n"), ord("\r")]:
             logger.info("Command: Enter")
-            self.execute_command(self.command_box.text[1:])
+            self.execute_command(str(self.command_box.text)[1:])
             self.submit(print=False)
             self.enter_command_mode()
 

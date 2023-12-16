@@ -1,122 +1,129 @@
-from collections import namedtuple
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 
-class Coordinate(NamedTuple):
-    x: int
-    y: int
+# class Coordinate(NamedTuple):
+#     x: int
+#     y: int
 
-    def __repr__(self):
-        return f"Coordinate(x={self.x}, y={self.y})"
+#     def __repr__(self):
+#         return f"Coordinate(x={self.x}, y={self.y})"
 
-    def __str__(self):
-        return f"[{self.x}, {self.y}]"
+#     def __str__(self):
+#         return f"[{self.x}, {self.y}]"
 
-    def __add__(self, other):
-        if isinstance(other, Coordinate):
-            return Coordinate(self.x + other.x, self.y + other.y)
-        elif isinstance(other, tuple) and len(other) == 2:
-            return Coordinate(self.x + other[0], self.y + other[1])
-        else:
-            raise TypeError(f"Cannot add {type(other)} to Coordinate")
+#     def __add__(self, other):
+#         if isinstance(other, Coordinate):
+#             return Coordinate(self.x + other.x, self.y + other.y)
+#         elif isinstance(other, tuple) and len(other) == 2:
+#             return Coordinate(self.x + other[0], self.y + other[1])
+#         else:
+#             raise TypeError(f"Cannot add {type(other)} to Coordinate")
 
-    def __sub__(self, other):
-        if isinstance(other, Coordinate):
-            return Coordinate(self.x - other.x, self.y - other.y)
-        elif isinstance(other, tuple) and len(other) == 2:
-            return Coordinate(self.x - other[0], self.y - other[1])
-        else:
-            raise TypeError(f"Cannot subtract {type(other)} from Coordinate")
+#     def __sub__(self, other):
+#         if isinstance(other, Coordinate):
+#             return Coordinate(self.x - other.x, self.y - other.y)
+#         elif isinstance(other, tuple) and len(other) == 2:
+#             return Coordinate(self.x - other[0], self.y - other[1])
+#         else:
+#             raise TypeError(f"Cannot subtract {type(other)} from Coordinate")
 
 
-class Dimensions(Coordinate):
-    @property
-    def width(self):
-        return self.x
-
-    @width.setter
-    def width(self, value):
-        self.y = value
-
-    @property
-    def height(self):
-        return self.y
-
-    @height.setter
-    def height(self, value):
-        self.y = value
+class Dimensions(NamedTuple):
+    height: int
+    width: int
 
     @property
     def area(self):
         return self.width * self.height
 
     def __repr__(self):
-        return f"Dimensions(width={self.width}, height={self.height})"
+        return f"Dimensions(height={self.height}, width={self.width})"
 
-    def __str__(self):
-        return f"[{self.width}, {self.height}]"
+
+class Position(NamedTuple):
+    lineno: int
+    colno: int
+
+    def __add__(self, other: "Position"):
+        return Position(self.lineno + other.lineno, self.colno + other.colno)
+
+    def __repr__(self):
+        return f"Position(lineno={self.lineno}, colno={self.colno})"
 
 
 class BoundingBox(NamedTuple):
-    x: int
-    y: int
-    width: int
+    lineno: int
+    colno: int
     height: int
+    width: int
 
     @property
     def area(self):
         return self.width * self.height
 
     @property
-    def x2(self):
-        return self.x + self.width - 1
+    def first_lineno(self):
+        return self.lineno
 
     @property
-    def y2(self):
-        return self.y + self.height - 1
+    def last_lineno(self):
+        return self.lineno + self.height - 1
+
+    @property
+    def first_colno(self):
+        return self.colno
+
+    @property
+    def last_colno(self):
+        return self.colno + self.width - 1
 
     @property
     def top_left(self):
-        return Coordinate(self.x, self.y2)
+        return Position(self.first_lineno, self.first_colno)
 
     @property
     def top_right(self):
-        return Coordinate(self.x2, self.y2)
+        return Position(self.first_lineno, self.last_lineno)
 
     @property
     def bottom_left(self):
-        return Coordinate(self.x, self.y)
+        return Position(self.last_lineno, self.first_colno)
 
     @property
     def bottom_right(self):
-        return Coordinate(self.x2, self.y)
+        return Position(self.last_lineno, self.last_colno)
 
     @property
-    def top(self):
-        return self.y2
-
-    @property
-    def bottom(self):
-        return self.y
-
-    @property
-    def left(self):
-        return self.x
-
-    @property
-    def right(self):
-        return self.x2
-
-    @property
-    def coordinate(self):
-        return Coordinate(self.x, self.y)
+    def position(self):
+        return Position(self.lineno, self.colno)
 
     @property
     def dimensions(self):
-        return Dimensions(self.width, self.height)
+        return Dimensions(self.height, self.width)
+
+    def __contains__(self, position: Union[Position, "BoundingBox"]):
+        if isinstance(position, Position):
+            return (
+                self.first_lineno <= position.lineno <= self.last_lineno
+                and self.first_colno <= position.colno <= self.last_colno
+            )
+        elif isinstance(position, BoundingBox):
+            return (
+                self.first_lineno <= position.first_lineno <= self.last_lineno
+                and self.first_colno <= position.first_colno <= self.last_colno
+                and self.first_lineno <= position.last_lineno <= self.last_lineno
+                and self.first_colno <= position.last_colno <= self.last_colno
+            )
 
     def __repr__(self):
-        return f"BoundingBox(x={self.x}, y={self.y}, width={self.width}, height={self.height})"
+        return f"BoundingBox(lineno={self.lineno}, colno={self.colno}, height={self.height}, width={self.width})"
 
-    def __str__(self):
-        return f"[{self.x}, {self.y}, {self.width}, {self.height}]"
+
+class LineSpan(NamedTuple):
+    """First is inclusive, last is exclusive"""
+
+    first_lineno: int
+    last_lineno: int
+
+    def __contains__(self, lineno: int):
+        return self.first_lineno <= lineno < self.last_lineno
