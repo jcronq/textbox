@@ -334,6 +334,14 @@ def test_backspace():
     # assert test.text == "hello\nworld"
 
 
+def test_insert_from_empty():
+    test = Text()
+    test.edit_mode = True
+    test.insert("h")
+    test.insert("e")
+    assert test.text == "he"
+
+
 # def test_break_line():
 #     test = Text("hello\nworld")
 #     test.break_line()

@@ -7,7 +7,7 @@ class Text:
     def __init__(self, text: str = "", max_line_width: int = None):
         self._text_lines: List[TextLine] = []
         self._line_ptr = 0
-        self._column_ptr = -1
+        self._column_ptr = 0
         self._max_line_width = max_line_width
         self._edit_mode = False
 
@@ -278,7 +278,7 @@ class Text:
         return self.text
 
     def __repr__(self) -> str:
-        return f"Text(text={self.text}, cursor_ptr={self._line_ptr}, line_count={self.line_count})"
+        return f"Text(text={self.text}, cursor_ptr={self.cursor_position}, line_ptr={self._line_ptr}, column_ptr={self.column_ptr}, line_count={self.line_count})"
 
     def __len__(self):
         return sum([len(line) for line in self._text_lines])

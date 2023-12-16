@@ -46,7 +46,7 @@ class VimLikeInputBox:
             "user_box",
             main_window,
             BoundingBox(
-                main_window.height - self.command_box.height - self.user_box_height - 1,
+                main_window.height - self.command_box.height - self.user_box_height,
                 0,
                 height=self.user_box_height,
                 width=main_window.width,
@@ -61,7 +61,10 @@ class VimLikeInputBox:
             BoundingBox(
                 0,
                 0,
-                height=main_window.height - self.user_box.height - self.command_box.height - 1,
+                height=main_window.height
+                - self.user_box.height
+                - self.command_box.height
+                + 1,  # +1 for overlapping the box space with user_box
                 width=main_window.width,
             ),
             ColorCode.OUPTUT_TEXT,
@@ -141,10 +144,10 @@ class VimLikeInputBox:
 
     def enter_command_mode(self):
         self.input_mode = INPUT_MODE.COMMAND
-        self.focused_box.text.edit_mode = False
         self.command_box.set_text_to_str("")
         if self.focused_box != self.user_box:
             self.focused_box = self.user_box
+        self.focused_box.text.edit_mode = False
         logger.info("Input Mode: COMMAND")
         self.focused_box.redraw(with_cursor=True)
 
@@ -172,12 +175,17 @@ class VimLikeInputBox:
             self.read_only_handler(key)
 
     def submit(self, print=True):
+        logger.info("Submit(print=%s)", print)
         self.focused_box: InputBox
         if len(self.focused_box.text) > 0:
+            logger.info("appending history")
             self.focused_box.append_history()
             if print:
+                logger.info("Adding text to output box")
                 self.output_box.add_text(self.focused_box.text.copy())
+            logger.info("Erasing entry box")
             self.focused_box.text.erase()
+            logger.info("Redrawing screen")
             self.focused_box.redraw(with_cursor=True)
 
     def execute_command(self, text):

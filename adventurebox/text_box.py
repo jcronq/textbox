@@ -158,6 +158,7 @@ class TextBox:
     def add_text(self, text: Text):
         text.max_line_width = self.printable_width
         self._text_list.add_text(text)
+        self.redraw()
 
     def add_str(self, text: str):
         self._text_list[self._text_ptr].insert(text)
@@ -179,7 +180,7 @@ class TextBox:
             columnno = self.first_printable_column
             local_lineno = idx + self.first_printable_lineno
             if not self.top_to_bottom:
-                local_lineno = self.printable_height - (local_lineno + 1)
+                local_lineno = self.printable_height - local_lineno + 1
 
             position = Position(local_lineno, columnno)
             logger.info(
