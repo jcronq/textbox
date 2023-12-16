@@ -2,7 +2,6 @@ import asyncio
 import curses
 from enum import Enum
 
-
 from adventurebox.window import Window
 from adventurebox.input_manager import AsyncInputManager
 from adventurebox.input_box import InputBox
@@ -30,46 +29,21 @@ class VimLikeInputBox:
         self.command_box_height = 1
         self.user_box_height = 5
         self.command_box = InputBox(
-            "command_box",
-            main_window,
-            BoundingBox(
-                main_window.height - self.command_box_height,
-                0,
-                self.command_box_height,
-                main_window.width,
-            ),
-            ColorCode.GREY,
-            top_to_bottom=True,
+            "command_box", main_window, self.command_bounding_box, ColorCode.GREY, top_to_bottom=True
         )
+
         logger.info("command_box: %s", self.command_box)
+
         self.user_box = InputBox(
-            "user_box",
-            main_window,
-            BoundingBox(
-                main_window.height - self.command_box.height - self.user_box_height,
-                0,
-                height=self.user_box_height,
-                width=main_window.width,
-            ),
-            ColorCode.WHITE,
-            top_to_bottom=True,
-            has_box=True,
+            "user_box", main_window, self.user_bounding_box, ColorCode.WHITE, top_to_bottom=True, has_box=True
         )
         self.output_box = TextBox(
             "output_box",
             main_window,
-            BoundingBox(
-                0,
-                0,
-                height=main_window.height
-                - self.user_box.height
-                - self.command_box.height
-                + 1,  # +1 for overlapping the box space with user_box
-                width=main_window.width,
-            ),
+            self.output_bounding_box,
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
-            has_box=True,
+            has_box=False,
         )
         # self.user_box.verbose = True
 
@@ -78,16 +52,44 @@ class VimLikeInputBox:
         input_manager.on_keypress = self.handle_keypress
         input_manager.redraw = self.redraw
 
+    @property
+    def command_bounding_box(self):
+        return BoundingBox(
+            self.main_window.height - self.command_box_height,
+            0,
+            self.command_box_height,
+            self.main_window.width,
+        )
+
+    @property
+    def user_bounding_box(self):
+        return BoundingBox(
+            self.main_window.height - self.command_box.height - self.user_box_height,
+            0,
+            height=self.user_box_height,
+            width=self.main_window.width,
+        )
+
+    @property
+    def output_bounding_box(self):
+        return BoundingBox(
+            0,
+            0,
+            height=self.main_window.height
+            - self.user_box.height
+            - self.command_box.height
+            + 1,  # +1 for overlapping the box space with user_box
+            width=self.main_window.width,
+        )
+
     async def resize(self):
         logger.info("Event: Resize")
         curses.update_lines_cols()
         curses.resize_term(curses.LINES, curses.COLS)
-        self.main_window.resize(BoundingBox(0, 0, curses.COLS, curses.LINES))
-        self.command_box.resize(BoundingBox(0, 0, self.main_window.width, 1))
-        self.user_box.resize(BoundingBox(0, 1, self.main_window.width, self.input_box_height))
-        self.output_box.resize(
-            BoundingBox(0, 4, self.main_window.width, self.main_window.height - self.input_box_height)
-        )
+        self.main_window.resize(BoundingBox(0, 0, curses.LINES, curses.COLS))
+        self.command_box.resize(self.command_bounding_box)
+        self.user_box.resize(self.user_bounding_box)
+        self.output_box.resize(self.output_bounding_box)
         raise DelayedRedraw()
 
     def redraw(self):

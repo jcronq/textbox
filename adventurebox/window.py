@@ -119,7 +119,7 @@ class Window:
             position = self.cursor_position
         str_box = BoundingBox(position.lineno, position.colno, height=1, width=len(text))
         if str_box not in self.local_box:
-            raise ValueError(f"String '{text}' @ {position} will not fit within {self.bounding_box}")
+            raise ValueError(f"String '{text}':{str_box} @ {position} will not fit within {self.bounding_box}")
         if verbose:
             logger.info(f"Adding string at {position}")
         try:

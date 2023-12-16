@@ -8,6 +8,9 @@ class TextLine:
             raise ValueError("TextLine cannot contain newlines")
         self._text = text
 
+    def copy(self):
+        return TextLine(self._text)
+
     @property
     def text(self):
         """Get the text of the TextLine"""

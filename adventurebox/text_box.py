@@ -38,7 +38,12 @@ class TextBox:
         self.verbose = False
 
     def resize(self, box: BoundingBox):
+        if self.top_to_bottom:
+            value = self.last_viewable_lineno
         self.window.resize(box, self.verbose)
+        self._text_list.max_line_width = self.printable_width
+        if self.top_to_bottom:
+            self.last_viewable_lineno = value
 
     @property
     def attributes(self):
@@ -115,6 +120,12 @@ class TextBox:
     @property
     def last_viewable_lineno(self):
         return self._first_lineno_in_window + self.printable_height
+
+    @last_viewable_lineno.setter
+    def last_viewable_lineno(self, value: int):
+        if not isinstance(value, int):
+            raise TypeError("last_viewable_lineno must be an integer")
+        self._first_lineno_in_window = max(value - self.printable_height, 0)
 
     @property
     def box_offset(self):

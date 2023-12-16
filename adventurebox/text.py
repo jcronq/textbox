@@ -18,7 +18,11 @@ class Text:
         self.text = text
 
     def copy(self):
-        new_text = Text(str(self.text), max_line_width=self._max_line_width)
+        new_text = Text()
+        new_text.max_line_width = self.max_line_width
+        for line in self._text_lines:
+            new_text._text_lines.append(line.copy())
+        new_text.to_end_of_text()
         return new_text
 
     @property

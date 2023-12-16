@@ -70,6 +70,8 @@ class BoundingBox(NamedTuple):
 
     @property
     def last_lineno(self):
+        if self.height == 0:
+            return self.lineno
         return self.lineno + self.height - 1
 
     @property
@@ -78,6 +80,8 @@ class BoundingBox(NamedTuple):
 
     @property
     def last_colno(self):
+        if self.width == 0:
+            return self.colno
         return self.colno + self.width - 1
 
     @property
