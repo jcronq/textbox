@@ -130,3 +130,16 @@ def test_cursor_position():
         assert test.cursor_position(idx, 1) == (idx, 0)
 
     assert test.cursor_position(1, 2) == (0, 1)
+
+
+def test_start_of_next_word():
+    test = TextLine(" hello world")
+    assert test.start_of_next_word(0, in_white_space=False) == 1
+    assert test.start_of_next_word(1, in_white_space=False) == 7
+    assert test.start_of_next_word(7, in_white_space=False) == len(test)
+
+    test = TextLine("hello world")
+    assert test.start_of_next_word(0, in_white_space=False) == 6
+    assert test.start_of_next_word(0, in_white_space=True) == 0
+    assert test.start_of_next_word(1, in_white_space=True) == 1
+    assert test.start_of_next_word(2, in_white_space=True) == 2

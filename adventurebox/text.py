@@ -170,22 +170,20 @@ class Text:
         self.to_first_line()
         self.to_start_of_line()
 
-    def to_start_of_next_word(self):
-        while True:
-            if self.column_ptr >= len(self._text_lines[self._line_ptr]):
-                if self._line_ptr >= len(self._text_lines) - 1:
-                    return
-            else:
-                splits = self.current_line.text.split(r"[ \.\,\;\:\!\?\-\]\[\(\)]")
-                accumulated_length = 0
-                for split in splits:
-                    if self.column_ptr > accumulated_length:
-                        if len(split) > 0:
-                            self.column_ptr = accumulated_length
-                            break
-                    accumulated_length += len(split) + 1
-            self._line_ptr += 1
-            self.to_start_of_line()
+    def goto(self, position: Position):
+        self._line_ptr = position.lineno
+        self._column_ptr = position.colno
+
+    def start_of_next_word(self):
+        start_search_col = self.column_ptr
+        in_whitespace = False
+        for idx in range(self.line_ptr, len(self._text_lines)):
+            next_word_ptr = self._text_lines[idx].start_of_next_word(start_search_col, in_whitespace)
+            in_whitespace = True
+            start_search_col = 0
+            if next_word_ptr < len(self._text_lines[idx]):
+                return Position(idx, next_word_ptr)
+        return None
 
     def delete_line(self):
         if len(self._text_lines) == 0:

@@ -174,7 +174,9 @@ class InputBox(TextBox):
         self.redraw(with_cursor=True)
 
     def word_forward(self):
-        self.text.to_start_of_next_word()
+        next_word_position = self.text.start_of_next_word()
+        if next_word_position is not None:
+            self.text.goto(next_word_position)
         self.redraw(with_cursor=True)
 
     def word_backward(self):

@@ -1,6 +1,7 @@
 import pytest
 from adventurebox.text import Text
 from adventurebox.text_line import TextLine
+from adventurebox.box_types import Position
 
 
 def test_init():
@@ -362,220 +363,24 @@ def test_for_insert_bug():
     assert test.cursor_position == (1, 0)
 
 
-# def test_break_line():
-#     test = Text("hello\nworld")
-#     test.break_line()
-#     assert test.text == "hello\nworld\n"
-#     assert test.line_ptr == 2
-#     assert test.column_ptr == 0
-
-#     test = Text("hello world")
-#     test._line_ptr = 0
-#     test._column_ptr = 5
-#     test.break_line()
-#     assert test.text == "hello\n world"
-#     assert test._line_ptr == 1
-#     assert test._column_ptr == 0
-
-#     test = Text("hello world")
-#     test._line_ptr = 0
-#     test._column_ptr = 5
-#     test.break_line()
-#     test.break_line()
-#     assert test.text == "hello\n\n world"
-#     assert test._line_ptr == 2
-#     assert test._column_ptr == 0
+def test_start_of_next_word():
+    test = Text("hello world")
+    test.to_start_of_line()
+    assert test.start_of_next_word() == Position(0, 6)
 
 
-# def test_replace_character():
-#     test = Text("hello\nworld")
-#     test._line_ptr = 0
-#     test._column_ptr = 0
-#     test.replace_character("!")
-#     assert test.text == "!ello\nworld"
-#     assert test._line_ptr == 0
-#     assert test._column_ptr == 1
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 1
-#     test._column_ptr = 5
-#     test.replace_character("!")
-#     assert test.text == "hello\nworld!"
-#     assert test._line_ptr == 1
-#     assert test._column_ptr == 6
-
-#     test = Text("hello\nworld")
-#     test.decrement_column_ptr()
-#     test.replace_character("!")
-#     assert test.text == "hello\nworl!"
-#     assert test._line_ptr == 1
-#     assert test._column_ptr == 5
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 0
-#     test._column_ptr = 5
-#     test.replace_character("!")
-#     assert test.text == "hello!\nworld"
-#     assert test._line_ptr == 0
-#     assert test._column_ptr == 6
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 0
-#     test._column_ptr = 3
-#     test.replace_character("!")
-#     assert test.text == "hel!o\nworld"
-#     assert test._line_ptr == 0
-#     assert test._column_ptr == 4
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 0
-#     test._column_ptr = 3
-#     test.replace_character("!")
-#     test.replace_character("!")
-#     test.replace_character("!")
-#     assert test.text == "hel!!!\nworld"
-#     assert test._line_ptr == 0
-#     assert test._column_ptr == 6
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 0
-#     test._column_ptr = 0
-#     test.replace_character("!")
-#     assert test.text == "!ello\nworld"
-#     assert test._line_ptr == 0
-#     assert test._column_ptr == 1
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 0
-#     test._column_ptr = 0
-#     test.replace_character("!")
-#     test.replace_character("!")
-#     assert test.text == "!!llo\nworld"
-#     assert test._line_ptr == 0
-#     assert test._column_ptr == 2
-
-#     test = Text("hello\nworld")
-#     test._line_ptr = 1
-#     test._column_ptr = 0
-#     test.replace_character("!")
-#     assert test.text == "hello\n!orld"
-#     assert test._line_ptr == 1
-#     assert test._column_ptr == 1
-
-#     test = Text("hello world")
-#     test._line_ptr = 0
-#     test._column_ptr = 5
-#     test.replace_character("\n")
-#     assert test.text == "hello\nworld"
-#     assert test._line_ptr == 1
-#     assert test._column_ptr == 0
-
-#     test = Text("hello world")
-#     test._line_ptr = 0
-#     test._column_ptr = 10
-#     test.replace_character("\n")
-#     assert test.text == "hello worl\n"
-#     assert test._line_ptr == 1
-#     assert test._column_ptr == 0
-
-#     test = Text("hello\nworld\n")
-#     test.replace_character("!")
-#     assert test.text == "hello\nworld\n!"
-#     assert test._line_ptr == 2
-#     assert test._column_ptr == 1
-
-#     with pytest.raises(ValueError):
-#         test._column_ptr = -1
-#         test.replace_character("d")
-
-#     with pytest.raises(ValueError):
-#         test._column_ptr = 7
-#         test.replace_character("h")
-
-#     with pytest.raises(ValueError):
-#         test._column_ptr = 0
-#         test.replace_character("he")
-
-#     test = Text("hello world")
-#     test._line_ptr = 0
-#     test._column_ptr = 11
-#     test.replace_character("\n")
-#     assert test.text == "hello world\n"
-
-
-# def test_dunders():
-#     test = Text("hello\nworld")
-#     assert 0 in test
-#     assert 1 in test
-#     assert 2 not in test
-#     assert -1 not in test
-
-#     assert str(test[0]) == "hello"
-#     assert str(test[1]) == "world"
-
-
-# def test_with_max_line_width():
-#     test = Text("hello world", max_line_width=5)
-#     assert test.line_count == 3
-#     assert test.text == "hello\n worl\nd"
-#     assert test.cursor_position == (2, 1)
-#     test.increment_line_ptr()
-#     assert test.cursor_position == (2, 1)
-#     test.increment_column_ptr()
-#     assert test.cursor_position == (2, 1)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (2, 0)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 4)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 3)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 2)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 1)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 0)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 4)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 3)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 2)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 1)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 0)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 0)
-#     test.decrement_line_ptr()
-#     assert test.cursor_position == (0, 0)
-#     test = Text("helloworld", max_line_width=5)
-#     assert test.line_count == 2
-#     assert test.text == "hello\nworld"
-#     test = Text("hello world", max_line_width=6)
-#     assert test.line_count == 2
-#     assert test.text == "hello \nworld"
-
-
-# def test_multi_lined_max_widthed_positions():
-#     test = Text("hello\nworld", max_line_width=5)
-#     # breakpoint()
-#     assert test.cursor_position == (2, 0)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 4)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 3)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 2)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 1)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (1, 0)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 4)
-#     test.decrement_column_ptr()
-#     test.decrement_column_ptr()
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 1)
-#     test.decrement_column_ptr()
-#     assert test.cursor_position == (0, 0)
+def test_start_of_next_word():
+    test = Text("hello world")
+    test.to_start_of_line()
+    assert test.start_of_next_word() == Position(0, 6)
+    for _ in range(6):
+        test.increment_column_ptr()
+    assert test.start_of_next_word() == None
+    test.edit_mode = True
+    test.to_end_of_text()
+    test.insert("\nnospace")
+    test.to_start_of_text()
+    test.to_end_of_line()
+    test.decrement_column_ptr()
+    test.decrement_column_ptr()
+    assert test.start_of_next_word() == Position(1, 0)
