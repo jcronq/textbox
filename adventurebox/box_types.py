@@ -47,6 +47,9 @@ class Position(NamedTuple):
     def __add__(self, other: "Position"):
         return Position(self.lineno + other.lineno, self.colno + other.colno)
 
+    def __sub__(self, other: "Position"):
+        return Position(self.lineno - other.lineno, self.colno - other.colno)
+
     def __repr__(self):
         return f"Position(lineno={self.lineno}, colno={self.colno})"
 

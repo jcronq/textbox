@@ -92,7 +92,7 @@ class TextBox:
     @property
     def last_printable_lineno(self):
         if self._has_box:
-            return self.height - 1
+            return self.printable_height
         return self.height
 
     @property
@@ -117,9 +117,37 @@ class TextBox:
 
     @property
     def cursor_position(self) -> Position:
+        position = self._text_list.current_text.cursor_position
+
         if self._has_box:
-            return self._text_list.current_text.cursor_position + Position(1, 1)
-        return self._text_list.current_text.cursor_position
+            position += Position(1, 1)
+        position -= Position(self._first_lineno_in_window, 0)
+
+        return position
+
+    def adjust_screen_position(self):
+        position = self._text_list.current_text.cursor_position
+        if self._has_box:
+            position += Position(1, 1)
+        position -= Position(self._first_lineno_in_window, 0)
+        if position.lineno > self.last_printable_lineno:
+            self.scroll_down(position.lineno - self.last_printable_lineno)
+            position = Position(self.last_printable_lineno, position.colno)
+        elif position.lineno < self.first_printable_lineno:
+            logger.info("position %s is above first printable line %s", position.lineno, self.first_printable_lineno)
+            self.scroll_up(self.first_printable_lineno - position.lineno)
+            position = Position(self.first_printable_lineno, position.colno)
+            logger.info("New position in window: %s", position)
+
+    def scroll_down(self, n_lines):
+        self._first_lineno_in_window += n_lines
+        logger.info("New first line in window: %s", self._first_lineno_in_window)
+        self.redraw()
+
+    def scroll_up(self, n_lines):
+        self._first_lineno_in_window -= n_lines
+        logger.info("New first line in window: %s", self._first_lineno_in_window)
+        self.redraw()
 
     def erase(self):
         self._text_list = []
@@ -136,17 +164,18 @@ class TextBox:
 
     def redraw(self, with_cursor: bool = False):
         self.window.erase()
+        self.adjust_screen_position()
         if self._box_visible:
-            logger.info("Drawing box")
+            logger.debug("Drawing box")
             self.window.add_box()
-        logger.info("cleared")
+        logger.debug("cleared")
         self.draw_texts()
-        logger.info("Texts added")
         if with_cursor:
             self.window.move_cursor(self.cursor_position)
-            logger.info("Cursor moved to %s", self.cursor_position)
+            logger.debug("Cursor moved to %s", self.cursor_position)
+        logger.debug("Texts added")
         self.refresh()
-        logger.info("refreshed")
+        logger.debug("refreshed")
 
     def hline(self, position: Position):
         self.window.hline(position)
@@ -171,7 +200,7 @@ class TextBox:
             return
 
         visible_lines = self._text_list[self.first_viewable_lineno : self.last_viewable_lineno]
-        logger.info("visible_lines: %s", visible_lines)
+        logger.debug("visible_lines: %s", visible_lines)
         if not self.top_to_bottom:
             logger.debug("reversed printable set")
             visible_lines.reverse()
@@ -183,7 +212,7 @@ class TextBox:
                 local_lineno = self.printable_height - local_lineno + 1
 
             position = Position(local_lineno, columnno)
-            logger.info(
+            logger.debug(
                 "%s - draw line %s %s: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
                 self.name,
                 idx,

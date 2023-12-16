@@ -139,9 +139,7 @@ class InputBox(TextBox):
         self.redraw(with_cursor=True)
 
     def insert_character_at_cursor(self, ch: str):
-        logger.info(repr(self.text))
         self.text.insert(ch)
-        logger.info(repr(self.text))
         self.redraw(with_cursor=True)
 
     def replace_character_at_cursor(self, ch: str):
