@@ -35,9 +35,10 @@ class TextBox:
         self._first_lineno_in_window = 0
         self._box_visible = False
         self._text_list.max_line_width = self.printable_width
+        self.verbose = False
 
     def resize(self, box: BoundingBox):
-        self.window.resize(box)
+        self.window.resize(box, self.verbose)
 
     @property
     def attributes(self):
@@ -51,7 +52,7 @@ class TextBox:
     def box_visible(self, value: bool):
         self._box_visible = value
         if value:
-            self.window.add_box()
+            self.window.add_box(verbose=self.verbose)
             self.refresh()
 
     @property
@@ -127,6 +128,8 @@ class TextBox:
 
     def adjust_screen_position(self):
         position = self._text_list.current_text.cursor_position
+        if self.verbose:
+            logger.info("Current position: %s", position)
         if self._has_box:
             position += Position(1, 1)
         position -= Position(self._first_lineno_in_window, 0)
@@ -134,51 +137,56 @@ class TextBox:
             self.scroll_down(position.lineno - self.last_printable_lineno)
             position = Position(self.last_printable_lineno, position.colno)
         elif position.lineno < self.first_printable_lineno:
-            logger.info("position %s is above first printable line %s", position.lineno, self.first_printable_lineno)
+            if self.verbose:
+                logger.info(
+                    "position %s is above first printable line %s", position.lineno, self.first_printable_lineno
+                )
             self.scroll_up(self.first_printable_lineno - position.lineno)
             position = Position(self.first_printable_lineno, position.colno)
-            logger.info("New position in window: %s", position)
+            if self.verbose:
+                logger.info("New position in window: %s", position)
 
     def scroll_down(self, n_lines):
         self._first_lineno_in_window += n_lines
-        logger.info("New first line in window: %s", self._first_lineno_in_window)
+        if self.verbose:
+            logger.info("New first line in window: %s", self._first_lineno_in_window)
         self.redraw()
 
     def scroll_up(self, n_lines):
         self._first_lineno_in_window -= n_lines
-        logger.info("New first line in window: %s", self._first_lineno_in_window)
+        if self.verbose:
+            logger.info("New first line in window: %s", self._first_lineno_in_window)
         self.redraw()
 
     def erase(self):
         self._text_list = []
         self._text_ptr = 0
-        self.window.erase()
+        self.window.erase(verbose=self.verbose)
 
     def refresh(self):
-        self.window.refresh()
+        self.window.refresh(verbose=self.verbose)
 
     def update_cursor(self):
-        logger.info("Updating cursor position to %s", self.cursor_position)
-        self.window.move_cursor(self.cursor_position)
-        self.window.refresh()
+        self.window.move_cursor(self.cursor_position, verbose=self.verbose)
+        self.window.refresh(verbose=self.verbose)
 
     def redraw(self, with_cursor: bool = False):
-        self.window.erase()
+        self.window.erase(verbose=self.verbose)
         self.adjust_screen_position()
         if self._box_visible:
             logger.debug("Drawing box")
-            self.window.add_box()
+            self.window.add_box(verbose=self.verbose)
         logger.debug("cleared")
         self.draw_texts()
         if with_cursor:
-            self.window.move_cursor(self.cursor_position)
+            self.window.move_cursor(self.cursor_position, verbose=self.verbose)
             logger.debug("Cursor moved to %s", self.cursor_position)
         logger.debug("Texts added")
         self.refresh()
         logger.debug("refreshed")
 
     def hline(self, position: Position):
-        self.window.hline(position)
+        self.window.hline(position, verbose=self.verbose)
 
     def print_text(self, text: str):
         self.add_text(text)
@@ -226,4 +234,4 @@ class TextBox:
                 self.printable_width,
                 self._has_box,
             )
-            self.window.addstr(str(line), position, attributes=self.attributes)
+            self.window.addstr(str(line), position, attributes=self.attributes, verbose=self.verbose)

@@ -71,6 +71,7 @@ class VimLikeInputBox:
             top_to_bottom=False,
             has_box=True,
         )
+        self.output_box.verbose = True
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
@@ -225,6 +226,10 @@ class VimLikeInputBox:
         # elif key == ord("\n") or key == ord("\r"):
         #     logger.info("Key: Enter")
         #     self.submit()
+
+        elif key == ord("\t"):
+            logger.info("Command: Tab")
+            self.cycle_focus()
 
         elif key == curses.KEY_BACKSPACE or key == 127:  # 127 is the delete key.  Macs use delete instead of backspace.
             self.focused_box.handle_backspace()

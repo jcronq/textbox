@@ -254,11 +254,12 @@ class Text:
     def insert_newline(self):
         if self.column_ptr == 0:
             self._text_lines.insert(self._line_ptr, TextLine())
+            self._line_ptr += 1
         elif self.column_ptr >= len(self.current_line):
             self._text_lines.insert(self._line_ptr + 1, TextLine())
+            self._line_ptr += 1
         else:
             self.break_line()
-        self._line_ptr += 1
         self.to_start_of_line()
 
     def insert(self, text: str):

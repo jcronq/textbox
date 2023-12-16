@@ -352,6 +352,16 @@ def test_insert_from_empty():
     assert test.text == "he"
 
 
+def test_for_insert_bug():
+    test = Text()
+    test.edit_mode = True
+    test.insert("h")
+    test.insert("i")
+    test.decrement_column_ptr()
+    test.insert("\n")
+    assert test.cursor_position == (1, 0)
+
+
 # def test_break_line():
 #     test = Text("hello\nworld")
 #     test.break_line()
