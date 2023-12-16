@@ -9,6 +9,9 @@ class TextList:
         self._text_ptr = 0
         self._max_line_width = max_line_width
 
+    def set_first_text(self, text: Text):
+        self._texts[0] = text
+
     @property
     def max_line_width(self):
         return self._max_line_width

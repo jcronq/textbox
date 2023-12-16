@@ -117,13 +117,13 @@ class VimLikeInputBox:
         logger.info("Input Mode: READ_ONLY")
         self.input_mode = INPUT_MODE.READ_ONLY
         self.focused_box = self.output_box
-        self.command_box.set_text("-- READING --")
+        self.command_box.set_text_to_str("-- READING --")
         self.focused_box.refresh()
 
     def enter_replace_mode(self):
         self.input_mode = INPUT_MODE.REPLACE
         self.focused_box = self.user_box
-        self.command_box.set_text("-- REPLACE --")
+        self.command_box.set_text_to_str("-- REPLACE --")
         logger.info("Input Mode: REPLACE")
         self.focused_box.refresh()
 
@@ -135,14 +135,14 @@ class VimLikeInputBox:
         self.focused_box.update_cursor()
         self.focused_box.window.refresh()
         self.input_mode = INPUT_MODE.INSERT
-        self.command_box.set_text("-- INSERT --")
+        self.command_box.set_text_to_str("-- INSERT --")
         logger.info("Input Mode: INSERT")
         self.focused_box.refresh()
 
     def enter_command_mode(self):
         self.input_mode = INPUT_MODE.COMMAND
         self.focused_box.text.edit_mode = False
-        self.command_box.set_text("")
+        self.command_box.set_text_to_str("")
         if self.focused_box != self.user_box:
             self.focused_box = self.user_box
         logger.info("Input Mode: COMMAND")
@@ -151,7 +151,7 @@ class VimLikeInputBox:
     def enter_command_entry_mode(self):
         self.input_mode = INPUT_MODE.COMMAND_ENTRY
         self.focused_box = self.command_box
-        self.command_box.set_text(":")
+        self.command_box.set_text_to_str(":")
         self.focused_box.text.edit_mode = True
         self.focused_box.text.increment_column_ptr()
         logger.info("Input Mode: COMMAND_ENTRY")

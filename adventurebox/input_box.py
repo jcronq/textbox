@@ -72,7 +72,15 @@ class InputBox(TextBox):
         self._history = InputHistory()
 
     def set_text(self, text: Text):
-        self.text.set_text(text)
+        if not isinstance(text, Text):
+            raise ValueError("Text must be a Text object")
+        text.to_end_of_text()
+        self._text_list.set_first_text(text)
+
+    def set_text_to_str(self, text: str):
+        if not isinstance(text, str):
+            raise ValueError("Text must be a string")
+        self.text.set_text_to_str(text)
         self.redraw()
 
     @property
@@ -97,7 +105,7 @@ class InputBox(TextBox):
         else:
             logger.debug("Key: Up (History) - Press")
         self.set_text(self._history.previous())
-        self.column_ptr = len(self.text)
+        # self.column_ptr = len(self.text)
 
     def history_scroll_down(self):
         if self._history.at_present():
@@ -105,8 +113,7 @@ class InputBox(TextBox):
         else:
             logger.debug("Key: Down (History) - Press")
             self.set_text(self._history.next())
-            self.column_ptr = len(self.text)
-            self.synchronize_cursor()
+            self.update_cursor()
 
     def append_history(self):
         self._history.append(self.text)

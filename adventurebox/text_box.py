@@ -178,13 +178,15 @@ class TextBox:
         for idx, line in enumerate(visible_lines):
             columnno = self.first_printable_column
             local_lineno = idx + self.first_printable_lineno
-            if self.top_to_bottom:
+            if not self.top_to_bottom:
                 local_lineno = self.printable_height - (local_lineno + 1)
 
             position = Position(local_lineno, columnno)
             logger.info(
-                "draw line %s: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
+                "%s - draw line %s %s: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
+                self.name,
                 idx,
+                "top to bottom" if self.top_to_bottom else "bottom to top",
                 local_lineno,
                 self.printable_height,
                 line[:5],

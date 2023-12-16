@@ -85,7 +85,9 @@ class Text:
         self.to_last_line()
         self.to_end_of_line()
 
-    def set_text(self, text: str):
+    def set_text_to_str(self, text: str):
+        if not isinstance(text, str):
+            raise ValueError("Text must be a string")
         self.text = text
 
     @property
@@ -145,6 +147,14 @@ class Text:
 
     def to_start_of_line(self):
         self._column_ptr = 0
+
+    def to_end_of_text(self):
+        self.to_last_line()
+        self.to_end_of_line()
+
+    def to_start_of_text(self):
+        self.to_first_line()
+        self.to_start_of_line()
 
     def to_start_of_next_word(self):
         while True:
@@ -271,7 +281,7 @@ class Text:
         return f"Text(text={self.text}, cursor_ptr={self._line_ptr}, line_count={self.line_count})"
 
     def __len__(self):
-        return sum([len(line) for line in self._text_lines]) + len(self._text_lines) - 1
+        return sum([len(line) for line in self._text_lines])
 
     def __contains__(self, lineno: int):
         return 0 <= lineno < len(self._text_lines)
