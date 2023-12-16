@@ -1,6 +1,10 @@
 from typing import List, Union
 from adventurebox.text_line import TextLine
 from adventurebox.box_types import Position
+import logging
+
+
+logger = logging.getLogger()
 
 
 class Text:
@@ -26,12 +30,12 @@ class Text:
         previous_edit_mode = self._edit_mode
         self._edit_mode = new_edit_mode
         if not new_edit_mode and previous_edit_mode:
-            if self._column_ptr >= len(self.current_line):
+            if self.column_ptr >= len(self.current_line):
                 self.to_end_of_line()
 
     @property
     def column_ptr(self):
-        return max(self._column_ptr, 0)
+        return self._column_ptr
 
     @property
     def line_ptr(self):
@@ -104,7 +108,7 @@ class Text:
 
     @property
     def last_column_on_line(self):
-        return len(self.current_line) - (0 if self._edit_mode else 1)
+        return max(len(self.current_line) - (0 if self._edit_mode else 1), 0)
 
     @property
     def last_line_in_text(self):
@@ -114,18 +118,18 @@ class Text:
         if self._line_ptr >= self.last_line_in_text:
             return
         self._line_ptr += 1
-        if self._column_ptr >= len(self.current_line):
+        if self.column_ptr >= len(self.current_line):
             self.to_end_of_line()
 
     def decrement_line_ptr(self):
         if self._line_ptr <= 0:
             return
         self._line_ptr -= 1
-        if self._column_ptr >= len(self.current_line):
+        if self.column_ptr >= len(self.current_line):
             self.to_end_of_line()
 
     def increment_column_ptr(self):
-        if self._column_ptr >= self.last_column_on_line:
+        if self.column_ptr >= self.last_column_on_line:
             if self._line_ptr >= self.last_line_in_text:
                 return
             self._line_ptr += 1
@@ -134,13 +138,13 @@ class Text:
             self._column_ptr += 1
 
     def decrement_column_ptr(self):
-        if self._column_ptr <= 0:
+        if self.column_ptr <= 0:
             if self._line_ptr <= 0:
                 return
             self._line_ptr -= 1
             self.to_end_of_line()
         else:
-            self._column_ptr -= 1
+            self._column_ptr = max(0, self._column_ptr - 1)
 
     def to_end_of_line(self):
         self._column_ptr = self.last_column_on_line
@@ -158,14 +162,14 @@ class Text:
 
     def to_start_of_next_word(self):
         while True:
-            if self._column_ptr >= len(self._text_lines[self._line_ptr]):
+            if self.column_ptr >= len(self._text_lines[self._line_ptr]):
                 if self._line_ptr >= len(self._text_lines) - 1:
                     return
             else:
                 splits = self.current_line.text.split(r"[ \.\,\;\:\!\?\-\]\[\(\)]")
                 accumulated_length = 0
                 for split in splits:
-                    if self._column_ptr > accumulated_length:
+                    if self.column_ptr > accumulated_length:
                         if len(split) > 0:
                             self.column_ptr = accumulated_length
                             break
@@ -180,14 +184,14 @@ class Text:
         self._text_lines.pop(self._line_ptr)
         if self._line_ptr > 0 and self._line_ptr >= len(self._text_lines):
             self.decrement_line_ptr()
-        elif self._column_ptr > len(self.current_line):
+        elif self.column_ptr > len(self.current_line):
             self.to_end_of_line()
 
     def backspace(self):
         """Delete the character before the cursor."""
 
         # If we're at the beginning of a line, delete the line.
-        if self._column_ptr == 0:
+        if self.column_ptr == 0:
             # If we're at the beginning of the first line, do nothing.
             if self._line_ptr == 0:
                 return
@@ -212,14 +216,14 @@ class Text:
         # Otherwise, delete the character before the cursor on the same line.
         else:
             self.current_line.backspace(self.column_ptr)
-            self._column_ptr -= 1
+            self.decrement_column_ptr()
 
     @property
     def line_count(self):
         return sum((line.line_count(self._max_line_width) for line in self._text_lines))
 
     def break_line(self):
-        line_remainder = self.current_line.delete_to_end(self._column_ptr)
+        line_remainder = self.current_line.delete_to_end(self.column_ptr)
         self._text_lines.insert(self._line_ptr + 1, TextLine(line_remainder))
         self._line_ptr += 1
         self.to_start_of_line()
@@ -227,9 +231,9 @@ class Text:
     def replace_character(self, ch: str):
         if len(ch) != 1:
             raise ValueError("Cannot replace character with string of length != 1")
-        if self._column_ptr < 0:
+        if self.column_ptr < 0:
             raise ValueError("Cannot replace character before the beginning of a line")
-        if self._column_ptr > len(self.current_line):
+        if self.column_ptr > len(self.current_line):
             raise ValueError("Cannot replace character past the end of a line")
 
         if ch == "\n":
@@ -238,7 +242,7 @@ class Text:
                 self.increment_column_ptr()
                 self.backspace()
         else:
-            self.current_line.replace_character(ch, self._column_ptr)
+            self.current_line.replace_character(ch, self.column_ptr)
             self.increment_column_ptr()
 
     def insert_newline(self, before_cursor: bool = True):
@@ -257,7 +261,7 @@ class Text:
             if ch == "\n":
                 self.insert_newline(before_cursor)
             else:
-                self.current_line.insert(ch, self._column_ptr if before_cursor else self._column_ptr + 1)
+                self.current_line.insert(ch, self.column_ptr if before_cursor else self.column_ptr + 1)
                 self.increment_column_ptr()
 
     def erase(self):
@@ -278,7 +282,7 @@ class Text:
         return self.text
 
     def __repr__(self) -> str:
-        return f"Text(text={self.text}, cursor_ptr={self.cursor_position}, line_ptr={self._line_ptr}, column_ptr={self.column_ptr}, line_count={self.line_count})"
+        return f"Text(text={self.text}, cursor_ptr={self.cursor_position}, line_ptr={self._line_ptr}, column_ptr={self.column_ptr}, lines={self._text_lines}, edit_moode={self._edit_mode}, max_line_width={self._max_line_width}, line_count={self.line_count})"
 
     def __len__(self):
         return sum([len(line) for line in self._text_lines])

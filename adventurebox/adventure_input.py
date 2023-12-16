@@ -136,7 +136,6 @@ class VimLikeInputBox:
         if append and self.input_mode != INPUT_MODE.INSERT:
             self.focused_box.text.increment_column_ptr()
         self.focused_box.update_cursor()
-        self.focused_box.window.refresh()
         self.input_mode = INPUT_MODE.INSERT
         self.command_box.set_text_to_str("-- INSERT --")
         logger.info("Input Mode: INSERT")

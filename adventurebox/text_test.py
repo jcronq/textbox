@@ -337,6 +337,8 @@ def test_backspace():
 def test_insert_from_empty():
     test = Text()
     test.edit_mode = True
+    test.edit_mode = False
+    test.edit_mode = True
     test.insert("h")
     test.insert("e")
     assert test.text == "he"
