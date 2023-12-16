@@ -120,6 +120,45 @@ def test_getitem_max_line_length(text_list):
     assert text_list[1:3] == ["lo", "Wor"]
 
 
+def test_cursor_position_empty_str(text_list: TextList):
+    text_list.insert("")
+    assert text_list.cursor_position == (0, 0)
+
+
+def test_cursor_position_insert_str(text_list: TextList):
+    text_list.insert("Hello")
+    assert text_list.cursor_position == (0, 4)
+    text_list.insert("World")
+    assert text_list.cursor_position == (1, 4)
+    text_list.insert("hohoh")
+    assert text_list.cursor_position == (2, 4)
+    text_list.max_line_width = 3
+    assert text_list.cursor_position == (5, 1)
+
+
+def test_cursor_position_add_text(text_list: TextList):
+    text_list.add_text(Text("Hello"))
+    assert text_list.cursor_position == (0, 4)
+    text_list.add_text(Text("World"))
+    assert text_list.cursor_position == (1, 4)
+    text_list.add_text(Text("hohoh"))
+    assert text_list.cursor_position == (2, 4)
+    text_list.max_line_width = 3
+    assert text_list.cursor_position == (6, 1)
+    text_list.add_text(Text("huoo\nrah"))
+    assert text_list.cursor_position == (8, 2)
+    assert text_list[0] == "Hel"
+    assert text_list[:2] == ["Hel", "lo"]
+
+
+def test_cursor_position_add_text(text_list: TextList):
+    text_list.add_text(Text("Hello"))
+    text_list.add_text(Text("World"))
+    long_list = "\n".join((str(idx) for idx in range(1, 11)))
+    text_list.add_text(Text(long_list))
+    assert text_list.cursor_position == (11, 1)
+
+
 # def test_get_item_max_line_length_after_items_added(text_list):
 #     text_list.insert("Hello")
 #     text_list.insert("World")

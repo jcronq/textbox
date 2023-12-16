@@ -1,3 +1,5 @@
+from typing import Union
+
 from adventurebox.text_box import TextBox
 from adventurebox.text import Text
 
@@ -8,56 +10,64 @@ logger = logging.getLogger()
 
 class InputHistory:
     def __init__(self, max_size: int = 100):
-        self.max_size = max_size
-        self.history = []
-        self.history_ptr = 0
-        self.short_term_memory = None
+        self._max_size = max_size
+        self._history = []
+        self._history_ptr = 0
+        self._short_term_memory = None
 
-    def has_short_term_memory(self):
-        return self.short_term_memory is not None
+    def has_short_term_memory(self) -> bool:
+        return self._short_term_memory is not None
 
-    def pop_short_term_memory(self):
-        tmp = self.short_term_memory
-        self.short_term_memory = None
+    def pop_short_term_memory(self) -> Text:
+        tmp = self._short_term_memory
+        self._short_term_memory = None
         return tmp
 
-    def set_short_term_memory(self, text: str):
-        self.short_term_memory = text
+    def set_short_term_memory(self, text: Text) -> None:
+        if not isinstance(text, Text):
+            raise ValueError("Text must be a Text object")
+        self._short_term_memory = text
 
-    def at_present(self):
-        return self.history_ptr == len(self.history)
+    def at_present(self) -> bool:
+        return self._history_ptr == len(self._history)
 
-    def has_history(self):
-        return len(self.history) > 0 and self.history_ptr > 0
+    def has_history(self) -> bool:
+        return len(self._history) > 0 and self._history_ptr > 0
 
-    def append(self, text: str):
-        self.history.append(text)
-        if len(self.history) > self.max_size:
-            self.history = self.history[-self.max_size :]
-        self.history_ptr = len(self.history)
+    def append(self, text: Text) -> None:
+        if not isinstance(text, Text):
+            raise ValueError("Text must be a Text object")
 
-    def previous(self):
-        if self.history_ptr > 0:
-            self.history_ptr -= 1
-            return self.history[self.history_ptr]
+        self._history.append(text)
+        if len(self._history) > self._max_size:
+            self._history = self._history[-self._max_size :]
+        self._history_ptr = len(self._history)
+
+    def previous(self) -> Text:
+        if self._history_ptr > 0:
+            self._history_ptr -= 1
+            return self._history[self._history_ptr]
         else:
-            return self.history[0]
+            return self._history[0]
 
-    def next(self):
-        if self.history_ptr < len(self.history) - 1:
-            self.history_ptr += 1
-            return self.history[self.history_ptr]
-        elif self.history_ptr == len(self.history) - 1:
-            self.history_ptr += 1
+    def next(self) -> Text:
+        if self._history_ptr < len(self._history) - 1:
+            self._history_ptr += 1
+            return self._history[self._history_ptr]
+        elif self._history_ptr == len(self._history) - 1:
+            self._history_ptr += 1
             return self.pop_short_term_memory()
         else:
             return None
 
-    def __getitem__(self, item):
-        return self.history[item]
+    def __getitem__(self, item: Union[int, slice]) -> Text:
+        return self._history[item]
 
     def __len__(self):
-        return len(self.history)
+        return len(self._history)
+
+    def __repr__(self):
+        return f"InputHistory(len={len(self._history)}, ptr={self._history_ptr}, memory={str(self._short_term_memory)})"
 
 
 class InputBox(TextBox):
@@ -72,10 +82,13 @@ class InputBox(TextBox):
         self._history = InputHistory()
 
     def set_text(self, text: Text):
+        if self.verbose:
+            logger.info("Setting text to %s", text)
         if not isinstance(text, Text):
             raise ValueError("Text must be a Text object")
         text.to_end_of_text()
-        self._text_list.set_first_text(text)
+        self._text_list.set_first_text(text.copy())
+        self.redraw()
 
     def set_text_to_str(self, text: str):
         if not isinstance(text, str):
@@ -96,27 +109,41 @@ class InputBox(TextBox):
         return self._text_list.texts[0]
 
     def history_scroll_up(self):
+        if self.verbose:
+            logger.info("History scroll up: %s", self._history)
         if not self._history.has_history():
-            logger.debug("Key: Up (No History)")
+            if self.verbose:
+                logger.info("Key: Up (No History)")
             return
         elif self._history.at_present():
-            logger.debug("Key: Up (History) - First Press")
+            if self.verbose:
+                logger.info("Key: Up (History) - First Press")
             self._history.set_short_term_memory(self.text)
         else:
-            logger.debug("Key: Up (History) - Press")
+            if self.verbose:
+                logger.info("Key: Up (History) - Press")
         self.set_text(self._history.previous())
-        # self.column_ptr = len(self.text)
+        if self.verbose:
+            logger.info("History: %s", self._history)
 
     def history_scroll_down(self):
+        if self.verbose:
+            logger.info("History scroll down: %s", self._history)
         if self._history.at_present():
-            logger.debug("Key: Down (History) - No further history")
+            if self.verbose:
+                logger.info("Key: Down (History) - No further history")
         else:
-            logger.debug("Key: Down (History) - Press")
+            if self.verbose:
+                logger.info("Key: Down (History) - Press")
             self.set_text(self._history.next())
             self.update_cursor()
+        if self.verbose:
+            logger.info("History: %s", self._history)
 
     def append_history(self):
-        self._history.append(self.text)
+        if self.verbose:
+            logger.info("Appending to history: %s", repr(self.text))
+        self._history.append(self.text.copy())
 
     def cursor_down(self):
         self.text.increment_line_ptr()

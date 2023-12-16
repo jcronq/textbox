@@ -68,29 +68,31 @@ class Window:
     def cursor_position(self) -> Position:
         return Position(*self._local_window.getyx())
 
-    def create_new_window(self, box: BoundingBox, validate_input=True) -> "Window":
+    def create_new_window(self, box: BoundingBox, validate_input=True, verbose=False) -> "Window":
         if validate_input and not box in self:
             raise ValueError(f"New window {box} is not contained within {self.bounding_box}")
 
-        logger.info("Creating new window: %s", box)
+        if verbose:
+            logger.info("Creating new window: %s", box)
         subwin = curses.newwin(*box.dimensions, *box.position)
         new_window = Window(subwin, box.position, box.dimensions, parent_window=self)
         self.__children.append(new_window)
         return new_window
 
-    def refresh(self):
+    def refresh(self, verbose=False):
         self._local_window.refresh()
 
-    def refresh_all(self):
+    def refresh_all(self, verbose=False):
         self._local_window.refresh()
         for subwin in self.__children:
             subwin.refresh()
 
-    def erase(self):
-        logger.info("Erased window")
+    def erase(self, verbose=False):
+        if verbose:
+            logger.info("Erased window")
         self._local_window.erase()
 
-    def addch(self, ch: str, position: Position = None, attributes: list = None):
+    def addch(self, ch: str, position: Position = None, attributes: list = None, verbose=False):
         if type(ch) is not str:
             raise ValueError(f"ch must be a string, not {type(ch)}")
         if len(ch) != 1:
@@ -108,36 +110,40 @@ class Window:
         else:
             self._local_window.addch(str(ch))
 
-    def addstr(self, text: str, position: Position = None, attributes: list = None):
+    def addstr(self, text: str, position: Position = None, attributes: list = None, verbose=False):
         if attributes is None:
             attributes = []
         if position is None:
-            logger.info(f"Adding string at cursor_position")
+            if verbose:
+                logger.info(f"Adding string at cursor_position")
             position = self.cursor_position
         str_box = BoundingBox(position.lineno, position.colno, height=1, width=len(text))
         if str_box not in self.local_box:
             raise ValueError(f"String '{text}' @ {position} will not fit within {self.bounding_box}")
-        logger.info(f"Adding string at {position}")
+        if verbose:
+            logger.info(f"Adding string at {position}")
         try:
             self._local_window.addstr(*position, text, *attributes)
         except curses.error:
             pass
 
-    def getkey(self) -> str:
+    def getkey(self, verbose=False) -> str:
         return self._local_window.getkey()
 
-    def getch(self) -> str:
+    def getch(self, verbose=False) -> str:
         return self._local_window.getch()
 
-    def move_cursor(self, position: Position):
+    def move_cursor(self, position: Position, verbose=False):
         if not position in self.local_box:
             raise ValueError(f"Cursor Position {position} is not contained within {self.bounding_box}")
 
-        logger.info(f"Window: Moving cursor to {position}")
+        if verbose:
+            logger.info(f"Window: Moving cursor to {position}")
         self._local_window.move(*position)
 
-    def resize(self, box: BoundingBox):
-        logger.info("Resizing window to %s", box)
+    def resize(self, box: BoundingBox, verbose=False):
+        if verbose:
+            logger.info("Resizing window to %s", box)
         self.dimensions = box.dimensions
         self.position = box.position
         try:
@@ -150,7 +156,7 @@ class Window:
         except curses.error:
             raise ValueError("Failed to move window to %s", box.position)
 
-    def add_box(self):
+    def add_box(self, verbose=False):
         self._local_window.box()
 
     def __del__(self):

@@ -107,6 +107,12 @@ class Text:
         return self._text_lines[self._line_ptr - 1]
 
     @property
+    def next_line(self):
+        if self._line_ptr >= len(self._text_lines):
+            return None
+        return self._text_lines[self._line_ptr + 1]
+
+    @property
     def last_column_on_line(self):
         return max(len(self.current_line) - (0 if self._edit_mode else 1), 0)
 
@@ -198,10 +204,10 @@ class Text:
 
             # If the current line is not empty, append it to the previous line.
             elif len(self.current_line) > 0:
+                self.decrement_line_ptr()
                 self.to_end_of_line()
-                self.previous_line.insert(self.current_line.text)
-                self._text_lines.pop(self._line_ptr)
-                self._line_ptr -= 1
+                self.current_line.insert(self.next_line.text)
+                self._text_lines.pop(self._line_ptr + 1)
                 # Correct positioning is end of preioous line + 1
                 # We get that for free in edit mode. Need to set manually otherwise.
                 if not self.edit_mode:
@@ -245,23 +251,26 @@ class Text:
             self.current_line.replace_character(ch, self.column_ptr)
             self.increment_column_ptr()
 
-    def insert_newline(self, before_cursor: bool = True):
-        if self.column_ptr >= len(self.current_line):
+    def insert_newline(self):
+        if self.column_ptr == 0:
+            self._text_lines.insert(self._line_ptr, TextLine())
+            self._line_ptr += 1
+        elif self.column_ptr >= len(self.current_line):
             self._text_lines.insert(self._line_ptr + 1, TextLine())
+            self._line_ptr += 1
         else:
             self.break_line()
-        self._line_ptr += 1
         self.to_start_of_line()
 
-    def insert(self, text: str, before_cursor: bool = True):
+    def insert(self, text: str):
         if len(self._text_lines) == 0:
             self._text_lines.append(TextLine())
 
         for ch in text:
             if ch == "\n":
-                self.insert_newline(before_cursor)
+                self.insert_newline()
             else:
-                self.current_line.insert(ch, self.column_ptr if before_cursor else self.column_ptr + 1)
+                self.current_line.insert(ch, self.column_ptr)
                 self.increment_column_ptr()
 
     def erase(self):

@@ -234,6 +234,13 @@ def test_insert():
     assert test.current_line == TextLine("hello!")
     assert test.previous_line == None
 
+    test = Text("world")
+    test.edit_mode = True
+    test.to_start_of_line()
+    test.insert("\n")
+    assert test.text == "\nworld"
+    assert test.cursor_position == (1, 0)
+
 
 def test_delete_line():
     test = Text("")
@@ -327,11 +334,12 @@ def test_backspace():
     assert test.text == "helloworld"
     assert test.cursor_position == (0, 5)
 
-    # test = Text("hello\nworld\n")
-    # test.edit_mode = True
-    # test.increment_line_ptr()
-    # test.backspace()
-    # assert test.text == "hello\nworld"
+    test = Text("\nworld")
+    test.edit_mode = True
+    test.to_start_of_line()
+    test.backspace()
+    assert test.text == "world"
+    assert test.cursor_position == (0, 0)
 
 
 def test_insert_from_empty():
@@ -342,6 +350,16 @@ def test_insert_from_empty():
     test.insert("h")
     test.insert("e")
     assert test.text == "he"
+
+
+def test_for_insert_bug():
+    test = Text()
+    test.edit_mode = True
+    test.insert("h")
+    test.insert("i")
+    test.decrement_column_ptr()
+    test.insert("\n")
+    assert test.cursor_position == (1, 0)
 
 
 # def test_break_line():
