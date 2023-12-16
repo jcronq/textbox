@@ -83,13 +83,13 @@ class TextBox:
         if self._has_box:
             # -1 for left side of box. -1 for right side of box. -1 for cursor buffer.
             return self.width - 3
-        return self.width
+        return self.width - 1
 
     @property
     def printable_height(self):
         if self._has_box:
             return self.height - 2
-        return self.height
+        return self.height - 1
 
     @property
     def first_printable_lineno(self):
@@ -113,7 +113,7 @@ class TextBox:
     def last_printable_column(self):
         if self._has_box:
             return self.first_printable_column + self.printable_width
-        return self.width
+        return self.width - 1
 
     @property
     def first_viewable_lineno(self):
@@ -233,6 +233,8 @@ class TextBox:
         if self._text_list.line_count == 0:
             return
 
+        if self.verbose:
+            logger.info("Drawing texts on lines: %s - %s", self.first_viewable_lineno, self.last_viewable_lineno)
         visible_lines = self._text_list[self.first_viewable_lineno : self.last_viewable_lineno]
         logger.debug("visible_lines: %s", visible_lines)
         if not self.top_to_bottom:
@@ -243,10 +245,10 @@ class TextBox:
             columnno = self.first_printable_column
             local_lineno = idx + self.first_printable_lineno
             if not self.top_to_bottom:
-                local_lineno = self.printable_height - local_lineno + 1
+                local_lineno = self.printable_height - local_lineno + (1 if self._has_box else 0)
 
             position = Position(local_lineno, columnno)
-            logger.debug(
+            logger.info(
                 "%s - draw line %s %s: %s/%s (%s%s) at Coord(%s): %s/%s char w/ box=%s",
                 self.name,
                 idx,
