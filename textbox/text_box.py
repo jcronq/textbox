@@ -31,7 +31,6 @@ class TextBox:
         self.color_pair = color_pair
 
         self._text_list: TextList = TextList()
-        self._text_ptr = 0
         self._first_lineno_in_window = 0
         self._box_visible = False
         self._text_list.max_line_width = self.printable_width
@@ -186,7 +185,6 @@ class TextBox:
 
     def erase(self):
         self._text_list = []
-        self._text_ptr = 0
         self.window.erase(verbose=self.verbose)
 
     def refresh(self):
@@ -224,10 +222,16 @@ class TextBox:
         self.redraw()
 
     def add_str(self, text: str):
-        self._text_list[self._text_ptr].insert(text)
+        self._text_list.insert(text)
+        self.redraw()
+
+    def end_current_text(self):
+        self._text_list.increment_text_ptr()
 
     def add_char(self, text: str):
-        self._text_list[self._text_ptr].insert(text)
+        self._text_list.current_text.edit_mode = True
+        self._text_list.current_text.insert(text)
+        self._text_list.current_text.edit_mode = False
 
     def draw_texts(self):
         if self._text_list.line_count == 0:

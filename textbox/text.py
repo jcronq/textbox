@@ -303,6 +303,9 @@ class Text:
         if len(self._text_lines) == 0:
             self._text_lines.append(TextLine())
 
+        if not self._edit_mode:
+            raise RuntimeError("Cannot insert text when not in edit mode")
+
         for ch in text:
             if ch == "\n":
                 self.insert_newline()

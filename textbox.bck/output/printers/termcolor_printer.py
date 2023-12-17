@@ -37,7 +37,6 @@ class TermcolorPrinter(PrinterBase):
         if len(results) == 0:
             return ""
         if len(results) == 1:
-            # breakpoint()
             return results[0]
         return tuple(results)
 

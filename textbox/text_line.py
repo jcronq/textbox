@@ -1,78 +1,40 @@
-from typing import Callable, Optional
+from typing import Union, Optional, List
 from textbox.box_types import Position
+from textbox.text_segment import TextSegment
+from textbox.segmented_text_line import SegmentedTextLine
 
 
 class TextLine:
-    def __init__(self, text: str = ""):
+    def __init__(self, text: Union[str, TextSegment, SegmentedTextLine] = ""):
         """A single line of text"""
-        if "\n" in text:
-            raise ValueError("TextLine cannot contain newlines")
-        self._text = text
+        self._text: SegmentedTextLine = None
+        self.text = text
 
-    def start_of_next_word(self, column_ptr: int, in_white_space: bool):
+    def start_of_next_word(self, column_ptr: int, in_white_space: bool) -> Optional[int]:
         if column_ptr is None:
             column_ptr = 0
-        for idx in range(column_ptr, len(self._text)):
-            if not self._text[idx].isalnum():
+        for idx in range(column_ptr, len(self.text)):
+            if not self.text[idx].isalnum():
                 in_white_space = True
-            elif in_white_space and self._text[idx].isalnum():
+            elif in_white_space and self.text[idx].isalnum():
                 return idx
         return None
 
     def start_of_previous_word(self, column_ptr: int):
         in_character_space = False
         if column_ptr is None:
-            column_ptr = len(self._text) - 1
+            column_ptr = len(self.text) - 1
         for idx in range(column_ptr - 1, -1, -1):
-            if in_character_space and not self._text[idx].isalnum():
+            if in_character_space and not self.text[idx].isalnum():
                 return idx + 1
-            elif self._text[idx].isalnum():
+            elif self.text[idx].isalnum():
                 in_character_space = True
         if in_character_space:
             return 0
         return None
 
-    # def directional_search(
-    #     self,
-    #     column_ptr: Optional[int],
-    #     start_found: bool,
-    #     start_func: Callable[[str], bool],
-    #     success_func: Callable[[str], bool],
-    #     direction: int,
-    # ):
-    #     if direction > 0:
-    #         start_idx = column_ptr if column_ptr is not None else 0
-    #         end_idx = len(self._text)
-    #         step = 1
-    #     elif direction < 0:
-    #         start_idx = column_ptr if column_ptr is not None else len(self._text)
-    #         end_idx = -2
-    #         step = -1
-    #     else:
-    #         raise ValueError("Direction can't be 0")
-
-    #     for idx in range(start_idx, end_idx, step):
-    #         if idx == end_idx:
-    #             return None
-    #         elif start_func(self._text[idx]):
-    #             start_found = True
-    #         elif start_found and success_func(self._text[idx]):
-    #             return idx
-
     def copy(self):
-        return TextLine(self._text)
-
-    @property
-    def text(self):
-        """Get the text of the TextLine"""
-        return self._text
-
-    @text.setter
-    def text(self, value: str):
-        """Set the text of the TextLine"""
-        if "\n" in value:
-            raise ValueError("TextLine cannot contain newlines")
-        self._text = value
+        return TextLine(self.text)
 
     def cursor_position(self, column_ptr: int, width: int = None):
         if width is None:
@@ -85,15 +47,41 @@ class TextLine:
         """Get the number of lines this TextLine would take up if printed with width"""
         if width is None:
             return 1
-        if len(self._text) == 0:
+        if len(self.text) == 0:
             return 1
-        if len(self._text) % width == 0:
-            return len(self._text) // width
-        return len(self._text) // width + 1
+        if len(self.text) % width == 0:
+            return len(self.text) // width
+        return len(self.text) // width + 1
+
+    @property
+    def text(self) -> str:
+        """Get the text of the TextLine"""
+        return str(self._text)
+
+    @text.setter
+    def text(self, value: Union[str, TextSegment, List[TextSegment], SegmentedTextLine]):
+        """Set the text of the TextLine"""
+        if "\n" in value:
+            raise ValueError("TextLine cannot contain newlines")
+
+        if isinstance(value, str):
+            self._text = SegmentedTextLine(TextSegment(value))
+        elif isinstance(value, list):
+            if not all([isinstance(segment, TextSegment) for segment in value]):
+                raise ValueError(
+                    "SegmentedTextLine must be initialized with a list of TextSegments, str, or SegmentedTextLine"
+                )
+            self._text = SegmentedTextLine(value)
+        elif isinstance(value, TextSegment):
+            self._text = SegmentedTextLine(value)
+        elif isinstance(value, SegmentedTextLine):
+            self._text = value
+        else:
+            raise ValueError("TextLine must be initialized with a string or TextSegment")
 
     def split_on_width(self, width: int):
         """Split the TextLine into TextLines of width"""
-        for idx in range(len(self._text) // width + 1):
+        for idx in range(len(self.text) // width + 1):
             sub_line = TextLine(self._text[idx * width : (idx + 1) * width])
             if len(sub_line) > 0:
                 yield sub_line
@@ -110,7 +98,11 @@ class TextLine:
         if column_ptr > len(self._text):
             raise ValueError("Cannot replace character past the end of a line")
 
-        self._text = self._text[:column_ptr] + ch + self._text[column_ptr + 1 :]
+        if column_ptr == len(self._text):
+            self._text = self._text + ch
+        self._text = (
+            self._text[:column_ptr] + TextSegment(ch, self._text[column_ptr].color_pair) + self._text[column_ptr + 1 :]
+        )
 
     def delete_to_end(self, column_ptr: int) -> str:
         """Delete from column_ptr to the end of the line, returning the deleted text"""
@@ -138,7 +130,15 @@ class TextLine:
         if cursor_ptr is None:
             cursor_ptr = len(self._text)
 
-        self._text = self._text[:cursor_ptr] + other + self._text[cursor_ptr:]
+        if cursor_ptr < 0:
+            raise ValueError("Cannot insert before the beginning of a line")
+        if cursor_ptr > len(self._text):
+            raise ValueError("Cannot insert past the end of a line")
+
+        if cursor_ptr == len(self._text):
+            self._text = self._text + other
+        else:
+            self._text = self._text[:cursor_ptr] + other + self._text[cursor_ptr:]
 
     def backspace(self, column_ptr: int = None):
         """Delete the character before column_ptr"""
@@ -156,24 +156,24 @@ class TextLine:
 
         self._text = self._text[: column_ptr - 1] + self._text[column_ptr:]
 
-    def __getitem__(self, item: int):
+    def __getitem__(self, item: Union[int, slice]):
         """Get the character at item"""
         return self._text[item]
 
     def __len__(self) -> int:
-        return len(self._text)
+        return len(self.text)
 
     def __hash__(self) -> int:
-        return hash(self._text)
+        return hash(self.text)
 
     def __str__(self) -> str:
-        return self._text
+        return self.text
 
     def __repr__(self) -> str:
-        return f"TextLine(text={self._text})"
+        return f"TextLine(text={self.text})"
 
     def __contains__(self, item: str):
-        return item in self._text
+        return item in self.text
 
     def __eq__(self, other: "TextLine") -> bool:
         if isinstance(other, TextLine):

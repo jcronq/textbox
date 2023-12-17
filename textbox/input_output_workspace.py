@@ -1,6 +1,7 @@
 import asyncio
 import curses
 from enum import Enum
+from typing import Callable
 
 from textbox.window import Window
 from textbox.input_manager import AsyncInputManager
@@ -23,7 +24,7 @@ class INPUT_MODE(Enum):
     READ_ONLY = 4
 
 
-class VimLikeInputBox:
+class InputOutputWorkspace:
     def __init__(self, main_window: Window, input_manager: AsyncInputManager):
         self.main_window = main_window
         self.command_box_height = 1
@@ -45,12 +46,20 @@ class VimLikeInputBox:
             top_to_bottom=False,
             has_box=True,
         )
-        self.output_box.verbose = True
+        self._submit_callback = None
+        self._command_callback = None
+        # self.output_box.verbose = True
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
         input_manager.on_keypress = self.handle_keypress
         input_manager.redraw = self.redraw
+
+    def set_submit_callback(self, func: Callable[[str], None]):
+        self._submit_callback = func
+
+    def set_command_callback(self, func: Callable[[str], None]):
+        self._command_callback = func
 
     @property
     def command_bounding_box(self):
@@ -181,14 +190,23 @@ class VimLikeInputBox:
         elif self.input_mode == INPUT_MODE.READ_ONLY:
             self.read_only_handler(key)
 
-    def submit(self, print=True):
+    def submit(self):
         logger.info("Submit(print=%s)", print)
         self.focused_box: InputBox
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
-            if print:
-                logger.info("Adding text to output box")
-                self.output_box.add_text(self.focused_box.text.copy())
+            if self._submit_callback is not None:
+                self._submit_callback(str(self.focused_box.text))
+            logger.info("Erasing entry box")
+            self.focused_box.text.erase()
+            logger.info("Redrawing screen")
+            self.focused_box.redraw(with_cursor=True)
+
+    def submit_command(self):
+        logger.info("Submit_command")
+        self.focused_box: InputBox
+        if len(self.focused_box.text) > 0:
+            self.focused_box.append_history()
             logger.info("Erasing entry box")
             self.focused_box.text.erase()
             logger.info("Redrawing screen")
@@ -200,7 +218,8 @@ class VimLikeInputBox:
             case "q":
                 raise WindowQuit()
             case _:
-                pass
+                if self._command_callback is not None:
+                    self._command_callback(text)
 
     def read_only_handler(self, key: int):
         if key == ord("\t"):
@@ -340,7 +359,7 @@ class VimLikeInputBox:
         elif key in [ord("\n"), ord("\r")]:
             logger.info("Command: Enter")
             self.execute_command(str(self.command_box.text)[1:])
-            self.submit(print=False)
+            self.submit_command()
             self.enter_command_mode()
 
         else:

@@ -11,7 +11,7 @@ from textbox.window import Window
 from textbox.input_box import InputBox
 from textbox.box_types import BoundingBox, Coordinate
 from textbox.signals import WindowQuit
-from textbox.adventure_input import VimLikeInputBox
+from textbox.input_output_workspace import InputOutputWorkspace
 from textbox.curses_utils import curses_wrapper
 
 logger = logging.getLogger()

@@ -40,31 +40,39 @@ class TextList:
         return line_spans
 
     @property
-    def current_text(self):
-        if len(self._texts) == 0:
-            return Text("", max_line_width=self._max_line_width)
-        return self._texts[self._text_ptr - 1]
+    def current_text(self) -> Text:
+        if self._text_ptr > len(self._texts):
+            raise IndexError(f"TextList has no text at index {self._text_ptr}.")
+
+        if self._text_ptr == len(self._texts):
+            self._texts.append(Text("", max_line_width=self._max_line_width))
+        return self._texts[self._text_ptr]
 
     @property
     def cursor_position(self):
         if len(self._texts) == 0:
             return Position(0, 0)
-        elif len(self._texts) == 1:
-            return self.current_text.cursor_position
         else:
-            lines_before = sum([text.line_count for text in self._texts[: self._text_ptr - 1]])
+            lines_before = sum([text.line_count for text in self._texts[: self._text_ptr]])
             return self.current_text.cursor_position + Position(lines_before, 0)
 
     def insert(self, text: str):
-        if self._text_ptr >= len(self._texts):
-            self._texts.append(Text(text, max_line_width=self.max_line_width))
-        else:
-            self._texts.insert(self._text_ptr, text)
-        self._text_ptr += 1
+        prev_edit_mode = self.current_text.edit_mode
+        self.current_text.edit_mode = True
+        self.current_text.increment_column_ptr()
+        self.current_text.insert(text)
+        self.current_text.edit_mode = prev_edit_mode
 
     def add_text(self, text: Text):
         self._texts.append(text)
+        self._text_ptr = len(self._texts) - 1
+
+    def increment_text_ptr(self):
         self._text_ptr += 1
+
+    @property
+    def as_string(self):
+        return "\n".join(self[:])
 
     def __len__(self):
         return sum([len(text) for text in self._texts])

@@ -30,9 +30,9 @@ def test_newline_errors():
 
 def test_dunders():
     text_line = TextLine("hello")
-    assert text_line[0] == "h"
-    assert text_line[1] == "e"
-    assert text_line[:3] == "hel"
+    assert str(text_line[0]) == "h"
+    assert str(text_line[1]) == "e"
+    assert str(text_line[:3]) == "hel"
     assert len(text_line) == 5
     assert hash(text_line) == hash("hello")
     assert "ell" in text_line
@@ -76,13 +76,13 @@ def test_delete():
 
 def test_delete_to_end():
     text_line = TextLine("hello")
-    assert text_line.delete_to_end(0) == "hello"
+    assert str(text_line.delete_to_end(0)) == "hello"
     assert text_line.text == ""
     text_line = TextLine("hello")
-    assert text_line.delete_to_end(1) == "ello"
+    assert str(text_line.delete_to_end(1)) == "ello"
     assert text_line.text == "h"
     text_line = TextLine("hello")
-    assert text_line.delete_to_end(5) == ""
+    assert str(text_line.delete_to_end(5)) == ""
     assert text_line.text == "hello"
     with pytest.raises(ValueError):
         text_line.delete_to_end(6)

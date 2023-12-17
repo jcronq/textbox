@@ -87,10 +87,6 @@ def test_increment_decrement_line_ptr():
     assert text.cursor_position == (0, 1)
     assert text.current_line == TextLine("hello")
     assert text.previous_line == None
-    text.insert("!")
-    assert text.cursor_position == (0, 2)
-    assert text.current_line == TextLine("h!ello")
-    assert text.previous_line == None
 
     text = Text("hello\nwo")
     text.decrement_line_ptr()
@@ -127,7 +123,6 @@ def test_increment_decrement_column_ptr():
     assert text.cursor_position == (0, 3)
     text.increment_column_ptr()
     assert text.cursor_position == (0, 4)
-    # breakpoint()
     text.increment_column_ptr()
     assert text.cursor_position == (1, 0)
     assert text.current_line == TextLine("wo")
@@ -398,11 +393,10 @@ def test_start_of_previous_word():
     assert test.start_of_previous_word() == Position(0, 0)
     test.to_start_of_text()
     assert test.start_of_previous_word() == None
-    # test.edit_mode = True
-    # test.to_end_of_text()
-    # test.insert("\nnospace")
-    # test.to_start_of_text()
-    # test.to_end_of_line()
-    # test.decrement_column_ptr()
-    # test.decrement_column_ptr()
-    # assert test.start_of_next_word() == Position(1, 0)
+
+
+def test_insert_from_empty():
+    test = Text()
+    test.edit_mode = False
+    with pytest.raises(RuntimeError):
+        test.insert("h")

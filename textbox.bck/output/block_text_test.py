@@ -150,7 +150,6 @@ def test_border():
         LineText(rich_texts=[*border, RichText(text="*****", foreground_color="red"), *border]),
     ]
     result = list(tb.wrapped_text([rt]))
-    breakpoint()
     assert result == expected
     for line in result:
         assert len(line) == text_width + border_width * 2 + padding_width * 2
