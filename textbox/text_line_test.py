@@ -1,5 +1,5 @@
 import pytest
-from adventurebox.text_line import TextLine
+from textbox.text_line import TextLine
 
 
 def test_text_line_init():

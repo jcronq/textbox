@@ -1,4 +1,4 @@
-from adventurebox import box_types
+from textbox import box_types
 
 
 def test_dimensions():

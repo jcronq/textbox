@@ -2,13 +2,13 @@ import asyncio
 import curses
 from enum import Enum
 
-from adventurebox.window import Window
-from adventurebox.input_manager import AsyncInputManager
-from adventurebox.input_box import InputBox
-from adventurebox.text_box import TextBox
-from adventurebox.box_types import BoundingBox, Dimensions
-from adventurebox.signals import WindowQuit, DelayedRedraw
-from adventurebox.color_code import ColorCode
+from textbox.window import Window
+from textbox.input_manager import AsyncInputManager
+from textbox.input_box import InputBox
+from textbox.text_box import TextBox
+from textbox.box_types import BoundingBox, Dimensions
+from textbox.signals import WindowQuit, DelayedRedraw
+from textbox.color_code import ColorCode
 
 import logging
 

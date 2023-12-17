@@ -1,10 +1,10 @@
 from typing import List, Union
 import curses
 
-from adventurebox.window import Window
-from adventurebox.box_types import BoundingBox, Position
-from adventurebox.text import Text
-from adventurebox.text_list import TextList
+from textbox.window import Window
+from textbox.box_types import BoundingBox, Position
+from textbox.text import Text
+from textbox.text_list import TextList
 
 import logging
 

@@ -1,6 +1,6 @@
 import pytest
-from adventurebox.text_list import TextList
-from adventurebox.text import Text
+from textbox.text_list import TextList
+from textbox.text import Text
 
 
 @pytest.fixture

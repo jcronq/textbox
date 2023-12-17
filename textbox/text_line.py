@@ -1,5 +1,5 @@
 from typing import Callable, Optional
-from adventurebox.box_types import Position
+from textbox.box_types import Position
 
 
 class TextLine:

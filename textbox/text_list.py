@@ -1,6 +1,6 @@
 from typing import List, Union
-from adventurebox.text import Text
-from adventurebox.box_types import LineSpan, Position
+from textbox.text import Text
+from textbox.box_types import LineSpan, Position
 
 
 class TextList:

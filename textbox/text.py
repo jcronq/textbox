@@ -1,6 +1,6 @@
 from typing import List, Union
-from adventurebox.text_line import TextLine
-from adventurebox.box_types import Position
+from textbox.text_line import TextLine
+from textbox.box_types import Position
 import logging
 
 

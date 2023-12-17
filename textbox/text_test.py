@@ -1,7 +1,7 @@
 import pytest
-from adventurebox.text import Text
-from adventurebox.text_line import TextLine
-from adventurebox.box_types import Position
+from textbox.text import Text
+from textbox.text_line import TextLine
+from textbox.box_types import Position
 
 
 def test_init():

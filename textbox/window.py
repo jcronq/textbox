@@ -4,7 +4,7 @@ from collections import namedtuple
 import curses
 from curses import window
 
-from adventurebox.box_types import Position, BoundingBox, Dimensions
+from textbox.box_types import Position, BoundingBox, Dimensions
 
 import logging
 

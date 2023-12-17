@@ -1,18 +1,13 @@
-import time
 import asyncio
-import functools
 import curses
 
 import uvloop
 import logging
 
-from adventurebox.input_manager import AsyncInputManager
-from adventurebox.window import Window
-from adventurebox.input_box import InputBox
-from adventurebox.box_types import BoundingBox, Coordinate
-from adventurebox.signals import WindowQuit
-from adventurebox.adventure_input import VimLikeInputBox
-from adventurebox.curses_utils import curses_wrapper
+from textbox.input_manager import AsyncInputManager
+from textbox.window import Window
+from textbox.adventure_input import VimLikeInputBox
+from textbox.curses_utils import curses_wrapper
 
 logger = logging.getLogger()
 logger.addHandler(logging.FileHandler("log.txt"))
@@ -22,9 +17,12 @@ logger.setLevel(logging.INFO)
 async def amain(window: Window):
     async with AsyncInputManager(window) as input_manager:
         try:
-            for i in range(0, 255):
-                window._local_window.addstr(str(i), curses.color_pair(i))
-                window._local_window.addstr(" ", curses.color_pair(i))
+            await asyncio.sleep(0.05)
+            input_box = VimLikeInputBox(window, input_manager)
+            input_box.enter_insert_mode()
+            window.refresh()
+            input_box.focused_box.refresh()
+
         except Exception as e:
             logger.exception(e)
             input_manager.stop()

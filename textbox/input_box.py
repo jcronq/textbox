@@ -1,7 +1,7 @@
 from typing import Union
 
-from adventurebox.text_box import TextBox
-from adventurebox.text import Text
+from textbox.text_box import TextBox
+from textbox.text import Text
 
 import logging
 

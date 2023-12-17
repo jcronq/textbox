@@ -6,15 +6,15 @@ import curses
 import uvloop
 import logging
 
-from adventurebox.input_manager import AsyncInputManager
-from adventurebox.window import Window
-from adventurebox.input_box import InputBox
-from adventurebox.text_box import TextBox
-from adventurebox.box_types import BoundingBox, Coordinate
-from adventurebox.signals import WindowQuit
-from adventurebox.adventure_input import VimLikeInputBox
-from adventurebox.curses_utils import curses_wrapper
-from adventurebox.color_code import ColorCode
+from textbox.input_manager import AsyncInputManager
+from textbox.window import Window
+from textbox.input_box import InputBox
+from textbox.text_box import TextBox
+from textbox.box_types import BoundingBox, Coordinate
+from textbox.signals import WindowQuit
+from textbox.adventure_input import VimLikeInputBox
+from textbox.curses_utils import curses_wrapper
+from textbox.color_code import ColorCode
 
 logger = logging.getLogger()
 logger.addHandler(logging.FileHandler("log.txt"))
