@@ -15,7 +15,7 @@ class TextLine:
         for idx in range(column_ptr, len(self._text)):
             if not self._text[idx].isalnum():
                 in_white_space = True
-            elif in_white_space and self._text[idx] not in (" ", "\t"):
+            elif in_white_space and self._text[idx].isalnum():
                 return idx
         return None
 
