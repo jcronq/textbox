@@ -384,3 +384,25 @@ def test_start_of_next_word():
     test.decrement_column_ptr()
     test.decrement_column_ptr()
     assert test.start_of_next_word() == Position(1, 0)
+
+
+def test_start_of_previous_word():
+    test = Text("hello world")
+    assert test.start_of_previous_word() == Position(0, 6)
+    for _ in range(4):
+        test.decrement_column_ptr()
+    assert test.start_of_previous_word() == Position(0, 0)
+    test.decrement_column_ptr()
+    assert test.start_of_previous_word() == Position(0, 0)
+    test.decrement_column_ptr()
+    assert test.start_of_previous_word() == Position(0, 0)
+    test.to_start_of_text()
+    assert test.start_of_previous_word() == None
+    # test.edit_mode = True
+    # test.to_end_of_text()
+    # test.insert("\nnospace")
+    # test.to_start_of_text()
+    # test.to_end_of_line()
+    # test.decrement_column_ptr()
+    # test.decrement_column_ptr()
+    # assert test.start_of_next_word() == Position(1, 0)

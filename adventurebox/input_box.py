@@ -180,7 +180,9 @@ class InputBox(TextBox):
         self.redraw(with_cursor=True)
 
     def word_backward(self):
-        print("not implemented")
+        prev_word_position = self.text.start_of_previous_word()
+        if prev_word_position is not None:
+            self.text.goto(prev_word_position)
         self.redraw(with_cursor=True)
 
     def end_of_line(self):

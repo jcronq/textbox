@@ -1,3 +1,4 @@
+from typing import Callable, Optional
 from adventurebox.box_types import Position
 
 
@@ -9,14 +10,54 @@ class TextLine:
         self._text = text
 
     def start_of_next_word(self, column_ptr: int, in_white_space: bool):
+        if column_ptr is None:
+            column_ptr = 0
         for idx in range(column_ptr, len(self._text)):
-            if idx == len(self._text):
-                return idx
-            elif self._text[idx] in (" ", "\t"):
+            if not self._text[idx].isalnum():
                 in_white_space = True
             elif in_white_space and self._text[idx] not in (" ", "\t"):
                 return idx
-        return len(self._text)
+        return None
+
+    def start_of_previous_word(self, column_ptr: int):
+        in_character_space = False
+        if column_ptr is None:
+            column_ptr = len(self._text) - 1
+        for idx in range(column_ptr - 1, -1, -1):
+            if in_character_space and not self._text[idx].isalnum():
+                return idx + 1
+            elif self._text[idx].isalnum():
+                in_character_space = True
+        if in_character_space:
+            return 0
+        return None
+
+    # def directional_search(
+    #     self,
+    #     column_ptr: Optional[int],
+    #     start_found: bool,
+    #     start_func: Callable[[str], bool],
+    #     success_func: Callable[[str], bool],
+    #     direction: int,
+    # ):
+    #     if direction > 0:
+    #         start_idx = column_ptr if column_ptr is not None else 0
+    #         end_idx = len(self._text)
+    #         step = 1
+    #     elif direction < 0:
+    #         start_idx = column_ptr if column_ptr is not None else len(self._text)
+    #         end_idx = -2
+    #         step = -1
+    #     else:
+    #         raise ValueError("Direction can't be 0")
+
+    #     for idx in range(start_idx, end_idx, step):
+    #         if idx == end_idx:
+    #             return None
+    #         elif start_func(self._text[idx]):
+    #             start_found = True
+    #         elif start_found and success_func(self._text[idx]):
+    #             return idx
 
     def copy(self):
         return TextLine(self._text)

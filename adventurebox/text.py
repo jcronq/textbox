@@ -180,10 +180,45 @@ class Text:
         for idx in range(self.line_ptr, len(self._text_lines)):
             next_word_ptr = self._text_lines[idx].start_of_next_word(start_search_col, in_whitespace)
             in_whitespace = True
-            start_search_col = 0
-            if next_word_ptr < len(self._text_lines[idx]):
+            start_search_col = None
+            if next_word_ptr is not None:
                 return Position(idx, next_word_ptr)
         return None
+
+    def start_of_previous_word(self):
+        start_search_col = self.column_ptr
+        for idx in range(self.line_ptr, -1, -1):
+            next_word_ptr = self._text_lines[idx].start_of_previous_word(start_search_col)
+            start_search_col = None
+            if next_word_ptr is not None:
+                return Position(idx, next_word_ptr)
+        return None
+
+    # def start_of_next_word(self):
+    #     return self.directional_search(lambda ch: not ch.isalnum(), lambda ch: ch.isalnum(), direction=1)
+
+    # def directional_search(self, start_func, success_func, direction: int):
+    #     start_search_col = self.column_ptr
+    #     start_found = False
+    #     start_idx = self._line_ptr
+    #     if direction > 0:
+    #         end_idx = len(self._text_lines)
+    #         step = 1
+    #     elif direction < 0:
+    #         end_idx = -2
+    #         step = -1
+    #     else:
+    #         raise ValueError("Direction can't be 0")
+
+    #     for idx in range(start_idx, end_idx, step):
+    #         search_result = self._text_lines[idx].directional_search(
+    #             start_search_col, start_found, start_func, success_func, direction
+    #         )
+    #         if search_result is not None:
+    #             return Position(idx, search_result)
+    #         start_found = True
+    #         start_search_col = None
+    #     return None
 
     def delete_line(self):
         if len(self._text_lines) == 0:

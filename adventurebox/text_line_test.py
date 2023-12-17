@@ -136,10 +136,27 @@ def test_start_of_next_word():
     test = TextLine(" hello world")
     assert test.start_of_next_word(0, in_white_space=False) == 1
     assert test.start_of_next_word(1, in_white_space=False) == 7
-    assert test.start_of_next_word(7, in_white_space=False) == len(test)
+    assert test.start_of_next_word(7, in_white_space=False) == None
 
     test = TextLine("hello world")
     assert test.start_of_next_word(0, in_white_space=False) == 6
     assert test.start_of_next_word(0, in_white_space=True) == 0
     assert test.start_of_next_word(1, in_white_space=True) == 1
     assert test.start_of_next_word(2, in_white_space=True) == 2
+
+
+def test_start_of_previous_word():
+    test = TextLine(" hello world")
+    assert test.start_of_previous_word(0) == None
+    assert test.start_of_previous_word(1) == None
+    assert test.start_of_previous_word(3) == 1
+    assert test.start_of_previous_word(7) == 1
+    assert test.start_of_previous_word(8) == 7
+    assert test.start_of_previous_word(9) == 7
+
+    test = TextLine("hello world")
+    assert test.start_of_previous_word(0) == None
+    for idx in range(1, 7):
+        assert test.start_of_previous_word(idx) == 0
+    for idx in range(7, len(test)):
+        assert test.start_of_previous_word(idx) == 6
