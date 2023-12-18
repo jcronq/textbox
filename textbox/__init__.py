@@ -76,13 +76,14 @@ class App:
             self.workspace.output_box.add_str(text)
         elif isinstance(text, Text):
             self.workspace.output_box.add_text(text)
-        elif isinstance(text, SegmentedTextLine):
-            raise NotImplementedError("SegmentedTextLine is not implemented yet.")
-            # self.workspace.output_box.add_segmented_text_line(text)
         elif isinstance(text, list):
             if all([isinstance(line, SegmentedTextLine) for line in text]):
                 for line in text:
                     self.workspace.output_box.add_segmented_text_line(line)
+            elif all((isinstance(line, SegmentedTextLine) for line in text)):
+                self.workspace.output_box.add_text(Text([TextLine(line) for line in text]))
+            elif all((isinstance(line, TextLine) for line in text)):
+                self.workspace.output_box.add_text(Text(text))
             else:
                 raise ValueError("List must contain only SegmentedTextLines")
         else:

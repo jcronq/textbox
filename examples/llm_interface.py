@@ -15,12 +15,10 @@ def on_submit(text: textbox.Text):
     text.color_pair = ColorCode.LIGHT_BLUE
     app.print(text)
     app.print(
-        textbox.Text(
-            [
-                textbox.TextLine([dark_purple("AI: "), light_purple("Hello!")]),
-                textbox.TextLine(),
-            ]
-        )
+        [
+            textbox.TextLine([dark_purple("AI: "), light_purple("Hello!")]),
+            textbox.TextLine(),
+        ]
     )
 
 
