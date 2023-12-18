@@ -1,6 +1,7 @@
 from typing import List, Union
 from textbox.text import Text
 from textbox.box_types import LineSpan, Position
+from textbox.text_line import TextLine
 
 
 class TextList:
@@ -77,7 +78,7 @@ class TextList:
     def __len__(self):
         return sum([len(text) for text in self._texts])
 
-    def __getitem__(self, lineaddr: Union[int, slice]) -> Union[str, List[str]]:
+    def __getitem__(self, lineaddr: Union[int, slice]) -> Union[TextLine, List[TextLine]]:
         """The slice is for line numbers."""
         # Determine whethe we're looking for a specific line, or a range of lines.
         if isinstance(lineaddr, int):
@@ -143,7 +144,7 @@ class TextList:
         ):
             for _, line in enumerate(text.lines):
                 if global_lineno >= start:
-                    result.append(str(line))
+                    result.append(line)
                 global_lineno += step
                 if global_lineno >= stop:
                     break

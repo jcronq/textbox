@@ -25,6 +25,14 @@ def test_init():
     assert len(Text("\n\nhello\n\nworld\n\n")._text_lines) == 7
 
 
+def test_text_setting():
+    test = Text()
+    test.text = "hello"
+    assert test.text == "hello"
+    test.text = [TextLine("hello")]
+    assert test.text == "hello"
+
+
 def test_init_pointers():
     text = Text("hello\nworld")
     assert text.cursor_position == (1, 4)

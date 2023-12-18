@@ -54,6 +54,11 @@ class TextLine:
         return len(self.text) // width + 1
 
     @property
+    def rich_text(self) -> SegmentedTextLine:
+        """Get the rich text of the TextLine"""
+        return self._text
+
+    @property
     def text(self) -> str:
         """Get the text of the TextLine"""
         return str(self._text)
@@ -122,7 +127,7 @@ class TextLine:
 
         self._text = self._text[:column_ptr] + self._text[column_ptr + 1 :]
 
-    def insert(self, other: str, cursor_ptr: int = None):
+    def insert(self, other: Union[str, TextSegment, SegmentedTextLine], cursor_ptr: int = None):
         """Insert other at cursor_ptr"""
         if "\n" in other:
             raise ValueError("TextLine cannot contain newlines")

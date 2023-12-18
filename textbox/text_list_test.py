@@ -1,6 +1,7 @@
 import pytest
 from textbox.text_list import TextList
 from textbox.text import Text
+from textbox.text_line import TextLine
 
 
 @pytest.fixture
@@ -130,17 +131,17 @@ def test_getitem_max_line_length(text_list: TextList):
     text_list.increment_text_ptr()
     assert text_list.line_count == 4
     assert text_list._text_line_spans == [(0, 2), (2, 4)]
-    assert text_list._texts[0].lines == ["Hel", "lo"]
+    assert text_list._texts[0].lines == [TextLine("Hel"), TextLine("lo")]
     assert text_list[0] == "Hel"
     assert text_list[1] == "lo"
     assert text_list[2] == "Wor"
     assert text_list[3] == "ld"
-    assert text_list[0:2] == ["Hel", "lo"]
-    assert text_list[0:3] == ["Hel", "lo", "Wor"]
-    assert text_list[0:4] == ["Hel", "lo", "Wor", "ld"]
-    assert text_list[1:4] == ["lo", "Wor", "ld"]
-    assert text_list[2:4] == ["Wor", "ld"]
-    assert text_list[1:3] == ["lo", "Wor"]
+    assert text_list[0:2] == [TextLine("Hel"), TextLine("lo")]
+    assert text_list[0:3] == [TextLine("Hel"), TextLine("lo"), TextLine("Wor")]
+    assert text_list[0:4] == [TextLine("Hel"), TextLine("lo"), TextLine("Wor"), TextLine("ld")]
+    assert text_list[1:4] == [TextLine("lo"), TextLine("Wor"), TextLine("ld")]
+    assert text_list[2:4] == [TextLine("Wor"), TextLine("ld")]
+    assert text_list[1:3] == [TextLine("lo"), TextLine("Wor")]
 
 
 def test_cursor_position_empty_str(text_list: TextList):

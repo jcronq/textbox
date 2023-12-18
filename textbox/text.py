@@ -1,6 +1,8 @@
 from typing import List, Union
 from textbox.text_line import TextLine
 from textbox.box_types import Position
+from textbox.text_segment import TextSegment
+from textbox.segmented_text_line import SegmentedTextLine
 import logging
 
 
@@ -33,9 +35,10 @@ class Text:
     def edit_mode(self, new_edit_mode: bool):
         previous_edit_mode = self._edit_mode
         self._edit_mode = new_edit_mode
-        if not new_edit_mode and previous_edit_mode:
-            if self.column_ptr >= len(self.current_line):
-                self.to_end_of_line()
+        # If turning off edit mode, and we were past the length of the current line (only possible in edit mode),
+        # move cursor to end of line (ie. back one space.)
+        if not new_edit_mode and previous_edit_mode and self.column_ptr >= len(self.current_line):
+            self.to_end_of_line()
 
     @property
     def column_ptr(self):
@@ -67,33 +70,54 @@ class Text:
             return offset_position + line_position
 
     @property
-    def lines(self) -> List[str]:
+    def lines(self) -> List[TextLine]:
         if self._max_line_width is None:
             return [str(text_line) for text_line in self._text_lines]
         lines = []
         for text_line in self._text_lines:
             if len(text_line) >= self._max_line_width:
                 for sub_line in text_line.split_on_width(self._max_line_width):
-                    lines.append(str(sub_line))
+                    lines.append(sub_line)
             else:
-                lines.append(str(text_line))
+                lines.append(text_line)
         return lines
 
     @property
     def text(self):
-        return "\n".join((text_line for text_line in self.lines))
+        return "\n".join((str(text_line) for text_line in self.lines))
 
     @text.setter
-    def text(self, text: str):
+    def text(self, text: Union[str, List[str], List[TextLine], List[SegmentedTextLine], List[TextSegment]]):
+        """Set the text of the textbox."""
+        if isinstance(text, str):
+            if text == "":
+                return
+            text = [TextLine(line) for line in text.split("\n")]
+        elif isinstance(text, list):
+            if all((isinstance(line, str) for line in text)):
+                text = [TextLine(line) for line in text]
+            elif all((isinstance(line, TextLine) for line in text)):
+                text = text
+            elif all((isinstance(line, SegmentedTextLine) for line in text)):
+                text = [TextLine(line) for line in text]
+            elif all((isinstance(line, TextSegment) for line in text)):
+                raise NotImplementedError("TextSegments not yet supported")
+                # text = [TextLine(line) for line in text]
+            else:
+                raise ValueError(
+                    "Text must be a string or a list of strings or a list of TextLines or a list of SegmentedTextLines or a list of TextSegments"
+                )
+        else:
+            raise ValueError(
+                "Text must be a string or a list of strings or a list of TextLines or a list of SegmentedTextLines or a list of TextSegments"
+            )
         self.erase()
-        if text == "":
-            return
-        for line in text.split("\n"):
-            self._text_lines.append(TextLine(line))
+        self._text_lines = text
         self.to_last_line()
         self.to_end_of_line()
 
     def set_text_to_str(self, text: str):
+        """Set the text of the textbox.  Default string formatting."""
         if not isinstance(text, str):
             raise ValueError("Text must be a string")
         self.text = text
@@ -194,32 +218,6 @@ class Text:
                 return Position(idx, next_word_ptr)
         return None
 
-    # def start_of_next_word(self):
-    #     return self.directional_search(lambda ch: not ch.isalnum(), lambda ch: ch.isalnum(), direction=1)
-
-    # def directional_search(self, start_func, success_func, direction: int):
-    #     start_search_col = self.column_ptr
-    #     start_found = False
-    #     start_idx = self._line_ptr
-    #     if direction > 0:
-    #         end_idx = len(self._text_lines)
-    #         step = 1
-    #     elif direction < 0:
-    #         end_idx = -2
-    #         step = -1
-    #     else:
-    #         raise ValueError("Direction can't be 0")
-
-    #     for idx in range(start_idx, end_idx, step):
-    #         search_result = self._text_lines[idx].directional_search(
-    #             start_search_col, start_found, start_func, success_func, direction
-    #         )
-    #         if search_result is not None:
-    #             return Position(idx, search_result)
-    #         start_found = True
-    #         start_search_col = None
-    #     return None
-
     def delete_line(self):
         if len(self._text_lines) == 0:
             return
@@ -243,7 +241,7 @@ class Text:
             elif len(self.current_line) > 0:
                 self.decrement_line_ptr()
                 self.to_end_of_line()
-                self.current_line.insert(self.next_line.text)
+                self.current_line.insert(self.next_line.rich_text)
                 self._text_lines.pop(self._line_ptr + 1)
                 # Correct positioning is end of preioous line + 1
                 # We get that for free in edit mode. Need to set manually otherwise.

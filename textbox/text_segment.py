@@ -13,6 +13,9 @@ class TextSegment:
     def isalnum(self):
         return self._text.isalnum()
 
+    def split(self, split_str: str):
+        return [TextSegment(split_i, self.color_pair) for split_i in self._text.split(split_str)]
+
     def __len__(self):
         return len(self._text)
 
