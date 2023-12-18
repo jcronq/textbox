@@ -214,7 +214,9 @@ class InputOutputWorkspace:
 
     def execute_command(self, text):
         logger.info(f"Command: {text}")
-        match text:
+        text.strip()
+        command = text.split(" ")[0]
+        match command:
             case "q":
                 raise WindowQuit()
             case _:
@@ -338,6 +340,7 @@ class InputOutputWorkspace:
         elif key == ord("\n") or key == ord("\r"):
             logger.info("Key: Enter")
             self.submit()
+            self.enter_insert_mode(append=True)
 
         elif key in [27]:
             logger.info("Command: Escape (nop)")
