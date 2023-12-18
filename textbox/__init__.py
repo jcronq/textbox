@@ -59,9 +59,10 @@ class App:
         for func in self._submit_callbacks:
             func(text)
 
-    def _command_callback(self, command: str):
+    def _command_callback(self, command_str: str):
+        command = command_str.split(" ")[0]
         if command in self._user_defined_commands:
-            self._user_defined_commands[command](command)
+            self._user_defined_commands[command](command_str)
         else:
             self.print(f"Unknown command: {command}")
 

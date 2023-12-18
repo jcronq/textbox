@@ -163,6 +163,7 @@ class InputOutputWorkspace:
         if self.focused_box != self.user_box:
             self.focused_box = self.user_box
         self.focused_box.text.edit_mode = False
+        self.command_box.set_text_to_str("-- COMMAND --")
         logger.info("Input Mode: COMMAND")
         self.focused_box.redraw(with_cursor=True)
 

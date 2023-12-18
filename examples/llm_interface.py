@@ -28,5 +28,11 @@ def quit(command: str):
     app.stop()
 
 
+@app.command("load")
+def load(command: str):
+    character = command.split(" ")[1]
+    app.print(f"Loading {character}...")
+
+
 if __name__ == "__main__":
     app.start()
