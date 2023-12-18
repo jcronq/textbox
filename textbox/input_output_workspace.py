@@ -196,7 +196,7 @@ class InputOutputWorkspace:
         if len(self.focused_box.text) > 0:
             self.focused_box.append_history()
             if self._submit_callback is not None:
-                self._submit_callback(self.focused_box.text)
+                self._submit_callback(self.focused_box.text.copy())
             logger.info("Erasing entry box")
             self.focused_box.text.erase()
             logger.info("Redrawing screen")

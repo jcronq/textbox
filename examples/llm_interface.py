@@ -12,7 +12,7 @@ def on_submit(text: textbox.Text):
     text.insert(textbox.TextSegment("User: ", ColorCode.DARK_BLUE))
     text.edit_mode = False
     text.color_pair = ColorCode.LIGHT_BLUE
-    app.print(text.copy())
+    app.print(text)
     app.print(
         textbox.Text(
             [
@@ -28,7 +28,6 @@ def on_submit(text: textbox.Text):
             ]
         )
     )
-    # app.print("AI: Hello!\n")
 
 
 @app.command("quit")
