@@ -7,7 +7,9 @@ from textbox.color_code import ColorCode
 
 class TextLine:
     def __init__(
-        self, text: Union[str, TextSegment, SegmentedTextLine] = "", default_color_pair: int = ColorCode.DEFAULT
+        self,
+        text: Union[str, TextSegment, List[TextSegment], SegmentedTextLine] = "",
+        default_color_pair: int = ColorCode.DEFAULT,
     ):
         """A single line of text"""
         self._text: SegmentedTextLine = None

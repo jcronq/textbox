@@ -1,5 +1,6 @@
 import textbox
 from textbox import ColorCode
+from textbox.colored import dark_blue, dark_purple, light_purple
 
 
 app = textbox.App()
@@ -9,21 +10,14 @@ app = textbox.App()
 def on_submit(text: textbox.Text):
     text.to_start_of_text()
     text.edit_mode = True
-    text.insert(textbox.TextSegment("User: ", ColorCode.DARK_BLUE))
+    text.insert(dark_blue("User: "))
     text.edit_mode = False
     text.color_pair = ColorCode.LIGHT_BLUE
     app.print(text)
     app.print(
         textbox.Text(
             [
-                textbox.TextLine(
-                    textbox.SegmentedTextLine(
-                        [
-                            textbox.TextSegment("AI: ", ColorCode.DARK_PURPLE),
-                            textbox.TextSegment("Hello!", ColorCode.LIGHT_PURPLE),
-                        ]
-                    )
-                ),
+                textbox.TextLine([dark_purple("AI: "), light_purple("Hello!")]),
                 textbox.TextLine(),
             ]
         )
