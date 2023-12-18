@@ -2,13 +2,17 @@ from typing import Union, Optional, List
 from textbox.box_types import Position
 from textbox.text_segment import TextSegment
 from textbox.segmented_text_line import SegmentedTextLine
+from textbox.color_code import ColorCode
 
 
 class TextLine:
-    def __init__(self, text: Union[str, TextSegment, SegmentedTextLine] = ""):
+    def __init__(
+        self, text: Union[str, TextSegment, SegmentedTextLine] = "", default_color_pair: int = ColorCode.DEFAULT
+    ):
         """A single line of text"""
         self._text: SegmentedTextLine = None
         self.text = text
+        self.default_color_pair = default_color_pair
 
     def start_of_next_word(self, column_ptr: int, in_white_space: bool) -> Optional[int]:
         if column_ptr is None:
@@ -34,7 +38,7 @@ class TextLine:
         return None
 
     def copy(self):
-        return TextLine(self.text)
+        return TextLine(self._text.copy())
 
     def cursor_position(self, column_ptr: int, width: int = None):
         if width is None:

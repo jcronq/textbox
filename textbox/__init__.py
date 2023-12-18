@@ -1,6 +1,6 @@
 import asyncio
 import curses
-from typing import Callable
+from typing import Callable, Union, List
 
 import uvloop
 
@@ -12,6 +12,10 @@ from .input_output_workspace import InputOutputWorkspace
 from .input_box import InputBox
 from .text_box import TextBox
 from .text import Text
+from .text_segment import TextSegment
+from .text_line import TextLine
+from .segmented_text_line import SegmentedTextLine
+from .color_code import ColorCode
 
 import logging
 
@@ -65,10 +69,25 @@ class App:
         self._submit_callbacks.append(func)
         return func
 
-    def print(self, text: str, end="\n"):
+    def print(self, text: Union[str, Text, List[SegmentedTextLine]], end="\n"):
         if self.workspace.output_bounding_box is None:
             raise ValueError("The application is not running.")
-        self.workspace.output_box.add_str(text)
+        if isinstance(text, str):
+            self.workspace.output_box.add_str(text)
+        elif isinstance(text, Text):
+            self.workspace.output_box.add_text(text)
+        elif isinstance(text, SegmentedTextLine):
+            raise NotImplementedError("SegmentedTextLine is not implemented yet.")
+            # self.workspace.output_box.add_segmented_text_line(text)
+        elif isinstance(text, list):
+            if all([isinstance(line, SegmentedTextLine) for line in text]):
+                for line in text:
+                    self.workspace.output_box.add_segmented_text_line(line)
+            else:
+                raise ValueError("List must contain only SegmentedTextLines")
+        else:
+            raise ValueError(f"Cannot print {type(text)}")
+
         if end == "\n":
             self.workspace.output_box.end_current_text()
 
@@ -83,4 +102,4 @@ class App:
         raise WindowQuit()
 
 
-__all__ = ["App", "Text", "InputBox", "TextBox"]
+__all__ = ["App", "Text", "InputBox", "TextBox", "TextSegment", "TextLine", "ColorCode"]

@@ -10,6 +10,9 @@ class TextSegment:
             self._text = text
         self.color_pair = color_pair
 
+    def copy(self):
+        return TextSegment(self._text, self.color_pair)
+
     def isalnum(self):
         return self._text.isalnum()
 

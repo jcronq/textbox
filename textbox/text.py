@@ -3,6 +3,7 @@ from textbox.text_line import TextLine
 from textbox.box_types import Position
 from textbox.text_segment import TextSegment
 from textbox.segmented_text_line import SegmentedTextLine
+from textbox.color_code import ColorCode
 import logging
 
 
@@ -16,8 +17,17 @@ class Text:
         self._column_ptr = 0
         self._max_line_width = max_line_width
         self._edit_mode = False
+        self._default_color_pair = None
 
         self.text = text
+
+    @property
+    def color_pair(self):
+        return self._default_color_pair
+
+    @color_pair.setter
+    def color_pair(self, value: int):
+        self._default_color_pair = value
 
     def copy(self):
         new_text = Text()
@@ -73,13 +83,21 @@ class Text:
     def lines(self) -> List[TextLine]:
         if self._max_line_width is None:
             return [str(text_line) for text_line in self._text_lines]
+
         lines = []
         for text_line in self._text_lines:
             if len(text_line) >= self._max_line_width:
                 for sub_line in text_line.split_on_width(self._max_line_width):
-                    lines.append(sub_line)
+                    next_line = sub_line.copy()
+                    if next_line.default_color_pair != ColorCode.DEFAULT:
+                        next_line.default_color_pair = self.color_pair
+                    lines.append(next_line)
+
             else:
-                lines.append(text_line)
+                next_line = text_line.copy()
+                if next_line.default_color_pair != ColorCode.DEFAULT:
+                    next_line.default_color_pair = self.color_pair
+                lines.append(next_line)
         return lines
 
     @property

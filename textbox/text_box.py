@@ -5,6 +5,7 @@ from textbox.window import Window
 from textbox.box_types import BoundingBox, Position
 from textbox.text import Text
 from textbox.text_list import TextList
+from textbox.text_segment import TextSegment
 
 import logging
 
@@ -225,6 +226,14 @@ class TextBox:
         self._text_list.insert(text)
         self.redraw()
 
+    def add_segmented_text_line(self, text: Text):
+        self._text_list.add_segmented_text_line(text)
+        self.redraw()
+
+    # def add_text_segments(self, text: List[TextSegment]):
+    #     self._text_list.add_text_segments(text)
+    #     self.redraw()
+
     def end_current_text(self):
         self._text_list.increment_text_ptr()
 
@@ -266,10 +275,12 @@ class TextBox:
                 self.printable_width,
                 self._has_box,
             )
-            # self.window.addstr(str(line), position, attributes=self.attributes, verbose=self.verbose)
             offset = 0
             for idx, text_segment in enumerate(line):
-                attributes = [curses.color_pair(text_segment.color_pair)]
+                if text_segment.color_pair is None:
+                    attributes = self.attributes
+                else:
+                    attributes = [curses.color_pair(text_segment.color_pair)]
                 position = Position(local_lineno, columnno + offset)
                 self.window.addstr(str(text_segment), position, attributes=attributes, verbose=self.verbose)
                 offset += len(text_segment)

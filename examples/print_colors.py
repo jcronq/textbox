@@ -1,6 +1,4 @@
-import time
 import asyncio
-import functools
 import curses
 
 import uvloop
@@ -8,10 +6,6 @@ import logging
 
 from textbox.input_manager import AsyncInputManager
 from textbox.window import Window
-from textbox.input_box import InputBox
-from textbox.box_types import BoundingBox, Coordinate
-from textbox.signals import WindowQuit
-from textbox.input_output_workspace import InputOutputWorkspace
 from textbox.curses_utils import curses_wrapper
 
 logger = logging.getLogger()

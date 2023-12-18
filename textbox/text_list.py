@@ -64,6 +64,9 @@ class TextList:
         self.current_text.insert(text)
         self.current_text.edit_mode = prev_edit_mode
 
+    def add_text_line(self, text_line: TextLine):
+        self.current_text.add_text_line(text_line)
+
     def add_text(self, text: Text):
         self._texts.append(text)
         self._text_ptr = len(self._texts) - 1

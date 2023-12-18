@@ -17,12 +17,17 @@ class SegmentedTextLine:
             raise ValueError("TextLine must be initialized with a string or TextSegment")
         self.reduce()
 
+        self._default_color_pair = ColorCode.DEFAULT
+
     @property
     def last_color_pair(self) -> int:
         """Get the color pair of the last TextSegment"""
         if len(self._segments) == 0:
-            return ColorCode.DEFAULT
+            return self._default_color_pair
         return self._segments[-1].color_pair
+
+    def copy(self):
+        return SegmentedTextLine([segment.copy() for segment in self._segments])
 
     def reduce(self):
         """Combine all TextSegments with the same color pair"""
