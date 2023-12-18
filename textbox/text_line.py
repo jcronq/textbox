@@ -184,3 +184,6 @@ class TextLine:
         if isinstance(other, TextLine):
             return self.text == other.text
         return False
+
+    def __iter__(self):
+        return iter(self._text)

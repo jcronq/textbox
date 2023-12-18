@@ -266,4 +266,10 @@ class TextBox:
                 self.printable_width,
                 self._has_box,
             )
-            self.window.addstr(str(line), position, attributes=self.attributes, verbose=self.verbose)
+            # self.window.addstr(str(line), position, attributes=self.attributes, verbose=self.verbose)
+            offset = 0
+            for idx, text_segment in enumerate(line):
+                attributes = [curses.color_pair(text_segment.color_pair)]
+                position = Position(local_lineno, columnno + offset)
+                self.window.addstr(str(text_segment), position, attributes=attributes, verbose=self.verbose)
+                offset += len(text_segment)

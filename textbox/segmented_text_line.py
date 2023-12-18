@@ -65,6 +65,9 @@ class SegmentedTextLine:
         else:
             raise ValueError(f"Cannot add SegmentedTextLine to {type(other)}")
 
+    def __iter__(self):
+        return iter(self._segments)
+
     def __contains__(self, item: str):
         if not isinstance(item, str):
             raise ValueError("SegmentedTextLine can only contain strings")

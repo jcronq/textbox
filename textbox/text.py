@@ -89,6 +89,7 @@ class Text:
     @text.setter
     def text(self, text: Union[str, List[str], List[TextLine], List[SegmentedTextLine], List[TextSegment]]):
         """Set the text of the textbox."""
+        self.erase()
         if isinstance(text, str):
             if text == "":
                 return
@@ -111,7 +112,6 @@ class Text:
             raise ValueError(
                 "Text must be a string or a list of strings or a list of TextLines or a list of SegmentedTextLines or a list of TextSegments"
             )
-        self.erase()
         self._text_lines = text
         self.to_last_line()
         self.to_end_of_line()
