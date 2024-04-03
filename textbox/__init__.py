@@ -25,7 +25,8 @@ logger = logging.getLogger()
 class App:
     def __init__(self):
         self._submit_callbacks = []
-        self._user_defined_commands = {}
+        self._user_defined_commands = {"help": self._default_help}
+        self._user_defined_commands_help = {"help": "Print this help message."}
         self.workspace: InputOutputWorkspace = None
 
     def start(self):
@@ -93,12 +94,20 @@ class App:
         if end == "\n":
             self.workspace.output_box.end_current_text()
 
-    def command(self, name: str):
+    def command(self, name: str, *alt_names, help: str = None):
         def decorator(func):
             self._user_defined_commands[name] = func
+            for alt_name in alt_names:
+                self._user_defined_commands[alt_name] = func
+            self._user_defined_commands_help[name] = help
             return func
 
         return decorator
+
+    def _default_help(self, command_str: str):
+        self.print("Commands:")
+        for command, help in self._user_defined_commands_help.items():
+            self.print(f"  {command}: {help}")
 
     def stop(self):
         raise WindowQuit()
