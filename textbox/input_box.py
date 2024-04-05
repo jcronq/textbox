@@ -108,6 +108,10 @@ class InputBox(TextBox):
     def text(self) -> Text:
         return self._text_list.texts[0]
 
+    @property
+    def character_at_cursor(self) -> str:
+        return self.text.character_at_cursor
+
     def history_scroll_up(self):
         if self.verbose:
             logger.info("History scroll up: %s", self._history)

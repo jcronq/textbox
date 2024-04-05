@@ -6,17 +6,34 @@ from textbox.color_code import ColorCode
 
 
 class TextLine:
+    """An abstracted view of a line of text that can be manipulated in a variety of ways.
+    It largely adds pointer manipulation and text manipulation to the SegmentedTextLine class.
+
+    TextLine may represent multiple lines of text if viewed with a max width. However, all
+    operations on TextLine are treated as if it were a single line of text.
+
+    Textline is guaranteed to not contain newlines."""
+
     def __init__(
         self,
         text: Union[str, TextSegment, List[TextSegment], SegmentedTextLine] = "",
         default_color_pair: int = ColorCode.DEFAULT,
     ):
-        """A single line of text"""
+        """A single line of text, as in there are no newlines in the text."""
         self._text: SegmentedTextLine = None
         self.text = text
         self.default_color_pair = default_color_pair
 
     def start_of_next_word(self, column_ptr: int, in_white_space: bool) -> Optional[int]:
+        """Get the start of the next word after column_ptr
+
+        Args:
+            column_ptr (int): The column pointer to start searching from
+            in_white_space (bool): Whether the column_ptr is in white space
+
+        Returns:
+            Optional[int]: The column pointer of the start of the next word, or None if there is no next word
+        """
         if column_ptr is None:
             column_ptr = 0
         for idx in range(column_ptr, len(self.text)):
@@ -27,6 +44,15 @@ class TextLine:
         return None
 
     def start_of_previous_word(self, column_ptr: int):
+        """Get the start of the previous word before column_ptr
+        if column_ptr is None, start from the end of the line
+
+        Args:
+            column_ptr (int): The column pointer to start searching from
+
+        Returns:
+            Optional[int]: The column pointer of the start of the previous word, or None if there is no previous word
+        """
         in_character_space = False
         if column_ptr is None:
             column_ptr = len(self.text) - 1
@@ -40,9 +66,24 @@ class TextLine:
         return None
 
     def copy(self):
+        """Get a copy of the TextLine"""
         return TextLine(self._text.copy())
 
     def cursor_position(self, column_ptr: int, width: int = None):
+        """Get the cursor position of column_ptr in the TextLine with width
+        The cursor position is (line_ptr, column_ptr) where line_ptr is the line number.
+        The line number is the line number that would appear if the line was bound to the
+        given width, relative only to itself.
+
+        If width is None, the cursor position is (0, column_ptr)
+
+        Args:
+            column_ptr (int): The column pointer to get the cursor position of
+            width (int, optional): The width of the TextLine. Defaults to None.
+
+        Returns:
+            Position: The cursor position of column_ptr
+        """
         if width is None:
             return Position(0, column_ptr)
         effective_lineno = column_ptr // width

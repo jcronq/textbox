@@ -3,6 +3,9 @@ from textbox.color_code import ColorCode
 
 
 class TextSegment:
+    """A segment of text with a single color pair.
+    This is the smallest unit of text in the textbox library."""
+
     def __init__(self, text: str = None, color_pair: int = ColorCode.DEFAULT):
         if text is None:
             self._text = ""

@@ -4,6 +4,9 @@ from textbox.color_code import ColorCode
 
 
 class SegmentedTextLine:
+    """A line of text that can contain multiple TextSegments with different color pairs.
+    This makes the individual, multi-colored segments of text easier to manage as a single line."""
+
     def __init__(self, text: Union[List[TextSegment], TextSegment] = None):
         if text is None:
             self._segments = []

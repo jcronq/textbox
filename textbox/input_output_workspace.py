@@ -255,9 +255,13 @@ class InputOutputWorkspace:
             logger.info("Key: Escape")
             self.enter_command_mode()
 
-        # elif key == ord("\n") or key == ord("\r"):
-        #     logger.info("Key: Enter")
-        #     self.submit()
+        elif key == ord("n") or key == ord("\r"):
+            logger.info("Key: Enter")
+            self.submit()
+
+        elif key == ord("\n") or key == ord("\r"):
+            logger.info("Key: Enter")
+            self.submit()
 
         elif key == ord("\t"):
             logger.info("Command: Tab")

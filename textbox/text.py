@@ -11,6 +11,15 @@ logger = logging.getLogger()
 
 
 class Text:
+    """An abstracted view of a block of text that can be manipulated in a variety of ways.
+    It largely adds pointer manipulation and text manipulation to the TextLine class.
+
+    Text may represent multiple lines of text if viewed with a max width. However, all
+    operations on Text are treated as if it were a single block of text.
+
+    Each TextLine represents blocks of text seperated by newlines.  Text is a collection of TextLines.
+    """
+
     def __init__(self, text: str = "", max_line_width: int = None):
         self._text_lines: List[TextLine] = []
         self._line_ptr = 0
@@ -23,6 +32,7 @@ class Text:
 
     @property
     def color_pair(self):
+        """Get the color pair of the text.  This is the default color pair for the text."""
         return self._default_color_pair
 
     @color_pair.setter
@@ -30,6 +40,7 @@ class Text:
         self._default_color_pair = value
 
     def copy(self):
+        """Create a deep copy of the text."""
         new_text = Text()
         new_text.max_line_width = self.max_line_width
         for line in self._text_lines:
@@ -38,11 +49,18 @@ class Text:
         return new_text
 
     @property
+    def char_at_cursor(self) -> str:
+        """Get the character at the cursor."""
+        return self.current_line[self.column_ptr]
+
+    @property
     def edit_mode(self):
+        """Get whether the text is in edit mode.  In edit mode, text at the cursor can be appended to."""
         return self._edit_mode
 
     @edit_mode.setter
     def edit_mode(self, new_edit_mode: bool):
+        """Set whether the text is in edit mode.  In edit mode, text at the cursor can be appended to."""
         previous_edit_mode = self._edit_mode
         self._edit_mode = new_edit_mode
         # If turning off edit mode, and we were past the length of the current line (only possible in edit mode),
@@ -52,14 +70,21 @@ class Text:
 
     @property
     def column_ptr(self):
+        """Get the column pointer of the text.
+        This is the current position of the cursor in the text.
+        This ignores viewing width.
+        """
         return self._column_ptr
 
     @property
     def line_ptr(self):
+        """Get the line pointer of the text.
+        This ignores max_line_width."""
         return self._line_ptr
 
     @property
     def max_line_width(self):
+        """Get the maximum line width of the text.  This is the maximum number of characters that can be displayed on a line."""
         return self._max_line_width
 
     @max_line_width.setter
@@ -67,7 +92,10 @@ class Text:
         self._max_line_width = value
 
     @property
-    def cursor_position(self):
+    def cursor_position(self) -> Position:
+        """Get the cursor position of the text.
+        This is the position of the cursor in the text with wrapping.
+        """
         if self._max_line_width is None:
             return Position(self._line_ptr, self.column_ptr)
         else:
@@ -81,6 +109,11 @@ class Text:
 
     @property
     def lines(self) -> List[TextLine]:
+        """This renders the text into a list of TextLines that can be printed with wrapping.
+
+        Returns:
+            List[TextLine]: A list of TextLines that can be printed.
+        """
         if self._max_line_width is None:
             return [str(text_line) for text_line in self._text_lines]
 
@@ -102,6 +135,7 @@ class Text:
 
     @property
     def text(self):
+        """Get the text of the textbox.  This is the text as a string with wrapping."""
         return "\n".join((str(text_line) for text_line in self.lines))
 
     @text.setter
