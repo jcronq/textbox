@@ -13,7 +13,11 @@ from textbox.color_code import ColorCode
 
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger("textbox")
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler("textbox.log")
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 
 class INPUT_MODE(Enum):
