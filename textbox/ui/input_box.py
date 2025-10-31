@@ -1,7 +1,7 @@
 from typing import Union
 
-from textbox.text_box import TextBox
-from textbox.text import Text
+from textbox.ui.text_box import TextBox
+from textbox.core.text import Text
 
 import logging
 
@@ -98,7 +98,7 @@ class InputBox(TextBox):
 
     @property
     def edit_mode(self):
-        self.text.edit_mode = True
+        return self.text.edit_mode
 
     @edit_mode.setter
     def edit_mode(self, value: bool):

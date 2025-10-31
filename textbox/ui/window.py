@@ -4,7 +4,7 @@ from collections import namedtuple
 import curses
 from curses import window
 
-from textbox.box_types import Position, BoundingBox, Dimensions
+from textbox.utils.box_types import Position, BoundingBox, Dimensions
 
 import logging
 
@@ -144,8 +144,6 @@ class Window:
     def resize(self, box: BoundingBox, verbose=False):
         if verbose:
             logger.info("Resizing window to %s", box)
-        self.dimensions = box.dimensions
-        self.position = box.position
         try:
             self._local_window.resize(*box.dimensions)
         except curses.error:
@@ -155,6 +153,10 @@ class Window:
             self._local_window.mvwin(*box.position)
         except curses.error:
             raise ValueError("Failed to move window to %s", box.position)
+
+        # Only update state after curses operations succeed
+        self.dimensions = box.dimensions
+        self.position = box.position
 
     def add_box(self, verbose=False):
         self._local_window.box()

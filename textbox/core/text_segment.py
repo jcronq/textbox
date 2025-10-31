@@ -1,5 +1,5 @@
 from typing import Union, List
-from textbox.color_code import ColorCode
+from textbox.utils.color_code import ColorCode
 
 
 class TextSegment:

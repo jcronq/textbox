@@ -1,12 +1,10 @@
 import asyncio
 import curses
-
-import uvloop
 import logging
 
 from textbox.input_manager import AsyncInputManager
-from textbox.window import Window
-from textbox.curses_utils import curses_wrapper
+from textbox.ui.window import Window
+from textbox.utils.curses_utils import curses_wrapper
 
 logger = logging.getLogger()
 logger.addHandler(logging.FileHandler("log.txt"))
@@ -32,5 +30,4 @@ def main(stdscr: curses.window):
 
 
 if __name__ == "__main__":
-    uvloop.install()
     main()

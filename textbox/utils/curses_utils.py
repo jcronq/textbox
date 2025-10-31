@@ -68,6 +68,6 @@ def curses_wrapper(func):
                 curses.echo()
                 curses.nocbreak()
                 curses.endwin()
-                state == 0
+                state = 0
 
     return run

@@ -1,6 +1,6 @@
 from typing import Union, List
-from textbox.text_segment import TextSegment
-from textbox.color_code import ColorCode
+from textbox.core.text_segment import TextSegment
+from textbox.utils.color_code import ColorCode
 
 
 class SegmentedTextLine:

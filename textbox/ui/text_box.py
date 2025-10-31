@@ -1,11 +1,11 @@
 from typing import List, Union
 import curses
 
-from textbox.window import Window
-from textbox.box_types import BoundingBox, Position
-from textbox.text import Text
-from textbox.text_list import TextList
-from textbox.text_segment import TextSegment
+from textbox.ui.window import Window
+from textbox.utils.box_types import BoundingBox, Position
+from textbox.core.text import Text
+from textbox.core.text_list import TextList
+from textbox.core.text_segment import TextSegment
 
 import logging
 
@@ -185,7 +185,8 @@ class TextBox:
         self.redraw()
 
     def erase(self):
-        self._text_list = []
+        self._text_list = TextList()
+        self._text_list.max_line_width = self.printable_width
         self.window.erase(verbose=self.verbose)
 
     def refresh(self):

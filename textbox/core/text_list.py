@@ -1,7 +1,7 @@
 from typing import List, Union
-from textbox.text import Text
-from textbox.box_types import LineSpan, Position
-from textbox.text_line import TextLine
+from textbox.core.text import Text
+from textbox.utils.box_types import LineSpan, Position
+from textbox.core.text_line import TextLine
 
 
 class TextList:

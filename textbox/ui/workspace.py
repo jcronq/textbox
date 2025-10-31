@@ -3,13 +3,14 @@ import curses
 from enum import Enum
 from typing import Callable
 
-from textbox.window import Window
-from textbox.input_manager import AsyncInputManager
-from textbox.input_box import InputBox
-from textbox.text_box import TextBox
-from textbox.box_types import BoundingBox, Dimensions
-from textbox.signals import WindowQuit, DelayedRedraw
-from textbox.color_code import ColorCode
+from textbox.ui.window import Window
+from textbox.ui.input_manager import AsyncInputManager
+from textbox.ui.input_box import InputBox
+from textbox.ui.text_box import TextBox
+from textbox.core.text import Text
+from textbox.utils.box_types import BoundingBox, Dimensions
+from textbox.utils.signals import WindowQuit, DelayedRedraw
+from textbox.utils.color_code import ColorCode
 
 import logging
 
@@ -59,7 +60,7 @@ class InputOutputWorkspace:
         input_manager.on_keypress = self.handle_keypress
         input_manager.redraw = self.redraw
 
-    def set_submit_callback(self, func: Callable[[str], None]):
+    def set_submit_callback(self, func: Callable[[Text], None]):
         self._submit_callback = func
 
     def set_command_callback(self, func: Callable[[str], None]):
@@ -219,7 +220,7 @@ class InputOutputWorkspace:
 
     def execute_command(self, text):
         logger.info(f"Command: {text}")
-        text.strip()
+        text = text.strip()
         command = text.split(" ")[0]
         match command:
             case "q":

@@ -1,8 +1,8 @@
 import asyncio
 import curses
 
-from .window import Window
-from .signals import WindowQuit, DelayedRedraw
+from textbox.ui.window import Window
+from textbox.utils.signals import WindowQuit, DelayedRedraw
 import logging
 
 logger = logging.getLogger()

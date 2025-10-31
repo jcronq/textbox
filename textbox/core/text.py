@@ -1,9 +1,9 @@
 from typing import List, Union
-from textbox.text_line import TextLine
-from textbox.box_types import Position
-from textbox.text_segment import TextSegment
-from textbox.segmented_text_line import SegmentedTextLine
-from textbox.color_code import ColorCode
+from textbox.core.text_line import TextLine
+from textbox.utils.box_types import Position
+from textbox.core.text_segment import TextSegment
+from textbox.core.segmented_text_line import SegmentedTextLine
+from textbox.utils.color_code import ColorCode
 import logging
 
 
@@ -188,7 +188,7 @@ class Text:
 
     @property
     def next_line(self):
-        if self._line_ptr >= len(self._text_lines):
+        if self._line_ptr >= len(self._text_lines) - 1:
             return None
         return self._text_lines[self._line_ptr + 1]
 

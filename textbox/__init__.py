@@ -2,20 +2,18 @@ import asyncio
 import curses
 from typing import Callable, Union, List
 
-import uvloop
-
-from .signals import WindowQuit
-from .window import Window
-from .curses_utils import curses_wrapper
-from .input_manager import AsyncInputManager
-from .input_output_workspace import InputOutputWorkspace
-from .input_box import InputBox
-from .text_box import TextBox
-from .text import Text
-from .text_segment import TextSegment
-from .text_line import TextLine
-from .segmented_text_line import SegmentedTextLine
-from .color_code import ColorCode
+from .utils.signals import WindowQuit
+from .ui.window import Window
+from .utils.curses_utils import curses_wrapper
+from .ui.input_manager import AsyncInputManager
+from .ui.workspace import InputOutputWorkspace
+from .ui.input_box import InputBox
+from .ui.text_box import TextBox
+from .core.text import Text
+from .core.text_segment import TextSegment
+from .core.text_line import TextLine
+from .core.segmented_text_line import SegmentedTextLine
+from .utils.color_code import ColorCode
 
 import logging
 
@@ -30,14 +28,20 @@ class App:
         self.workspace: InputOutputWorkspace = None
 
     def start(self):
-        uvloop.install()
-
         @curses_wrapper
         def main(stdscr: curses.window):
             window = Window(stdscr)
             asyncio.run(self.run(window))
 
         main()
+
+    async def astart(self):
+        @curses_wrapper
+        async def main(stdscr: curses.window):
+            window = Window(stdscr)
+            await self.run(window)
+
+        await main()
 
     async def run(self, window: Window):
         async with AsyncInputManager(window) as input_manager:
@@ -56,7 +60,7 @@ class App:
                 raise e
         self.workspace = None
 
-    def _submit_callback(self, text: str):
+    def _submit_callback(self, text: Text):
         for func in self._submit_callbacks:
             func(text)
 
@@ -67,7 +71,7 @@ class App:
         else:
             self.print(f"Unknown command: {command}")
 
-    def on_submit(self, func: Callable[[str], None]):
+    def on_submit(self, func: Callable[[Text], None]):
         self._submit_callbacks.append(func)
         return func
 

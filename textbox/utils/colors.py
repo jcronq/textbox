@@ -1,5 +1,5 @@
-from textbox.color_code import ColorCode
-from textbox.text_segment import TextSegment
+from textbox.utils.color_code import ColorCode
+from textbox.core.text_segment import TextSegment
 
 
 def dark_blue(text: str):

@@ -1,8 +1,8 @@
 from typing import Union, Optional, List
-from textbox.box_types import Position
-from textbox.text_segment import TextSegment
-from textbox.segmented_text_line import SegmentedTextLine
-from textbox.color_code import ColorCode
+from textbox.utils.box_types import Position
+from textbox.core.text_segment import TextSegment
+from textbox.core.segmented_text_line import SegmentedTextLine
+from textbox.utils.color_code import ColorCode
 
 
 class TextLine:
@@ -152,6 +152,7 @@ class TextLine:
 
         if column_ptr == len(self._text):
             self._text = self._text + ch
+            return
         self._text = (
             self._text[:column_ptr] + TextSegment(ch, self._text[column_ptr].color_pair) + self._text[column_ptr + 1 :]
         )

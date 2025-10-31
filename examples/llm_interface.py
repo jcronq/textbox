@@ -1,6 +1,6 @@
 import textbox
 from textbox import ColorCode
-from textbox.colored import dark_blue, dark_purple, light_purple
+from textbox.utils.colors import dark_blue, dark_purple, light_purple
 
 
 app = textbox.App()
