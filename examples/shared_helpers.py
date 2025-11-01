@@ -43,3 +43,16 @@ def format_message(speaker: str, text: str, color: ColorCode) -> str:
     if speaker:
         return f"{speaker}: {text}"
     return text
+
+
+def create_text_from_string(text: str, color: ColorCode):
+    """
+    Create a Text object from a multi-line string.
+    Splits on newlines and creates proper TextLine objects.
+    """
+    from textbox import Text, TextLine, TextSegment
+
+    lines = []
+    for line in text.split("\n"):
+        lines.append(TextLine([TextSegment(line, color)]))
+    return Text(lines)

@@ -11,7 +11,7 @@ import asyncio
 import random
 from textbox import App, Text, TextLine, TextSegment
 from textbox.utils.color_code import ColorCode
-from shared_helpers import COLORS, get_claude_client, has_api_key
+from shared_helpers import COLORS, get_claude_client, has_api_key, create_text_from_string
 
 # NPC definitions
 NPCS = {
@@ -261,7 +261,7 @@ Note: NPCs will occasionally do things on their own!
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
-            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            app.print(create_text_from_string(welcome_text, COLORS["system"]))
             # Show initial location
             parse_command("look", mud)
 

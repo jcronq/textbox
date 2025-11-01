@@ -11,7 +11,7 @@ import asyncio
 import re
 from textbox import App, Text, TextLine, TextSegment
 from textbox.utils.color_code import ColorCode
-from shared_helpers import COLORS, get_claude_client, has_api_key
+from shared_helpers import COLORS, get_claude_client, has_api_key, create_text_from_string
 
 # System prompt for story generation
 STORY_SYSTEM_PROMPT = """You are a creative storyteller for an interactive fiction game.
@@ -206,7 +206,7 @@ Let's begin your adventure!
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
-            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            app.print(create_text_from_string(welcome_text, COLORS["system"]))
             # Show initial scene
             if not client:
                 initial_node = get_mock_story_node(())
@@ -243,7 +243,7 @@ Let's begin your adventure!
         state.choice_history.clear()
         first_run[0] = True  # Reset first run flag
         app.print(create_colored_text("\n=== Story Restarted ===\n", COLORS["system"]))
-        app.print(create_colored_text(welcome_text, COLORS["system"]))
+        app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
         # Show initial scene
         if not client:
