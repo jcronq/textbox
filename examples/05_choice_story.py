@@ -180,8 +180,7 @@ def main():
     else:
         mode_msg = "Mock mode (no API key found - pre-written story tree)"
 
-    welcome = create_colored_text(
-        f"""=== 🎭 The Dragon's Choice 🎭 ===
+    welcome_text = f"""=== 🎭 The Dragon's Choice 🎭 ===
 
 An interactive story where every choice matters!
 
@@ -198,22 +197,21 @@ Vim Commands:
   :quit        - Exit
 
 Let's begin your adventure!
-""",
-        COLORS["system"],
-    )
-    app.print(welcome)
+"""
 
-    # Show initial scene
-    if client:
-        asyncio.run(handle_choice(1, state, app, client))
-        state.choice_history.clear()  # Reset after showing initial scene
-    else:
-        initial_node = get_mock_story_node(())
-        app.print(format_story_with_choices(initial_node["scene"], initial_node["choices"]))
+    first_run = [True]
 
     @app.on_submit
     def handle_input(user_input: str):
         """Handle player input."""
+        if first_run[0]:
+            first_run[0] = False
+            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            # Show initial scene
+            if not client:
+                initial_node = get_mock_story_node(())
+                app.print(format_story_with_choices(initial_node["scene"], initial_node["choices"]))
+
         user_input = user_input.strip()
 
         # Try to parse as number
@@ -243,7 +241,9 @@ Let's begin your adventure!
     def restart_story(cmd):
         """Restart the story."""
         state.choice_history.clear()
+        first_run[0] = True  # Reset first run flag
         app.print(create_colored_text("\n=== Story Restarted ===\n", COLORS["system"]))
+        app.print(create_colored_text(welcome_text, COLORS["system"]))
 
         # Show initial scene
         if not client:

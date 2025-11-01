@@ -239,20 +239,23 @@ def main():
     state = GameState()
 
     # Welcome message
-    welcome = create_colored_text(
-        [
-            ("=== CAVE ADVENTURE ===\n", COLORS["highlight"]),
-            ("A classic text adventure game\n\n", COLORS["system"]),
-            ("Type 'help' for commands, or start exploring!\n", COLORS["metadata"]),
-            ("Your goal: Find the treasure room!\n\n", COLORS["metadata"]),
-        ]
-    )
-    app.print(welcome)
-    app.print(look_room(state))
+    welcome_segments = [
+        ("=== CAVE ADVENTURE ===\n", COLORS["highlight"]),
+        ("A classic text adventure game\n\n", COLORS["system"]),
+        ("Type 'help' for commands, or start exploring!\n", COLORS["metadata"]),
+        ("Your goal: Find the treasure room!\n\n", COLORS["metadata"]),
+    ]
+
+    first_run = [True]
 
     @app.on_submit
     def handle_input(command: str):
         """Handle player commands."""
+        if first_run[0]:
+            first_run[0] = False
+            app.print(create_colored_text(welcome_segments))
+            app.print(look_room(state))
+
         if command.strip():
             result = parse_command(command, state, app)
             app.print(result)
@@ -271,7 +274,8 @@ def main():
         ROOMS["treasure_room"]["items"] = ["golden_crown"]
         ROOMS["forest_path"]["items"] = ["silver_key"]
 
-        app.print(welcome)
+        first_run[0] = True  # Reset first run flag
+        app.print(create_colored_text(welcome_segments))
         app.print(look_room(state))
 
     @app.command("quit", "q", help="Exit the game")

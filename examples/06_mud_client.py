@@ -229,8 +229,7 @@ def main():
     else:
         mode_msg = "Mock mode (no API key found - NPCs use canned responses)"
 
-    welcome = create_colored_text(
-        f"""=== 🏰 MUD Client - Town Square 🏰 ===
+    welcome_text = f"""=== 🏰 MUD Client - Town Square 🏰 ===
 
 A single-player MUD with AI-powered NPCs!
 
@@ -250,13 +249,9 @@ Try:
 Note: NPCs will occasionally do things on their own!
 
 :quit to exit
-""",
-        COLORS["system"],
-    )
-    app.print(welcome)
+"""
 
-    # Show initial location
-    parse_command("look", mud)
+    first_run = [True]
 
     # Start ambient events
     mud.start_ambient_events()
@@ -264,6 +259,12 @@ Note: NPCs will occasionally do things on their own!
     @app.on_submit
     def handle_input(user_input: str):
         """Handle player input."""
+        if first_run[0]:
+            first_run[0] = False
+            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            # Show initial location
+            parse_command("look", mud)
+
         if user_input.strip():
             parse_command(user_input, mud)
 

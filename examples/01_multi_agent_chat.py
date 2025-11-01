@@ -116,8 +116,7 @@ def main():
     else:
         mode_msg = "Mock mode (no API key found - using canned responses)"
 
-    welcome = create_colored_text(
-        f"""=== Multi-Agent Conversation ===
+    welcome_text = f"""=== Multi-Agent Conversation ===
 
 Two AI agents will respond to your questions in sequence.
 
@@ -129,14 +128,18 @@ Commands:
   :quit    - Exit
 
 Try asking: "What is Python?" or "Explain quantum computing"
-""",
-        COLORS["system"],
-    )
-    app.print(welcome)
+"""
+
+    first_run = [True]  # Use list to allow modification in closure
 
     @app.on_submit
     def handle_input(user_input: str):
         """Handle user input."""
+        # Print welcome on first run
+        if first_run[0]:
+            first_run[0] = False
+            app.print(create_colored_text(welcome_text, COLORS["system"]))
+
         if user_input.strip():
             # Run async handler
             asyncio.run(handle_user_query(user_input, app, client))

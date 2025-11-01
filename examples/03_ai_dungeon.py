@@ -220,8 +220,7 @@ def main():
     else:
         mode_msg = "Mock mode (no API key found - exploring pre-made dungeon)"
 
-    welcome = create_colored_text(
-        f"""=== 🏰 AI Dungeon Master 🏰 ===
+    welcome_text = f"""=== 🏰 AI Dungeon Master 🏰 ===
 
 An AI-generated fantasy adventure!
 
@@ -238,14 +237,17 @@ Vim Commands:
   :quit        - Exit
 
 Type "look" to begin your adventure!
-""",
-        COLORS["system"],
-    )
-    app.print(welcome)
+"""
+
+    first_run = [True]
 
     @app.on_submit
     def handle_input(user_input: str):
         """Handle player input."""
+        if first_run[0]:
+            first_run[0] = False
+            app.print(create_colored_text(welcome_text, COLORS["system"]))
+
         if user_input.strip().lower() == "inventory":
             if state.inventory:
                 inv_text = "Inventory: " + ", ".join(state.inventory)
@@ -282,8 +284,9 @@ Type "look" to begin your adventure!
         state.history.clear()
         state.inventory.clear()
         state.current_location = "start"
+        first_run[0] = True  # Reset first run flag
         app.print(create_colored_text("\n=== Game Restarted ===\n", COLORS["system"]))
-        app.print(welcome)
+        app.print(create_colored_text(welcome_text, COLORS["system"]))
 
     @app.command("quit", "q", help="Exit the game")
     def quit_game(cmd):

@@ -183,8 +183,7 @@ def main():
     else:
         mode_msg = "Mock mode (no API key found)"
 
-    welcome = create_colored_text(
-        f"""=== AI Agent with Tools ===
+    welcome_text = f"""=== AI Agent with Tools ===
 
 Watch the agent think and use tools to answer your questions.
 
@@ -204,14 +203,17 @@ Try asking:
   "What's the weather in San Francisco?"
   "What time is it?"
   "Calculate 15 + 27"
-""",
-        COLORS["system"],
-    )
-    app.print(welcome)
+"""
+
+    first_run = [True]
 
     @app.on_submit
     def handle_input(user_input: str):
         """Handle user input."""
+        if first_run[0]:
+            first_run[0] = False
+            app.print(create_colored_text(welcome_text, COLORS["system"]))
+
         if user_input.strip():
             asyncio.run(simulate_tool_workflow(user_input, app, client))
 
