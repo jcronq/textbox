@@ -1,4 +1,4 @@
-from typing import List, Union, Optional
+from typing import List, Union, Optional, TYPE_CHECKING
 from textbox.core.text_line import TextLine
 from textbox.utils.box_types import Position
 from textbox.core.text_segment import TextSegment
@@ -7,6 +7,8 @@ from textbox.utils.color_code import ColorCode
 from textbox.core.commands import CommandHistory
 import logging
 
+if TYPE_CHECKING:
+    from textbox.core.events import EventBus
 
 logger = logging.getLogger()
 
@@ -21,7 +23,7 @@ class Text:
     Each TextLine represents blocks of text seperated by newlines.  Text is a collection of TextLines.
     """
 
-    def __init__(self, text: str = "", max_line_width: int = None) -> None:
+    def __init__(self, text: str = "", max_line_width: int = None, event_bus: Optional["EventBus"] = None) -> None:
         self._text_lines: List[TextLine] = []
         self._line_ptr = 0
         self._column_ptr = 0
@@ -33,6 +35,7 @@ class Text:
         self._selection_start: Optional[Position] = None
         self._selection_end: Optional[Position] = None
         self.command_history = CommandHistory()
+        self._event_bus: Optional["EventBus"] = event_bus
 
         self.text = text
 
@@ -97,6 +100,21 @@ class Text:
             max_lines: Maximum lines to retain (keeps most recent)
         """
         self.max_history_lines = max_lines
+
+    def _publish_text_changed(self, change_type: str) -> None:
+        """Publish a TextChangedEvent if event bus is available.
+
+        Args:
+            change_type: Type of change ('insert', 'delete', 'replace')
+        """
+        if self._event_bus is not None:
+            from textbox.core.events import TextChangedEvent
+            event = TextChangedEvent(
+                text=self,
+                change_type=change_type,
+                position=self.cursor_position
+            )
+            self._event_bus.publish(event)
 
     def _truncate_to_limit(self) -> None:
         """Truncate text lines to max_history_lines, keeping most recent."""
@@ -471,17 +489,20 @@ class Text:
                 # We get that for free in edit mode. Need to set manually otherwise.
                 if not self.edit_mode:
                     self.increment_column_ptr()
+                self._publish_text_changed("delete")
 
             # Otherwise, delete the empty line.
             else:
                 self._text_lines.pop(self._line_ptr)
                 self._line_ptr -= 1
                 self.to_end_of_line()
+                self._publish_text_changed("delete")
 
         # Otherwise, delete the character before the cursor on the same line.
         else:
             self.current_line.backspace(self.column_ptr)
             self.decrement_column_ptr()
+            self._publish_text_changed("delete")
 
     def delete_selection(self) -> str:
         """Delete the text within the current selection.
@@ -561,6 +582,8 @@ class Text:
             self.current_line.replace_character(ch, self.column_ptr)
             self.increment_column_ptr()
 
+        self._publish_text_changed("replace")
+
     def insert_newline(self):
         if self.column_ptr == 0:
             self._text_lines.insert(self._line_ptr, TextLine())
@@ -607,6 +630,10 @@ class Text:
             else:
                 self.current_line.insert(ch, self.column_ptr)
                 self.increment_column_ptr()
+
+        # Publish text changed event after all insertions
+        if text:
+            self._publish_text_changed("insert")
 
     def erase(self):
         self._text_lines = []

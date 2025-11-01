@@ -1,12 +1,13 @@
 import curses
 from enum import Enum
-from typing import Callable
+from typing import Callable, Optional
 
 from textbox.ui.window import Window
 from textbox.ui.input_manager import AsyncInputManager
 from textbox.ui.input_box import InputBox
 from textbox.ui.text_box import TextBox
 from textbox.core.text import Text
+from textbox.core.events import EventBus
 from textbox.core.commands import (
     CommandHistory,
     DeleteCharCommand,
@@ -47,10 +48,12 @@ class INPUT_MODE(Enum):
 
 
 class InputOutputWorkspace:
-    def __init__(self, main_window: Window, input_manager: AsyncInputManager):
+    def __init__(self, main_window: Window, input_manager: AsyncInputManager, event_bus: Optional[EventBus] = None):
         self.main_window = main_window
         self.command_box_height = 1
         self.user_box_height = 5
+        self.event_bus = event_bus if event_bus is not None else EventBus()
+
         self.command_box = InputBox(
             "command_box", main_window, self.command_bounding_box, ColorCode.GREY, top_to_bottom=True
         )
@@ -93,6 +96,17 @@ class InputOutputWorkspace:
 
     def set_command_callback(self, func: Callable[[str], None]):
         self._command_callback = func
+
+    def _publish_mode_changed(self, old_mode: INPUT_MODE, new_mode: INPUT_MODE) -> None:
+        """Publish a ModeChangedEvent.
+
+        Args:
+            old_mode: Previous INPUT_MODE
+            new_mode: New INPUT_MODE
+        """
+        from textbox.core.events import ModeChangedEvent
+        event = ModeChangedEvent(old_mode=old_mode, new_mode=new_mode)
+        self.event_bus.publish(event)
 
     @property
     def command_bounding_box(self):
@@ -170,14 +184,17 @@ class InputOutputWorkspace:
         self.focused_box.refresh()
 
     def enter_replace_mode(self) -> None:
+        old_mode = self.input_mode
         curses.curs_set(1)
         self.input_mode = INPUT_MODE.REPLACE
         self.focused_box = self.user_box
         self.command_box.set_text_to_str("-- REPLACE --")
         logger.info("Input Mode: REPLACE")
         self.focused_box.refresh()
+        self._publish_mode_changed(old_mode, INPUT_MODE.REPLACE)
 
     def enter_insert_mode(self, append: bool = False):
+        old_mode = self.input_mode
         curses.curs_set(1)
         self.focused_box = self.user_box
         self.focused_box.text.edit_mode = True
@@ -188,8 +205,10 @@ class InputOutputWorkspace:
         self.command_box.set_text_to_str("-- INSERT --")
         logger.info("Input Mode: INSERT")
         self.focused_box.refresh()
+        self._publish_mode_changed(old_mode, INPUT_MODE.INSERT)
 
     def enter_command_mode(self) -> None:
+        old_mode = self.input_mode
         curses.curs_set(1)
         self.input_mode = INPUT_MODE.COMMAND
         self.command_box.set_text_to_str("")
@@ -199,8 +218,10 @@ class InputOutputWorkspace:
         self.command_box.set_text_to_str("-- COMMAND --")
         logger.info("Input Mode: COMMAND")
         self.focused_box.redraw(with_cursor=True)
+        self._publish_mode_changed(old_mode, INPUT_MODE.COMMAND)
 
     def enter_command_entry_mode(self):
+        old_mode = self.input_mode
         curses.curs_set(2)
         self.input_mode = INPUT_MODE.COMMAND_ENTRY
         self.focused_box = self.command_box
@@ -209,9 +230,11 @@ class InputOutputWorkspace:
         self.focused_box.text.increment_column_ptr()
         logger.info("Input Mode: COMMAND_ENTRY")
         self.focused_box.redraw()
+        self._publish_mode_changed(old_mode, INPUT_MODE.COMMAND_ENTRY)
 
     def enter_visual_mode(self) -> None:
         """Enter VISUAL mode (character-wise selection)."""
+        old_mode = self.input_mode
         curses.curs_set(1)
         self.input_mode = INPUT_MODE.VISUAL
         self.focused_box = self.user_box
@@ -220,9 +243,11 @@ class InputOutputWorkspace:
         self.command_box.set_text_to_str("-- VISUAL --")
         logger.info("Input Mode: VISUAL")
         self.focused_box.redraw(with_cursor=True)
+        self._publish_mode_changed(old_mode, INPUT_MODE.VISUAL)
 
     def enter_visual_line_mode(self) -> None:
         """Enter VISUAL LINE mode (line-wise selection)."""
+        old_mode = self.input_mode
         curses.curs_set(1)
         self.input_mode = INPUT_MODE.VISUAL_LINE
         self.focused_box = self.user_box
@@ -231,6 +256,7 @@ class InputOutputWorkspace:
         self.command_box.set_text_to_str("-- VISUAL LINE --")
         logger.info("Input Mode: VISUAL_LINE")
         self.focused_box.redraw(with_cursor=True)
+        self._publish_mode_changed(old_mode, INPUT_MODE.VISUAL_LINE)
 
     async def handle_keypress(self, key: int):
         if key == curses.KEY_RESIZE:
