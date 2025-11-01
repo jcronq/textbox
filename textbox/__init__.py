@@ -1,6 +1,6 @@
 import asyncio
 import curses
-from typing import Callable, Union, List
+from typing import Callable, Union, List, Optional
 
 from .utils.signals import WindowQuit
 from .ui.window import Window
@@ -14,6 +14,7 @@ from .core.text_segment import TextSegment
 from .core.text_line import TextLine
 from .core.segmented_text_line import SegmentedTextLine
 from .utils.color_code import ColorCode
+from .utils.debug import DebugOverlay, setup_debug_logging
 
 import logging
 
@@ -21,11 +22,22 @@ logger = logging.getLogger()
 
 
 class App:
-    def __init__(self) -> None:
+    def __init__(self, debug: bool = False) -> None:
+        """Initialize the App.
+
+        Args:
+            debug: Enable debug mode with overlay and enhanced logging
+        """
         self._submit_callbacks = []
         self._user_defined_commands = {"help": self._default_help}
         self._user_defined_commands_help = {"help": "Print this help message."}
         self.workspace: InputOutputWorkspace = None
+        self.debug = debug
+        self.debug_overlay: Optional[DebugOverlay] = None
+        self.debug_logger: Optional[logging.Logger] = None
+
+        if debug:
+            self._setup_debug_mode()
 
     def start(self) -> None:
         @curses_wrapper
@@ -115,6 +127,12 @@ class App:
 
     def stop(self) -> None:
         raise WindowQuit()
+
+    def _setup_debug_mode(self) -> None:
+        """Setup debug mode with overlay and enhanced logging."""
+        self.debug_overlay = DebugOverlay(enabled=True)
+        self.debug_logger = setup_debug_logging()
+        self.debug_logger.info("Debug mode enabled")
 
 
 __all__ = ["App", "Text", "InputBox", "TextBox", "TextSegment", "TextLine", "ColorCode"]

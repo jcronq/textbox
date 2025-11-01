@@ -4,13 +4,21 @@ Welcome to the Textbox library documentation! Textbox is a Python library for bu
 
 ## Table of Contents
 
-1. [Getting Started](getting-started.md)
-2. [Quick Start Guide](quick-start.md)
-3. [API Reference](api-reference.md)
-4. [Text Handling](text-handling.md)
-5. [Color Support](color-support.md)
-6. [Examples](examples.md)
-7. [Advanced Topics](advanced-topics.md)
+### Getting Started
+1. [Getting Started](getting-started.md) - Installation and first application
+2. [Quick Start Guide](quick-start.md) - Quick examples to get running
+
+### Core Features
+3. [Vim Mode Reference](vim-mode.md) - **NEW!** Complete vim keybindings, modes, and features
+4. [Event System](event-system.md) - **NEW!** Reactive programming with pub/sub events
+5. [Text Handling](text-handling.md) - Working with Text objects
+6. [Color Support](color-support.md) - Adding colors to your terminal UI
+
+### Reference
+7. [API Reference](api-reference.md) - Complete API documentation
+8. [Examples](examples.md) - Sample applications
+9. [Advanced Topics](advanced-topics.md) - Complex patterns and techniques
+10. [Troubleshooting](troubleshooting.md) - Common issues and solutions
 
 ## What is Textbox?
 
