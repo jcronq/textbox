@@ -7,6 +7,7 @@ from textbox.ui.input_manager import AsyncInputManager
 from textbox.ui.input_box import InputBox
 from textbox.ui.text_box import TextBox
 from textbox.core.text import Text
+from textbox.core.commands import CommandHistory, DeleteCharCommand
 from textbox.utils.box_types import BoundingBox
 from textbox.utils.signals import WindowQuit, DelayedRedraw
 from textbox.utils.color_code import ColorCode
@@ -60,6 +61,7 @@ class InputOutputWorkspace:
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
         self.register_manager = RegisterManager()  # Vim-style registers for copy/paste
+        self.command_history = CommandHistory()  # Undo/redo history
         self._pending_register = None  # Register name specified by " prefix
         self._last_command_key = None  # Track last key for double-key commands (dd, yy, cc, etc)
         input_manager.on_keypress = self.handle_keypress
@@ -439,7 +441,28 @@ class InputOutputWorkspace:
 
         elif key == ord("x"):
             logger.info("Command: x (delete char)")
-            self.focused_box.handle_backspace()
+            # Use command pattern for undo/redo support
+            cmd = DeleteCharCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            self.focused_box.redraw(with_cursor=True)
+
+        elif key == ord("u"):
+            logger.info("Command: u (undo)")
+            if self.command_history.undo():
+                self.focused_box.redraw(with_cursor=True)
+                self.command_box.set_text_to_str("Undone")
+            else:
+                logger.debug("Nothing to undo")
+                self.command_box.set_text_to_str("Already at oldest change")
+
+        elif key == 18:  # Ctrl-r
+            logger.info("Command: Ctrl-r (redo)")
+            if self.command_history.redo():
+                self.focused_box.redraw(with_cursor=True)
+                self.command_box.set_text_to_str("Redone")
+            else:
+                logger.debug("Nothing to redo")
+                self.command_box.set_text_to_str("Already at newest change")
 
         elif key == ord('"'):
             logger.info("Command: \" (register prefix)")

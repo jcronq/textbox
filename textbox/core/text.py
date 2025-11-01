@@ -4,6 +4,7 @@ from textbox.utils.box_types import Position
 from textbox.core.text_segment import TextSegment
 from textbox.core.segmented_text_line import SegmentedTextLine
 from textbox.utils.color_code import ColorCode
+from textbox.core.commands import CommandHistory
 import logging
 
 
@@ -31,6 +32,7 @@ class Text:
         self._is_selecting = False
         self._selection_start: Optional[Position] = None
         self._selection_end: Optional[Position] = None
+        self.command_history = CommandHistory()
 
         self.text = text
 
