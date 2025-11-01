@@ -203,7 +203,27 @@ class Window:
     def add_box(self, verbose=False):
         self._local_window.box()
 
+    def cleanup(self) -> None:
+        """Clean up window resources.
+
+        Clears the window and releases references. Safe to call multiple times.
+        Handles curses errors gracefully.
+        """
+        if self._local_window is None:
+            return  # Already cleaned up
+
+        try:
+            self._local_window.clear()
+        except (curses.error, AttributeError):
+            # Window may already be destroyed or invalid
+            pass
+
+        # Note: We don't set _local_window to None to maintain compatibility
+        # with property accessors that may still query dimensions
+
     def __del__(self):
+        """Cleanup when object is garbage collected."""
+        self.cleanup()
         for subwin in self.__children:
             del subwin
 

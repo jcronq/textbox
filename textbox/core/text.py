@@ -27,6 +27,7 @@ class Text:
         self._max_line_width = max_line_width
         self._edit_mode = False
         self._default_color_pair = None
+        self._max_history_lines: Optional[int] = None  # No limit by default
 
         self.text = text
 
@@ -67,6 +68,48 @@ class Text:
         # move cursor to end of line (ie. back one space.)
         if not new_edit_mode and previous_edit_mode and self.column_ptr >= len(self.current_line):
             self.to_end_of_line()
+
+    @property
+    def max_history_lines(self) -> Optional[int]:
+        """Get the maximum number of lines to keep in history."""
+        return self._max_history_lines
+
+    @max_history_lines.setter
+    def max_history_lines(self, value: Optional[int]) -> None:
+        """Set the maximum number of lines to keep in history.
+
+        When set, old lines will be automatically truncated to prevent
+        unbounded memory growth. Set to None for unlimited history.
+        """
+        self._max_history_lines = value
+        if value is not None:
+            self._truncate_to_limit()
+
+    def set_max_lines(self, max_lines: int) -> None:
+        """Set the maximum number of lines to keep in history.
+
+        Args:
+            max_lines: Maximum lines to retain (keeps most recent)
+        """
+        self.max_history_lines = max_lines
+
+    def _truncate_to_limit(self) -> None:
+        """Truncate text lines to max_history_lines, keeping most recent."""
+        if self._max_history_lines is None:
+            return
+
+        if len(self._text_lines) > self._max_history_lines:
+            # Keep the most recent lines
+            lines_to_remove = len(self._text_lines) - self._max_history_lines
+            self._text_lines = self._text_lines[lines_to_remove:]
+
+            # Adjust line pointer
+            self._line_ptr = max(0, self._line_ptr - lines_to_remove)
+
+            logger.debug(
+                f"Truncated text history: removed {lines_to_remove} old lines, "
+                f"kept {len(self._text_lines)} recent lines"
+            )
 
     @property
     def column_ptr(self) -> int:
@@ -406,6 +449,10 @@ class Text:
         else:
             self.break_line()
         self.to_start_of_line()
+
+        # Truncate to limit if set
+        if self._max_history_lines is not None:
+            self._truncate_to_limit()
 
     def insert(self, text: str) -> None:
         """Insert text at the current cursor position.
