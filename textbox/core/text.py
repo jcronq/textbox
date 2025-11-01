@@ -109,11 +109,8 @@ class Text:
         """
         if self._event_bus is not None:
             from textbox.core.events import TextChangedEvent
-            event = TextChangedEvent(
-                text=self,
-                change_type=change_type,
-                position=self.cursor_position
-            )
+
+            event = TextChangedEvent(text=self, change_type=change_type, position=self.cursor_position)
             self._event_bus.publish(event)
 
     def _truncate_to_limit(self) -> None:
@@ -223,7 +220,7 @@ class Text:
 
         if start.lineno == end.lineno:
             # Same line selection
-            return str(self._text_lines[start.lineno])[start.colno:end.colno]
+            return str(self._text_lines[start.lineno])[start.colno : end.colno]
         else:
             # Multi-line selection
             result = []
@@ -232,9 +229,9 @@ class Text:
                     break
                 line = str(self._text_lines[line_idx])
                 if line_idx == start.lineno:
-                    result.append(line[start.colno:])
+                    result.append(line[start.colno :])
                 elif line_idx == end.lineno:
-                    result.append(line[:end.colno])
+                    result.append(line[: end.colno])
                 else:
                     result.append(line)
             return "\n".join(result)
@@ -406,8 +403,7 @@ class Text:
                 return
             else:
                 raise ValueError(
-                    f"Text is empty. Only position (0, 0) is valid. "
-                    f"Insert text first to create lines."
+                    f"Text is empty. Only position (0, 0) is valid. " f"Insert text first to create lines."
                 )
 
         if position.lineno >= len(self._text_lines):
@@ -420,8 +416,7 @@ class Text:
         # Validate column number
         if position.colno < 0:
             raise ValueError(
-                f"Column {position.colno} cannot be negative. "
-                f"Use Text.to_start_of_line() to move to column 0."
+                f"Column {position.colno} cannot be negative. " f"Use Text.to_start_of_line() to move to column 0."
             )
 
         # Column validation depends on the target line
@@ -430,8 +425,7 @@ class Text:
 
         if position.colno > max_col:
             logger.warning(
-                f"Column {position.colno} exceeds line length {len(target_line)}. "
-                f"Clamping to {max_col}."
+                f"Column {position.colno} exceeds line length {len(target_line)}. " f"Clamping to {max_col}."
             )
             self._line_ptr = position.lineno
             self._column_ptr = max_col
@@ -527,8 +521,8 @@ class Text:
         if start.lineno == end.lineno:
             # Same line selection
             line = self._text_lines[start.lineno]
-            before = str(line)[:start.colno]
-            after = str(line)[end.colno:]
+            before = str(line)[: start.colno]
+            after = str(line)[end.colno :]
             # Replace the line with before + after
             self._text_lines[start.lineno] = TextLine(before + after)
             # Position cursor at start of deletion
@@ -537,14 +531,14 @@ class Text:
         else:
             # Multi-line selection
             # Keep the part before selection on first line and after selection on last line
-            first_line = str(self._text_lines[start.lineno])[:start.colno]
-            last_line = str(self._text_lines[end.lineno])[end.colno:]
+            first_line = str(self._text_lines[start.lineno])[: start.colno]
+            last_line = str(self._text_lines[end.lineno])[end.colno :]
             # Combine them
             new_line = TextLine(first_line + last_line)
             # Replace first line with combined line
             self._text_lines[start.lineno] = new_line
             # Delete lines in between (including last line)
-            del self._text_lines[start.lineno + 1:end.lineno + 1]
+            del self._text_lines[start.lineno + 1 : end.lineno + 1]
             # Position cursor at start of deletion
             self._line_ptr = start.lineno
             self._column_ptr = start.colno
@@ -610,19 +604,13 @@ class Text:
             RuntimeError: If not in edit mode
         """
         if not isinstance(text, str):
-            raise TypeError(
-                f"Expected str, got {type(text).__name__}. "
-                f"Use str() to convert to string first."
-            )
+            raise TypeError(f"Expected str, got {type(text).__name__}. " f"Use str() to convert to string first.")
 
         if len(self._text_lines) == 0:
             self._text_lines.append(TextLine())
 
         if not self._edit_mode:
-            raise RuntimeError(
-                "Cannot insert text when not in edit mode. "
-                "Set edit_mode=True before inserting."
-            )
+            raise RuntimeError("Cannot insert text when not in edit mode. " "Set edit_mode=True before inserting.")
 
         for ch in text:
             if ch == "\n":
@@ -809,10 +797,10 @@ class Text:
             return ""
 
         current_line = self.current_line
-        deleted_text = str(current_line)[self.column_ptr:]
+        deleted_text = str(current_line)[self.column_ptr :]
 
         # Keep only the text before cursor
-        new_line_text = str(current_line)[:self.column_ptr]
+        new_line_text = str(current_line)[: self.column_ptr]
         self._text_lines[self._line_ptr] = TextLine(new_line_text)
 
         # Adjust cursor if needed (shouldn't be necessary, but be safe)

@@ -78,7 +78,7 @@ class CommandHistory:
 class InsertTextCommand(Command):
     """Command to insert text at cursor."""
 
-    def __init__(self, text: 'Text', inserted_text: str):
+    def __init__(self, text: "Text", inserted_text: str):
         self.text = text
         self.inserted_text = inserted_text
         self.position: Tuple[int, int] = text.cursor_position  # Save position before insert
@@ -97,16 +97,16 @@ class InsertTextCommand(Command):
 class DeleteCharCommand(Command):
     """Command to delete character(s)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.position: Tuple[int, int] = text.cursor_position
         # Save character about to be deleted
         # backspace deletes the character before the cursor
         if text.column_ptr > 0:
             line_text = text.current_line.text
-            self.deleted_char = line_text[text.column_ptr - 1] if text.column_ptr <= len(line_text) else ''
+            self.deleted_char = line_text[text.column_ptr - 1] if text.column_ptr <= len(line_text) else ""
         else:
-            self.deleted_char = ''
+            self.deleted_char = ""
 
     def execute(self) -> None:
         """Delete the character."""
@@ -121,7 +121,7 @@ class DeleteCharCommand(Command):
 class DeleteLineCommand(Command):
     """Command to delete an entire line (dd operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.line_index = text.line_ptr
         self.deleted_line = str(text.current_line)
@@ -133,6 +133,7 @@ class DeleteLineCommand(Command):
     def undo(self) -> None:
         """Restore the deleted line."""
         from textbox.core.text_line import TextLine
+
         self.text._text_lines.insert(self.line_index, TextLine(self.deleted_line))
         self.text._line_ptr = self.line_index
 
@@ -140,7 +141,7 @@ class DeleteLineCommand(Command):
 class InsertLineBelowCommand(Command):
     """Command to insert a line below current line (o operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.original_line_ptr = text.line_ptr
 
@@ -159,7 +160,7 @@ class InsertLineBelowCommand(Command):
 class InsertLineAboveCommand(Command):
     """Command to insert a line above current line (O operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.original_line_ptr = text.line_ptr
 
@@ -178,7 +179,7 @@ class InsertLineAboveCommand(Command):
 class DeleteToEndOfLineCommand(Command):
     """Command to delete from cursor to end of line (D operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.line_ptr = text.line_ptr
         self.column_ptr = text.column_ptr
@@ -206,7 +207,7 @@ class DeleteToEndOfLineCommand(Command):
 class ChangeToEndOfLineCommand(Command):
     """Command to change from cursor to end of line (C operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.line_ptr = text.line_ptr
         self.column_ptr = text.column_ptr
@@ -236,7 +237,7 @@ class ChangeToEndOfLineCommand(Command):
 class JoinLinesCommand(Command):
     """Command to join current line with next line (J operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         self.line_ptr = text.line_ptr
         # Save current line and next line before joining
@@ -255,6 +256,7 @@ class JoinLinesCommand(Command):
         """Split the joined lines back."""
         if self.next_line is not None:
             from textbox.core.text_line import TextLine
+
             # Restore original lines
             self.text._text_lines[self.line_ptr] = TextLine(self.current_line)
             self.text._text_lines.insert(self.line_ptr + 1, TextLine(self.next_line))
@@ -263,7 +265,7 @@ class JoinLinesCommand(Command):
 class PasteAfterCommand(Command):
     """Command to paste text after cursor (p operation)."""
 
-    def __init__(self, text: 'Text', content: str):
+    def __init__(self, text: "Text", content: str):
         self.text = text
         self.content = content
         self.original_line_ptr = text.line_ptr
@@ -285,8 +287,9 @@ class PasteAfterCommand(Command):
             line_text = line.text
             delete_pos = self.original_column_ptr + 1
             if delete_pos < len(line_text):
-                new_text = line_text[:delete_pos] + line_text[delete_pos + 1:]
+                new_text = line_text[:delete_pos] + line_text[delete_pos + 1 :]
                 from textbox.core.text_line import TextLine
+
                 self.text._text_lines[self.text._line_ptr] = TextLine(new_text)
         # Restore column pointer
         self.text._column_ptr = self.original_column_ptr
@@ -295,7 +298,7 @@ class PasteAfterCommand(Command):
 class PasteBeforeCommand(Command):
     """Command to paste text before cursor (P operation)."""
 
-    def __init__(self, text: 'Text', content: str):
+    def __init__(self, text: "Text", content: str):
         self.text = text
         self.content = content
         self.original_line_ptr = text.line_ptr
@@ -318,8 +321,9 @@ class PasteBeforeCommand(Command):
             line_text = line.text
             delete_pos = self.original_column_ptr
             if delete_pos < len(line_text):
-                new_text = line_text[:delete_pos] + line_text[delete_pos + 1:]
+                new_text = line_text[:delete_pos] + line_text[delete_pos + 1 :]
                 from textbox.core.text_line import TextLine
+
                 self.text._text_lines[self.text._line_ptr] = TextLine(new_text)
         # Restore column pointer
         self.text._column_ptr = self.original_column_ptr
@@ -328,7 +332,7 @@ class PasteBeforeCommand(Command):
 class VisualDeleteCommand(Command):
     """Command to delete visual selection (visual mode d operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         # Save selection state
         self.selection_start = text.selection_start
@@ -358,7 +362,7 @@ class VisualDeleteCommand(Command):
 class VisualChangeCommand(Command):
     """Command to change visual selection (visual mode c operation)."""
 
-    def __init__(self, text: 'Text'):
+    def __init__(self, text: "Text"):
         self.text = text
         # Save selection state
         self.selection_start = text.selection_start

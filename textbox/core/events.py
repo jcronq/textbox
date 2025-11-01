@@ -151,7 +151,4 @@ class EventBus:
                 try:
                     handler(event)
                 except Exception as e:
-                    logger.error(
-                        f"Event handler error in {handler.__name__}: {e}",
-                        exc_info=True
-                    )
+                    logger.error(f"Event handler error in {handler.__name__}: {e}", exc_info=True)

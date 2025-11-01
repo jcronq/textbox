@@ -50,7 +50,7 @@ class RegisterManager:
         Raises:
             ValueError: If register name is invalid
         """
-        valid_chars = set("abcdefghijklmnopqrstuvwxyz0123456789\"")
+        valid_chars = set('abcdefghijklmnopqrstuvwxyz0123456789"')
         if name not in valid_chars:
             raise ValueError(f"Invalid register name: {name!r}")
 
