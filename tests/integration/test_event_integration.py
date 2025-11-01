@@ -295,3 +295,69 @@ class TestEventSystemUseCases:
 
         workspace.enter_command_mode()
         assert mode_log[-1] == {'from': 'VISUAL', 'to': 'COMMAND'}
+
+    @pytest.mark.asyncio
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
+    @patch('textbox.ui.workspace.curses')
+    async def test_command_execution_publishes_event(
+        self, mock_workspace_curses, mock_textbox_curses, mock_window_curses
+    ):
+        """Test that executing commands publishes CommandExecutedEvent."""
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
+        mock_input_mgr = MagicMock(spec=AsyncInputManager)
+        event_bus = EventBus()
+
+        workspace = InputOutputWorkspace(mock_window, mock_input_mgr, event_bus=event_bus)
+
+        from textbox.core.events import CommandExecutedEvent
+        events = []
+
+        def handler(event):
+            events.append(event)
+
+        event_bus.subscribe(CommandExecutedEvent, handler)
+
+        # Execute a command
+        workspace.execute_command("help")
+
+        assert len(events) == 1
+        assert events[0].command_name == "help"
+        assert events[0].args == "help"
+
+    def test_text_events_propagate_from_workspace_boxes(self):
+        """Test that text events from user_box/output_box are published."""
+        from textbox.core.events import TextChangedEvent
+        from textbox.ui.window import Window
+        from textbox.ui.input_manager import AsyncInputManager
+        from textbox.utils.box_types import BoundingBox, Dimensions
+
+        # Create a real Window for this test
+        with patch('textbox.ui.window.curses') as mock_curses, \
+             patch('textbox.ui.text_box.curses') as mock_tb_curses, \
+             patch('textbox.ui.workspace.curses') as mock_ws_curses:
+
+            setup_curses_mocks(mock_curses, mock_tb_curses, mock_ws_curses)
+
+            mock_window = create_mock_window()
+            mock_input_mgr = MagicMock(spec=AsyncInputManager)
+            event_bus = EventBus()
+
+            workspace = InputOutputWorkspace(mock_window, mock_input_mgr, event_bus=event_bus)
+
+            events = []
+
+            def handler(event):
+                events.append(event)
+
+            event_bus.subscribe(TextChangedEvent, handler)
+
+            # Insert text in user_box
+            workspace.user_box.text.edit_mode = True
+            workspace.user_box.text.insert("test")
+
+            # Should have published event
+            assert len(events) == 1
+            assert events[0].change_type == "insert"

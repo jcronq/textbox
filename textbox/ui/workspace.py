@@ -55,13 +55,15 @@ class InputOutputWorkspace:
         self.event_bus = event_bus if event_bus is not None else EventBus()
 
         self.command_box = InputBox(
-            "command_box", main_window, self.command_bounding_box, ColorCode.GREY, top_to_bottom=True
+            "command_box", main_window, self.command_bounding_box, ColorCode.GREY,
+            top_to_bottom=True, event_bus=self.event_bus
         )
 
         logger.info("command_box: %s", self.command_box)
 
         self.user_box = InputBox(
-            "user_box", main_window, self.user_bounding_box, ColorCode.WHITE, top_to_bottom=True, has_box=True
+            "user_box", main_window, self.user_bounding_box, ColorCode.WHITE,
+            top_to_bottom=True, has_box=True, event_bus=self.event_bus
         )
         self.output_box = TextBox(
             "output_box",
@@ -70,6 +72,7 @@ class InputOutputWorkspace:
             ColorCode.OUPTUT_TEXT,
             top_to_bottom=False,
             has_box=True,
+            event_bus=self.event_bus,
         )
         self._submit_callback = None
         self._command_callback = None
@@ -304,6 +307,12 @@ class InputOutputWorkspace:
         logger.info(f"Command: {text}")
         text = text.strip()
         command = text.split(" ")[0]
+
+        # Publish command executed event
+        from textbox.core.events import CommandExecutedEvent
+        event = CommandExecutedEvent(command_name=command, args=text)
+        self.event_bus.publish(event)
+
         match command:
             case "q":
                 raise WindowQuit()

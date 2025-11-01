@@ -1,14 +1,18 @@
-from typing import List, Union, Optional
+from typing import List, Union, Optional, TYPE_CHECKING
 from textbox.core.text import Text
 from textbox.utils.box_types import LineSpan, Position
 from textbox.core.text_line import TextLine
 
+if TYPE_CHECKING:
+    from textbox.core.events import EventBus
+
 
 class TextList:
-    def __init__(self, max_line_width: int = None) -> None:
+    def __init__(self, max_line_width: int = None, event_bus: Optional["EventBus"] = None) -> None:
         self._texts: List[Text] = []
         self._text_ptr = 0
         self._max_line_width = max_line_width
+        self._event_bus: Optional["EventBus"] = event_bus
 
     def set_first_text(self, text: Text) -> None:
         self._texts[0] = text
@@ -46,7 +50,7 @@ class TextList:
             raise IndexError(f"TextList has no text at index {self._text_ptr}.")
 
         if self._text_ptr == len(self._texts):
-            self._texts.append(Text("", max_line_width=self._max_line_width))
+            self._texts.append(Text("", max_line_width=self._max_line_width, event_bus=self._event_bus))
         return self._texts[self._text_ptr]
 
     @property

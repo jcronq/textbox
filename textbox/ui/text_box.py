@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional, TYPE_CHECKING
 import curses
 
 from textbox.ui.window import Window
@@ -8,6 +8,9 @@ from textbox.core.text_list import TextList
 from textbox.core.text_segment import TextSegment
 
 import logging
+
+if TYPE_CHECKING:
+    from textbox.core.events import EventBus
 
 logger = logging.getLogger()
 
@@ -21,6 +24,7 @@ class TextBox:
         color_pair: int = 0,
         top_to_bottom: bool = True,
         has_box: bool = False,
+        event_bus: Optional["EventBus"] = None,
     ):
         self.name = name
         self._has_box = has_box
@@ -31,7 +35,7 @@ class TextBox:
 
         self.color_pair = color_pair
 
-        self._text_list: TextList = TextList()
+        self._text_list: TextList = TextList(event_bus=event_bus)
         self._first_lineno_in_window = 0
         self._box_visible = False
         self._text_list.max_line_width = self.printable_width
