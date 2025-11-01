@@ -30,7 +30,11 @@ def quit(command: str):
 
 @app.command("load")
 def load(command: str):
-    character = command.split(" ")[1]
+    parts = command.split(" ")
+    if len(parts) < 2:
+        app.print("Usage: load <character_name>")
+        return
+    character = parts[1]
     app.print(f"Loading {character}...")
 
 

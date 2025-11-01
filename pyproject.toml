@@ -7,7 +7,7 @@ name = "textbox"
 version = "0.1.0"
 description = "Python library for building rich terminal user interfaces with curses"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Jason Cronquist"},
