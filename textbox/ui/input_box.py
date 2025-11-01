@@ -67,7 +67,9 @@ class InputHistory:
         return len(self._history)
 
     def __repr__(self):
-        return f"InputHistory(len={len(self._history)}, ptr={self._history_ptr}, memory={str(self._short_term_memory)})"
+        return (
+            f"InputHistory(len={len(self._history)}, ptr={self._history_ptr}, memory={str(self._short_term_memory)})"
+        )
 
 
 class InputBox(TextBox):

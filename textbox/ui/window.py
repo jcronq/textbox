@@ -168,16 +168,10 @@ class Window:
             )
 
         if box.height < 0:
-            raise ValueError(
-                f"Window height cannot be negative (got {box.height}). "
-                f"Current height: {self.height}"
-            )
+            raise ValueError(f"Window height cannot be negative (got {box.height}). " f"Current height: {self.height}")
 
         if box.width < 0:
-            raise ValueError(
-                f"Window width cannot be negative (got {box.width}). "
-                f"Current width: {self.width}"
-            )
+            raise ValueError(f"Window width cannot be negative (got {box.width}). " f"Current width: {self.width}")
 
         if verbose:
             logger.info("Resizing window from %dx%d to %s", self.height, self.width, box)
@@ -185,16 +179,12 @@ class Window:
         try:
             self._local_window.resize(*box.dimensions)
         except curses.error as e:
-            raise ValueError(
-                f"Failed to resize window to {box.dimensions}: {e}"
-            )
+            raise ValueError(f"Failed to resize window to {box.dimensions}: {e}")
 
         try:
             self._local_window.mvwin(*box.position)
         except curses.error as e:
-            raise ValueError(
-                f"Failed to move window to {box.position}: {e}"
-            )
+            raise ValueError(f"Failed to move window to {box.position}: {e}")
 
         # Only update state after curses operations succeed
         self.dimensions = box.dimensions
@@ -209,7 +199,7 @@ class Window:
         Clears the window and releases references. Safe to call multiple times.
         Handles curses errors gracefully.
         """
-        if not hasattr(self, '_local_window') or self._local_window is None:
+        if not hasattr(self, "_local_window") or self._local_window is None:
             return  # Already cleaned up or never initialized
 
         try:
@@ -224,7 +214,7 @@ class Window:
     def __del__(self):
         """Cleanup when object is garbage collected."""
         self.cleanup()
-        if hasattr(self, '_Window__children'):
+        if hasattr(self, "_Window__children"):
             for subwin in self.__children:
                 del subwin
 

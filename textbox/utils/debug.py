@@ -96,24 +96,24 @@ class DebugOverlay:
             return {}
 
         info = {
-            'Mode': str(self.state.get('mode', 'N/A')),
-            'Cursor': str(self.state.get('cursor', 'N/A')),
-            'Focus': str(self.state.get('focused', 'N/A')),
-            'Text Len': str(self.state.get('text_length', 'N/A')),
-            'Selection': str(self.state.get('selection', 'None')),
-            'Keypresses': str(self.stats.keypress_count),
-            'Mode Changes': str(self.stats.mode_changes),
-            'Text Changes': str(self.stats.text_changes),
-            'Commands': str(self.stats.commands_executed),
-            'Undo': str(self.stats.undo_count),
-            'Redo': str(self.stats.redo_count),
-            'Uptime': f"{self.stats.uptime:.1f}s",
+            "Mode": str(self.state.get("mode", "N/A")),
+            "Cursor": str(self.state.get("cursor", "N/A")),
+            "Focus": str(self.state.get("focused", "N/A")),
+            "Text Len": str(self.state.get("text_length", "N/A")),
+            "Selection": str(self.state.get("selection", "None")),
+            "Keypresses": str(self.stats.keypress_count),
+            "Mode Changes": str(self.stats.mode_changes),
+            "Text Changes": str(self.stats.text_changes),
+            "Commands": str(self.stats.commands_executed),
+            "Undo": str(self.stats.undo_count),
+            "Redo": str(self.stats.redo_count),
+            "Uptime": f"{self.stats.uptime:.1f}s",
         }
 
         if self.stats.last_keypress:
-            info['Last Key'] = self.stats.last_keypress
+            info["Last Key"] = self.stats.last_keypress
         if self.stats.last_command:
-            info['Last Cmd'] = self.stats.last_command
+            info["Last Cmd"] = self.stats.last_command
 
         return info
 
@@ -133,8 +133,7 @@ class DebugOverlay:
         return "\n".join(lines)
 
 
-def setup_debug_logging(filename: str = "textbox_debug.log",
-                       level: int = logging.DEBUG) -> logging.Logger:
+def setup_debug_logging(filename: str = "textbox_debug.log", level: int = logging.DEBUG) -> logging.Logger:
     """Setup enhanced debug logging.
 
     Args:
@@ -152,14 +151,13 @@ def setup_debug_logging(filename: str = "textbox_debug.log",
     logger.setLevel(level)
 
     # File handler
-    fh = logging.FileHandler(filename, mode='w')
+    fh = logging.FileHandler(filename, mode="w")
     fh.setLevel(level)
 
     # Detailed formatter
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - '
-        '%(filename)s:%(lineno)d - %(funcName)s() - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(asctime)s - %(name)s - %(levelname)s - " "%(filename)s:%(lineno)d - %(funcName)s() - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     fh.setFormatter(formatter)
 
@@ -259,11 +257,11 @@ class PerformanceTimer:
                 continue
 
             results[operation] = {
-                'count': len(times),
-                'total': sum(times),
-                'avg': sum(times) / len(times),
-                'min': min(times),
-                'max': max(times),
+                "count": len(times),
+                "total": sum(times),
+                "avg": sum(times) / len(times),
+                "min": min(times),
+                "max": max(times),
             }
 
         return results
@@ -304,7 +302,7 @@ def format_bytes(size: int) -> str:
         >>> format_bytes(1536)
         '1.5 KB'
     """
-    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
         if size < 1024.0:
             return f"{size:.1f} {unit}"
         size /= 1024.0
@@ -327,10 +325,10 @@ def get_text_stats(text: Any) -> Dict[str, Any]:
     text_str = str(text)
 
     return {
-        'lines': len(text._text_lines) if hasattr(text, '_text_lines') else 0,
-        'characters': len(text_str),
-        'words': len(text_str.split()),
-        'cursor_line': text.line_ptr if hasattr(text, 'line_ptr') else 0,
-        'cursor_column': text.column_ptr if hasattr(text, 'column_ptr') else 0,
-        'edit_mode': text.edit_mode if hasattr(text, 'edit_mode') else False,
+        "lines": len(text._text_lines) if hasattr(text, "_text_lines") else 0,
+        "characters": len(text_str),
+        "words": len(text_str.split()),
+        "cursor_line": text.line_ptr if hasattr(text, "line_ptr") else 0,
+        "cursor_column": text.column_ptr if hasattr(text, "column_ptr") else 0,
+        "edit_mode": text.edit_mode if hasattr(text, "edit_mode") else False,
     }

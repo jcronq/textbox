@@ -55,15 +55,24 @@ class InputOutputWorkspace:
         self.event_bus = event_bus if event_bus is not None else EventBus()
 
         self.command_box = InputBox(
-            "command_box", main_window, self.command_bounding_box, ColorCode.GREY,
-            top_to_bottom=True, event_bus=self.event_bus
+            "command_box",
+            main_window,
+            self.command_bounding_box,
+            ColorCode.GREY,
+            top_to_bottom=True,
+            event_bus=self.event_bus,
         )
 
         logger.info("command_box: %s", self.command_box)
 
         self.user_box = InputBox(
-            "user_box", main_window, self.user_bounding_box, ColorCode.WHITE,
-            top_to_bottom=True, has_box=True, event_bus=self.event_bus
+            "user_box",
+            main_window,
+            self.user_bounding_box,
+            ColorCode.WHITE,
+            top_to_bottom=True,
+            has_box=True,
+            event_bus=self.event_bus,
         )
         self.output_box = TextBox(
             "output_box",
@@ -108,6 +117,7 @@ class InputOutputWorkspace:
             new_mode: New INPUT_MODE
         """
         from textbox.core.events import ModeChangedEvent
+
         event = ModeChangedEvent(old_mode=old_mode, new_mode=new_mode)
         self.event_bus.publish(event)
 
@@ -310,6 +320,7 @@ class InputOutputWorkspace:
 
         # Publish command executed event
         from textbox.core.events import CommandExecutedEvent
+
         event = CommandExecutedEvent(command_name=command, args=text)
         self.event_bus.publish(event)
 
@@ -355,7 +366,9 @@ class InputOutputWorkspace:
             logger.info("Command: Tab")
             self.cycle_focus()
 
-        elif key == curses.KEY_BACKSPACE or key == 127:  # 127 is the delete key.  Macs use delete instead of backspace.
+        elif (
+            key == curses.KEY_BACKSPACE or key == 127
+        ):  # 127 is the delete key.  Macs use delete instead of backspace.
             self.focused_box.handle_backspace()
 
         else:
@@ -372,7 +385,7 @@ class InputOutputWorkspace:
         if self._pending_register is True:
             # The previous key was ", this key is the register name
             register_char = chr(key)
-            if register_char in "abcdefghijklmnopqrstuvwxyz0123456789\"":
+            if register_char in 'abcdefghijklmnopqrstuvwxyz0123456789"':
                 self._pending_register = register_char
                 logger.info(f"Register selected: {register_char}")
                 return
@@ -535,7 +548,7 @@ class InputOutputWorkspace:
                 self.command_box.set_text_to_str("Already at newest change")
 
         elif key == ord('"'):
-            logger.info("Command: \" (register prefix)")
+            logger.info('Command: " (register prefix)')
             self._pending_register = True  # Next key will be register name
 
         elif key == ord("y"):
@@ -552,7 +565,9 @@ class InputOutputWorkspace:
 
         elif key == ord("p"):
             logger.info("Command: p (paste after)")
-            register = self._pending_register if self._pending_register and self._pending_register is not True else None
+            register = (
+                self._pending_register if self._pending_register and self._pending_register is not True else None
+            )
             content = self.register_manager.get_register(register if register else '"')
             if content:
                 # Use Command pattern for undo/redo support
@@ -563,7 +578,9 @@ class InputOutputWorkspace:
 
         elif key == ord("P"):
             logger.info("Command: P (paste before)")
-            register = self._pending_register if self._pending_register and self._pending_register is not True else None
+            register = (
+                self._pending_register if self._pending_register and self._pending_register is not True else None
+            )
             content = self.register_manager.get_register(register if register else '"')
             if content:
                 # Use Command pattern for undo/redo support
@@ -823,7 +840,7 @@ class InputOutputWorkspace:
 
     def search_entry_handler(self, key: int):
         """Handle keypresses in SEARCH_ENTRY mode."""
-        if key == ord('\n') or key == ord('\r'):
+        if key == ord("\n") or key == ord("\r"):
             # Execute search
             logger.info("Executing search: %s", self._search_pattern)
             self.execute_search()
@@ -871,7 +888,9 @@ class InputOutputWorkspace:
         # Then set the message in command box
         self.command_box.text.erase()
         if found:
-            self.command_box.set_text_to_str(f"/{self._search_pattern}" if self._search_forward else f"?{self._search_pattern}")
+            self.command_box.set_text_to_str(
+                f"/{self._search_pattern}" if self._search_forward else f"?{self._search_pattern}"
+            )
         else:
             self.command_box.set_text_to_str(f"Pattern not found: {self._search_pattern}")
 
