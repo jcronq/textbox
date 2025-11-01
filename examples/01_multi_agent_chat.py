@@ -133,16 +133,18 @@ Try asking: "What is Python?" or "Explain quantum computing"
     first_run = [True]  # Use list to allow modification in closure
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle user input."""
         # Print welcome on first run
         if first_run[0]:
             first_run[0] = False
             app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
-        if user_input.strip():
-            # Run async handler
-            asyncio.run(handle_user_query(user_input, app, client))
+        # Convert Text to string
+        input_str = user_input.text.strip()
+        if input_str:
+            # Schedule async handler
+            asyncio.create_task(handle_user_query(input_str, app, client))
 
     @app.command("clear", help="Clear conversation")
     def clear_conversation(cmd):

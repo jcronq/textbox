@@ -242,20 +242,21 @@ Type "look" to begin your adventure!
     first_run = [True]
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
             app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
-        if user_input.strip().lower() == "inventory":
+        input_str = user_input.text.strip()
+        if input_str.lower() == "inventory":
             if state.inventory:
                 inv_text = "Inventory: " + ", ".join(state.inventory)
             else:
                 inv_text = "Inventory: Empty"
             app.print(create_colored_text(f"\n{inv_text}\n", COLORS["highlight"]))
-        elif user_input.strip():
-            asyncio.run(handle_action(user_input, state, app, client))
+        elif input_str:
+            asyncio.create_task(handle_action(input_str, state, app, client))
 
     @app.command("back", help="Undo last action")
     def undo_action(cmd):

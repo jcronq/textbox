@@ -202,7 +202,7 @@ Let's begin your adventure!
     first_run = [True]
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
@@ -212,12 +212,12 @@ Let's begin your adventure!
                 initial_node = get_mock_story_node(())
                 app.print(format_story_with_choices(initial_node["scene"], initial_node["choices"]))
 
-        user_input = user_input.strip()
+        input_str = user_input.text.strip()
 
         # Try to parse as number
         try:
-            choice = int(user_input)
-            asyncio.run(handle_choice(choice, state, app, client))
+            choice = int(input_str)
+            asyncio.create_task(handle_choice(choice, state, app, client))
         except ValueError:
             app.print(create_colored_text("\nPlease enter a number (1, 2, or 3).\n", COLORS["error"]))
 

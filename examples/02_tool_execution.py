@@ -208,14 +208,15 @@ Try asking:
     first_run = [True]
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle user input."""
         if first_run[0]:
             first_run[0] = False
             app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
-        if user_input.strip():
-            asyncio.run(simulate_tool_workflow(user_input, app, client))
+        input_str = user_input.text.strip()
+        if input_str:
+            asyncio.create_task(simulate_tool_workflow(input_str, app, client))
 
     @app.command("tools", help="List available tools")
     def list_tools(cmd):

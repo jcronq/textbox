@@ -257,7 +257,7 @@ Note: NPCs will occasionally do things on their own!
     mud.start_ambient_events()
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
@@ -265,8 +265,9 @@ Note: NPCs will occasionally do things on their own!
             # Show initial location
             parse_command("look", mud)
 
-        if user_input.strip():
-            parse_command(user_input, mud)
+        input_str = user_input.text.strip()
+        if input_str:
+            parse_command(input_str, mud)
 
     @app.command("quit", "q", help="Exit the game")
     def quit_game(cmd):
