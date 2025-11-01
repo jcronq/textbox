@@ -135,4 +135,6 @@ class App:
         self.debug_logger.info("Debug mode enabled")
 
 
-__all__ = ["App", "Text", "InputBox", "TextBox", "TextSegment", "TextLine", "ColorCode"]
+from .version import __version__
+
+__all__ = ["App", "Text", "InputBox", "TextBox", "TextSegment", "TextLine", "ColorCode", "__version__"]

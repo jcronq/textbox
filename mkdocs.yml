@@ -1,0 +1,93 @@
+site_name: Textbox
+site_description: A powerful, vim-inspired terminal UI library for Python
+site_author: Jason Cronquist
+site_url: https://jasoncronquist.github.io/textbox/
+
+repo_name: jasoncronquist/textbox
+repo_url: https://github.com/jasoncronquist/textbox
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started.md
+    - Quick Start: quick-start.md
+  - Core Features:
+    - Vim Mode: vim-mode.md
+    - Event System: event-system.md
+    - Text Handling: text-handling.md
+    - Color Support: color-support.md
+  - Guides:
+    - Examples: examples.md
+    - Advanced Topics: advanced-topics.md
+    - Troubleshooting: troubleshooting.md
+  - API Reference: api-reference.md
+  - Development:
+    - Architecture: architecture.md
+    - Contributing: ../CONTRIBUTING.md
+    - Deployment: DEPLOYMENT_PLAN.md
+
+plugins:
+  - search:
+      lang: en
+  - minify:
+      minify_html: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jasoncronquist/textbox
+  version:
+    provider: mike
