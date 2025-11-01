@@ -32,6 +32,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - DO NOT create new progress reports in `docs/progress-reports/` (archived)
 - DO NOT create standalone reports (consolidate into existing documents)
 
+## Development Process - TDD (Test-Driven Development)
+
+**CRITICAL**: Always use TDD principles when developing new features or improvements:
+
+### TDD Workflow (Red-Green-Refactor)
+1. **Write Tests First** (Red)
+   - Write tests that describe the intended behavior
+   - Tests should fail initially (red)
+   - Tests document what the code should do
+
+2. **Implement Code** (Green)
+   - Write minimal code to make tests pass
+   - Focus on making it work, not perfect
+   - All tests should pass (green)
+
+3. **Refactor** (if needed)
+   - Clean up the code
+   - Improve structure and readability
+   - Tests must still pass
+
+### Example TDD Session
+```python
+# Step 1: Write failing test
+def test_window_resize_validates_dimensions():
+    window = Window(...)
+    with pytest.raises(ValueError) as exc:
+        window.resize(BoundingBox(0, 0, -1, 80))
+    assert "negative" in str(exc.value).lower()
+
+# Step 2: Run test (should fail)
+# pytest tests/ui/test_window.py::test_window_resize_validates_dimensions
+
+# Step 3: Implement validation in Window.resize()
+def resize(self, box: BoundingBox):
+    if box.height < 0 or box.width < 0:
+        raise ValueError(f"Dimensions cannot be negative")
+    # ... rest of implementation
+
+# Step 4: Run test (should pass)
+# Step 5: Refactor if needed
+```
+
+### Why TDD for This Project
+- **Prevents regressions**: Tests catch breaking changes
+- **Documents behavior**: Tests show how code should work
+- **Better design**: Writing tests first leads to better APIs
+- **Confidence**: Refactor freely knowing tests will catch issues
+- **High coverage**: Currently at 82%+ coverage, maintain this standard
+
 ## Development Commands
 
 ### Installation

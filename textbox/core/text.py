@@ -246,7 +246,65 @@ class Text:
         self.to_first_line()
         self.to_start_of_line()
 
-    def goto(self, position: Position):
+    def goto(self, position: Position) -> None:
+        """Move cursor to the specified position with validation.
+
+        Args:
+            position: Target position (lineno, colno)
+
+        Raises:
+            ValueError: If position is out of bounds
+        """
+        if not isinstance(position, Position):
+            raise TypeError(f"Expected Position, got {type(position).__name__}")
+
+        # Validate line number
+        if position.lineno < 0:
+            raise ValueError(
+                f"Line number {position.lineno} cannot be negative. "
+                f"Valid range: 0 to {max(0, len(self._text_lines) - 1)}"
+            )
+
+        # Handle empty text case
+        if len(self._text_lines) == 0:
+            if position.lineno == 0 and position.colno == 0:
+                # Allow goto(0, 0) on empty text - will be created on first insert
+                self._line_ptr = 0
+                self._column_ptr = 0
+                return
+            else:
+                raise ValueError(
+                    f"Text is empty. Only position (0, 0) is valid. "
+                    f"Insert text first to create lines."
+                )
+
+        if position.lineno >= len(self._text_lines):
+            raise ValueError(
+                f"Line {position.lineno} out of range. "
+                f"Valid range: 0 to {len(self._text_lines) - 1}. "
+                f"Use Text.to_last_line() to move to the last line."
+            )
+
+        # Validate column number
+        if position.colno < 0:
+            raise ValueError(
+                f"Column {position.colno} cannot be negative. "
+                f"Use Text.to_start_of_line() to move to column 0."
+            )
+
+        # Column validation depends on the target line
+        target_line = self._text_lines[position.lineno]
+        max_col = len(target_line) if self._edit_mode else max(0, len(target_line) - 1)
+
+        if position.colno > max_col:
+            logger.warning(
+                f"Column {position.colno} exceeds line length {len(target_line)}. "
+                f"Clamping to {max_col}."
+            )
+            self._line_ptr = position.lineno
+            self._column_ptr = max_col
+            return
+
         self._line_ptr = position.lineno
         self._column_ptr = position.colno
 
@@ -349,12 +407,30 @@ class Text:
             self.break_line()
         self.to_start_of_line()
 
-    def insert(self, text: str):
+    def insert(self, text: str) -> None:
+        """Insert text at the current cursor position.
+
+        Args:
+            text: String to insert (can contain newlines)
+
+        Raises:
+            TypeError: If text is not a string
+            RuntimeError: If not in edit mode
+        """
+        if not isinstance(text, str):
+            raise TypeError(
+                f"Expected str, got {type(text).__name__}. "
+                f"Use str() to convert to string first."
+            )
+
         if len(self._text_lines) == 0:
             self._text_lines.append(TextLine())
 
         if not self._edit_mode:
-            raise RuntimeError("Cannot insert text when not in edit mode")
+            raise RuntimeError(
+                "Cannot insert text when not in edit mode. "
+                "Set edit_mode=True before inserting."
+            )
 
         for ch in text:
             if ch == "\n":

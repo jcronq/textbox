@@ -104,8 +104,12 @@ class Window:
                 raise ValueError(f"Position {position} is not contained within {self.bounding_box}")
             try:
                 self._local_window.addch(*position, ch, *attributes)
-            except curses.error:
-                pass
+            except curses.error as e:
+                # Log with context but don't raise - drawing at edge is expected
+                logger.debug(
+                    f"Failed to draw '{ch}' at ({position.lineno}, {position.colno}): {e}. "
+                    f"Window size: {self.height}x{self.width}"
+                )
 
         else:
             self._local_window.addch(str(ch))
@@ -124,8 +128,12 @@ class Window:
             logger.info(f"Adding string at {position}")
         try:
             self._local_window.addstr(*position, text, *attributes)
-        except curses.error:
-            pass
+        except curses.error as e:
+            # Log with context but don't raise - drawing at edge is expected
+            logger.debug(
+                f"Failed to draw '{text}' at ({position.lineno}, {position.colno}): {e}. "
+                f"Window size: {self.height}x{self.width}"
+            )
 
     def getkey(self, verbose=False) -> str:
         return self._local_window.getkey()
@@ -141,18 +149,52 @@ class Window:
             logger.info(f"Window: Moving cursor to {position}")
         self._local_window.move(*position)
 
-    def resize(self, box: BoundingBox, verbose=False):
+    def resize(self, box: BoundingBox, verbose=False) -> None:
+        """Resize window to new bounding box with validation.
+
+        Args:
+            box: New bounding box for the window
+            verbose: Enable verbose logging
+
+        Raises:
+            ValueError: If dimensions are invalid or resize fails
+        """
+        # Validate dimensions before attempting resize
+        if box.height <= 0 or box.width <= 0:
+            raise ValueError(
+                f"Window dimensions must be positive. "
+                f"Got height={box.height}, width={box.width}. "
+                f"Current size: {self.height}x{self.width}"
+            )
+
+        if box.height < 0:
+            raise ValueError(
+                f"Window height cannot be negative (got {box.height}). "
+                f"Current height: {self.height}"
+            )
+
+        if box.width < 0:
+            raise ValueError(
+                f"Window width cannot be negative (got {box.width}). "
+                f"Current width: {self.width}"
+            )
+
         if verbose:
-            logger.info("Resizing window to %s", box)
+            logger.info("Resizing window from %dx%d to %s", self.height, self.width, box)
+
         try:
             self._local_window.resize(*box.dimensions)
-        except curses.error:
-            raise ValueError("Failed to resize window to %s", box.dimensions)
+        except curses.error as e:
+            raise ValueError(
+                f"Failed to resize window to {box.dimensions}: {e}"
+            )
 
         try:
             self._local_window.mvwin(*box.position)
-        except curses.error:
-            raise ValueError("Failed to move window to %s", box.position)
+        except curses.error as e:
+            raise ValueError(
+                f"Failed to move window to {box.position}: {e}"
+            )
 
         # Only update state after curses operations succeed
         self.dimensions = box.dimensions
