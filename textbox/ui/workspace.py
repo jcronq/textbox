@@ -7,7 +7,18 @@ from textbox.ui.input_manager import AsyncInputManager
 from textbox.ui.input_box import InputBox
 from textbox.ui.text_box import TextBox
 from textbox.core.text import Text
-from textbox.core.commands import CommandHistory, DeleteCharCommand
+from textbox.core.commands import (
+    CommandHistory,
+    DeleteCharCommand,
+    DeleteLineCommand,
+    InsertLineBelowCommand,
+    InsertLineAboveCommand,
+    ChangeToEndOfLineCommand,
+    DeleteToEndOfLineCommand,
+    JoinLinesCommand,
+    PasteAfterCommand,
+    PasteBeforeCommand,
+)
 from textbox.utils.box_types import BoundingBox
 from textbox.utils.signals import WindowQuit, DelayedRedraw
 from textbox.utils.color_code import ColorCode
@@ -327,7 +338,11 @@ class InputOutputWorkspace:
         # Handle double-key commands (dd, yy, cc)
         if key == ord("d") and self._last_command_key == ord("d"):
             logger.info("Command: dd (delete line)")
-            deleted = self.focused_box.text.delete_current_line()
+            # Use Command pattern for undo/redo support
+            cmd = DeleteLineCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            # Store deleted text in register
+            deleted = cmd.deleted_line
             self.register_manager.delete_to_register(self._pending_register, deleted)
             self._pending_register = None
             self.focused_box.redraw(with_cursor=True)
@@ -345,7 +360,11 @@ class InputOutputWorkspace:
 
         elif key == ord("c") and self._last_command_key == ord("c"):
             logger.info("Command: cc (change line)")
-            deleted = self.focused_box.text.delete_current_line()
+            # Use Command pattern for undo/redo support
+            cmd = DeleteLineCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            # Store deleted text in register
+            deleted = cmd.deleted_line
             self.register_manager.delete_to_register(self._pending_register, deleted)
             self._pending_register = None
             self.enter_insert_mode()
@@ -408,13 +427,17 @@ class InputOutputWorkspace:
 
         elif key == ord("o"):
             logger.info("Command: o (open line below)")
-            self.focused_box.text.insert_line_below()
+            # Use Command pattern for undo/redo support
+            cmd = InsertLineBelowCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
             self.enter_insert_mode()
             logger.info("Input Mode: %s", self.input_mode)
 
         elif key == ord("O"):
             logger.info("Command: O (open line above)")
-            self.focused_box.text.insert_line_above()
+            # Use Command pattern for undo/redo support
+            cmd = InsertLineAboveCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
             self.enter_insert_mode()
             logger.info("Input Mode: %s", self.input_mode)
 
@@ -485,7 +508,9 @@ class InputOutputWorkspace:
             register = self._pending_register if self._pending_register and self._pending_register is not True else None
             content = self.register_manager.get_register(register if register else '"')
             if content:
-                self.focused_box.text.paste_after(content)
+                # Use Command pattern for undo/redo support
+                cmd = PasteAfterCommand(self.focused_box.text, content)
+                self.command_history.execute_command(cmd)
                 self.focused_box.redraw(with_cursor=True)
             self._pending_register = None
 
@@ -494,32 +519,40 @@ class InputOutputWorkspace:
             register = self._pending_register if self._pending_register and self._pending_register is not True else None
             content = self.register_manager.get_register(register if register else '"')
             if content:
-                self.focused_box.text.paste_before(content)
+                # Use Command pattern for undo/redo support
+                cmd = PasteBeforeCommand(self.focused_box.text, content)
+                self.command_history.execute_command(cmd)
                 self.focused_box.redraw(with_cursor=True)
             self._pending_register = None
 
         elif key == ord("C"):
             logger.info("Command: C (change to end of line)")
-            # Check if cursor is already at end of line
-            text = self.focused_box.text
-            if text.column_ptr < text.last_column_on_line:
-                # Delete from cursor to end of line
-                deleted = text.delete_to_end_of_line()
+            # Use Command pattern for undo/redo support
+            cmd = ChangeToEndOfLineCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            # Store deleted text in register
+            deleted = cmd.deleted_text
+            if deleted:
                 self.register_manager.delete_to_register(self._pending_register, deleted)
-            # If already at end of line, don't delete anything, just enter INSERT mode
             self._pending_register = None
             self.enter_insert_mode()
 
         elif key == ord("D"):
             logger.info("Command: D (delete to end of line)")
-            deleted = self.focused_box.text.delete_to_end_of_line()
+            # Use Command pattern for undo/redo support
+            cmd = DeleteToEndOfLineCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            # Store deleted text in register
+            deleted = cmd.deleted_text
             self.register_manager.delete_to_register(self._pending_register, deleted)
             self._pending_register = None
             self.focused_box.redraw(with_cursor=True)
 
         elif key == ord("J"):
             logger.info("Command: J (join lines)")
-            self.focused_box.text.join_with_next_line()
+            # Use Command pattern for undo/redo support
+            cmd = JoinLinesCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
             self.focused_box.redraw(with_cursor=True)
 
         elif key == ord(":"):

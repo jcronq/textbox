@@ -1,7 +1,20 @@
 """Tests for command pattern and undo/redo functionality."""
 
 import pytest
-from textbox.core.commands import Command, CommandHistory, InsertTextCommand, DeleteCharCommand
+from textbox.core.commands import (
+    Command,
+    CommandHistory,
+    InsertTextCommand,
+    DeleteCharCommand,
+    DeleteLineCommand,
+    InsertLineAboveCommand,
+    InsertLineBelowCommand,
+    ChangeToEndOfLineCommand,
+    DeleteToEndOfLineCommand,
+    JoinLinesCommand,
+    PasteAfterCommand,
+    PasteBeforeCommand,
+)
 from textbox.core.text import Text
 from textbox.utils.box_types import Position
 
@@ -330,3 +343,248 @@ class TestCommandIntegration:
 
         text.command_history.undo()
         assert text.current_line.text == ""
+
+
+class TestDeleteLineCommand:
+    """Test DeleteLineCommand (dd operation)."""
+
+    def test_delete_line_removes_line(self):
+        """Test deleting a line removes it from text."""
+        text = Text("line 1\nline 2\nline 3")
+        text.edit_mode = False
+        text._line_ptr = 1  # Move to line 2
+
+        cmd = DeleteLineCommand(text)
+        cmd.execute()
+
+        assert len(text._text_lines) == 2
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == "line 3"
+
+    def test_delete_line_undo_restores_line(self):
+        """Test undoing delete line restores the deleted line."""
+        text = Text("line 1\nline 2\nline 3")
+        text.edit_mode = False
+        text._line_ptr = 1
+
+        cmd = DeleteLineCommand(text)
+        cmd.execute()
+        cmd.undo()
+
+        assert len(text._text_lines) == 3
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == "line 2"
+        assert text._text_lines[2].text == "line 3"
+        assert text.line_ptr == 1
+
+
+class TestInsertLineBelowCommand:
+    """Test InsertLineBelowCommand (o operation)."""
+
+    def test_insert_line_below_adds_line(self):
+        """Test inserting line below adds empty line."""
+        text = Text("line 1\nline 2")
+        text.edit_mode = False
+        text._line_ptr = 0
+
+        cmd = InsertLineBelowCommand(text)
+        cmd.execute()
+
+        assert len(text._text_lines) == 3
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == ""
+        assert text._text_lines[2].text == "line 2"
+        assert text.line_ptr == 1
+
+    def test_insert_line_below_undo_removes_line(self):
+        """Test undoing insert line below removes the inserted line."""
+        text = Text("line 1\nline 2")
+        text.edit_mode = False
+        text._line_ptr = 0
+
+        cmd = InsertLineBelowCommand(text)
+        cmd.execute()
+        cmd.undo()
+
+        assert len(text._text_lines) == 2
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == "line 2"
+        assert text.line_ptr == 0
+
+
+class TestInsertLineAboveCommand:
+    """Test InsertLineAboveCommand (O operation)."""
+
+    def test_insert_line_above_adds_line(self):
+        """Test inserting line above adds empty line."""
+        text = Text("line 1\nline 2")
+        text.edit_mode = False
+        text._line_ptr = 1
+
+        cmd = InsertLineAboveCommand(text)
+        cmd.execute()
+
+        assert len(text._text_lines) == 3
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == ""
+        assert text._text_lines[2].text == "line 2"
+        assert text.line_ptr == 1
+
+    def test_insert_line_above_undo_removes_line(self):
+        """Test undoing insert line above removes the inserted line."""
+        text = Text("line 1\nline 2")
+        text.edit_mode = False
+        text._line_ptr = 1
+
+        cmd = InsertLineAboveCommand(text)
+        cmd.execute()
+        cmd.undo()
+
+        assert len(text._text_lines) == 2
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == "line 2"
+        assert text.line_ptr == 1
+
+
+class TestDeleteToEndOfLineCommand:
+    """Test DeleteToEndOfLineCommand (D operation)."""
+
+    def test_delete_to_end_of_line(self):
+        """Test deleting to end of line."""
+        text = Text("hello world")
+        text.edit_mode = False
+        text._column_ptr = 6  # Position at 'w'
+
+        cmd = DeleteToEndOfLineCommand(text)
+        cmd.execute()
+
+        assert text.current_line.text == "hello "
+        assert cmd.deleted_text == "world"
+
+    def test_delete_to_end_of_line_undo(self):
+        """Test undoing delete to end of line."""
+        text = Text("hello world")
+        text.edit_mode = False
+        text._column_ptr = 6
+
+        cmd = DeleteToEndOfLineCommand(text)
+        cmd.execute()
+        cmd.undo()
+
+        assert text.current_line.text == "hello world"
+        assert text.column_ptr == 6
+
+
+class TestChangeToEndOfLineCommand:
+    """Test ChangeToEndOfLineCommand (C operation)."""
+
+    def test_change_to_end_of_line_deletes_text(self):
+        """Test change to end of line deletes text."""
+        text = Text("hello world")
+        text.edit_mode = False
+        text._column_ptr = 6
+
+        cmd = ChangeToEndOfLineCommand(text)
+        cmd.execute()
+
+        assert text.current_line.text == "hello "
+        assert cmd.deleted_text == "world"
+
+    def test_change_to_end_of_line_undo(self):
+        """Test undoing change to end of line."""
+        text = Text("hello world")
+        text.edit_mode = False
+        text._column_ptr = 6
+
+        cmd = ChangeToEndOfLineCommand(text)
+        cmd.execute()
+        cmd.undo()
+
+        assert text.current_line.text == "hello world"
+        assert text.column_ptr == 6
+
+
+class TestJoinLinesCommand:
+    """Test JoinLinesCommand (J operation)."""
+
+    def test_join_lines_combines_lines(self):
+        """Test joining lines combines current and next line."""
+        text = Text("line 1\nline 2")
+        text.edit_mode = False
+        text._line_ptr = 0  # Ensure we're on first line
+
+        cmd = JoinLinesCommand(text)
+        cmd.execute()
+
+        assert len(text._text_lines) == 1
+        assert text.current_line.text == "line 1 line 2"
+
+    def test_join_lines_undo_splits_lines(self):
+        """Test undoing join lines splits them back."""
+        text = Text("line 1\nline 2")
+        text.edit_mode = False
+        text._line_ptr = 0  # Ensure we're on first line
+
+        cmd = JoinLinesCommand(text)
+        cmd.execute()
+        cmd.undo()
+
+        assert len(text._text_lines) == 2
+        assert text._text_lines[0].text == "line 1"
+        assert text._text_lines[1].text == "line 2"
+
+
+class TestPasteAfterCommand:
+    """Test PasteAfterCommand (p operation)."""
+
+    def test_paste_after_inserts_text(self):
+        """Test paste after inserts text after cursor."""
+        text = Text("hello")
+        text.edit_mode = False
+        text._column_ptr = 2  # Position at 'l'
+
+        cmd = PasteAfterCommand(text, "XX")
+        cmd.execute()
+
+        assert "XX" in text.current_line.text
+
+    def test_paste_after_undo_removes_text(self):
+        """Test undoing paste after removes pasted text."""
+        text = Text("hello")
+        text.edit_mode = False
+        text._column_ptr = 2
+
+        cmd = PasteAfterCommand(text, "XX")
+        cmd.execute()
+        cmd.undo()
+
+        assert text.current_line.text == "hello"
+        assert text.column_ptr == 2
+
+
+class TestPasteBeforeCommand:
+    """Test PasteBeforeCommand (P operation)."""
+
+    def test_paste_before_inserts_text(self):
+        """Test paste before inserts text before cursor."""
+        text = Text("hello")
+        text.edit_mode = False
+        text._column_ptr = 2
+
+        cmd = PasteBeforeCommand(text, "XX")
+        cmd.execute()
+
+        assert "XX" in text.current_line.text
+
+    def test_paste_before_undo_removes_text(self):
+        """Test undoing paste before removes pasted text."""
+        text = Text("hello")
+        text.edit_mode = False
+        text._column_ptr = 2
+
+        cmd = PasteBeforeCommand(text, "XX")
+        cmd.execute()
+        cmd.undo()
+
+        assert text.current_line.text == "hello"
+        assert text.column_ptr == 2
