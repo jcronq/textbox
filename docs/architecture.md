@@ -601,4 +601,3 @@ For large-scale applications:
 
 - [API Reference](api-reference.md) - Public API documentation
 - [Advanced Topics](advanced-topics.md) - Advanced usage patterns
-- [Contributing Guide](../CONTRIBUTING.md) - How to contribute (if exists)
