@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from textbox.core.text_line import TextLine
 from textbox.utils.box_types import Position
 from textbox.core.text_segment import TextSegment
@@ -20,7 +20,7 @@ class Text:
     Each TextLine represents blocks of text seperated by newlines.  Text is a collection of TextLines.
     """
 
-    def __init__(self, text: str = "", max_line_width: int = None):
+    def __init__(self, text: str = "", max_line_width: int = None) -> None:
         self._text_lines: List[TextLine] = []
         self._line_ptr = 0
         self._column_ptr = 0
@@ -31,15 +31,15 @@ class Text:
         self.text = text
 
     @property
-    def color_pair(self):
+    def color_pair(self) -> int:
         """Get the color pair of the text.  This is the default color pair for the text."""
         return self._default_color_pair
 
     @color_pair.setter
-    def color_pair(self, value: int):
+    def color_pair(self, value: int) -> None:
         self._default_color_pair = value
 
-    def copy(self):
+    def copy(self) -> "Text":
         """Create a deep copy of the text."""
         new_text = Text()
         new_text.max_line_width = self.max_line_width
@@ -54,12 +54,12 @@ class Text:
         return self.current_line[self.column_ptr]
 
     @property
-    def edit_mode(self):
+    def edit_mode(self) -> bool:
         """Get whether the text is in edit mode.  In edit mode, text at the cursor can be appended to."""
         return self._edit_mode
 
     @edit_mode.setter
-    def edit_mode(self, new_edit_mode: bool):
+    def edit_mode(self, new_edit_mode: bool) -> None:
         """Set whether the text is in edit mode.  In edit mode, text at the cursor can be appended to."""
         previous_edit_mode = self._edit_mode
         self._edit_mode = new_edit_mode
@@ -69,7 +69,7 @@ class Text:
             self.to_end_of_line()
 
     @property
-    def column_ptr(self):
+    def column_ptr(self) -> int:
         """Get the column pointer of the text.
         This is the current position of the cursor in the text.
         This ignores viewing width.
@@ -77,18 +77,18 @@ class Text:
         return self._column_ptr
 
     @property
-    def line_ptr(self):
+    def line_ptr(self) -> int:
         """Get the line pointer of the text.
         This ignores max_line_width."""
         return self._line_ptr
 
     @property
-    def max_line_width(self):
+    def max_line_width(self) -> Optional[int]:
         """Get the maximum line width of the text.  This is the maximum number of characters that can be displayed on a line."""
         return self._max_line_width
 
     @max_line_width.setter
-    def max_line_width(self, value: int):
+    def max_line_width(self, value: int) -> None:
         self._max_line_width = value
 
     @property
@@ -134,7 +134,7 @@ class Text:
         return lines
 
     @property
-    def text(self):
+    def text(self) -> List[SegmentedTextLine]:
         """Get the text of the textbox.  This is the text as a string with wrapping."""
         return "\n".join((str(text_line) for text_line in self.lines))
 
@@ -168,26 +168,26 @@ class Text:
         self.to_last_line()
         self.to_end_of_line()
 
-    def set_text_to_str(self, text: str):
+    def set_text_to_str(self, text: str) -> None:
         """Set the text of the textbox.  Default string formatting."""
         if not isinstance(text, str):
             raise ValueError("Text must be a string")
         self.text = text
 
     @property
-    def current_line(self):
+    def current_line(self) -> Optional[TextLine]:
         if len(self._text_lines) == 0:
             return TextLine("")
         return self._text_lines[self._line_ptr]
 
     @property
-    def previous_line(self):
+    def previous_line(self) -> Optional[TextLine]:
         if self._line_ptr == 0:
             return None
         return self._text_lines[self._line_ptr - 1]
 
     @property
-    def next_line(self):
+    def next_line(self) -> Optional[TextLine]:
         if self._line_ptr >= len(self._text_lines) - 1:
             return None
         return self._text_lines[self._line_ptr + 1]
@@ -383,7 +383,7 @@ class Text:
     def __repr__(self) -> str:
         return f"Text(text={self.text}, cursor_ptr={self.cursor_position}, line_ptr={self._line_ptr}, column_ptr={self.column_ptr}, lines={self._text_lines}, edit_moode={self._edit_mode}, max_line_width={self._max_line_width}, line_count={self.line_count})"
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum([len(line) for line in self._text_lines])
 
     def __contains__(self, lineno: int):

@@ -1,38 +1,38 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from textbox.core.text import Text
 from textbox.utils.box_types import LineSpan, Position
 from textbox.core.text_line import TextLine
 
 
 class TextList:
-    def __init__(self, max_line_width: int = None):
+    def __init__(self, max_line_width: int = None) -> None:
         self._texts: List[Text] = []
         self._text_ptr = 0
         self._max_line_width = max_line_width
 
-    def set_first_text(self, text: Text):
+    def set_first_text(self, text: Text) -> None:
         self._texts[0] = text
 
     @property
-    def max_line_width(self):
+    def max_line_width(self) -> Optional[int]:
         return self._max_line_width
 
     @max_line_width.setter
-    def max_line_width(self, value: int):
+    def max_line_width(self, value: int) -> None:
         self._max_line_width = value
         for text in self._texts:
             text.max_line_width = value
 
     @property
-    def line_count(self):
+    def line_count(self) -> int:
         return sum([text.line_count for text in self._texts])
 
     @property
-    def texts(self):
+    def texts(self) -> List["Text"]:
         return self._texts
 
     @property
-    def _text_line_spans(self):
+    def _text_line_spans(self) -> List:
         accumulated_length = 0
         line_spans = []
         for text in self._texts:
@@ -57,28 +57,28 @@ class TextList:
             lines_before = sum([text.line_count for text in self._texts[: self._text_ptr]])
             return self.current_text.cursor_position + Position(lines_before, 0)
 
-    def insert(self, text: str):
+    def insert(self, text: str) -> None:
         prev_edit_mode = self.current_text.edit_mode
         self.current_text.edit_mode = True
         self.current_text.increment_column_ptr()
         self.current_text.insert(text)
         self.current_text.edit_mode = prev_edit_mode
 
-    def add_text_line(self, text_line: TextLine):
+    def add_text_line(self, text_line: TextLine) -> None:
         self.current_text.add_text_line(text_line)
 
-    def add_text(self, text: Text):
+    def add_text(self, text: Text) -> None:
         self._texts.append(text)
         self._text_ptr = len(self._texts) - 1
 
-    def increment_text_ptr(self):
+    def increment_text_ptr(self) -> None:
         self._text_ptr += 1
 
     @property
-    def as_string(self):
+    def as_string(self) -> str:
         return "\n".join(self[:])
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum([len(text) for text in self._texts])
 
     def __getitem__(self, lineaddr: Union[int, slice]) -> Union[TextLine, List[TextLine]]:
@@ -157,5 +157,5 @@ class TextList:
 
         return result
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"TextList({self._texts}, max_line_width={self._max_line_width}, text_ptr={self._text_ptr})"

@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Optional, Iterator
 from textbox.core.text_segment import TextSegment
 from textbox.utils.color_code import ColorCode
 
@@ -7,7 +7,7 @@ class SegmentedTextLine:
     """A line of text that can contain multiple TextSegments with different color pairs.
     This makes the individual, multi-colored segments of text easier to manage as a single line."""
 
-    def __init__(self, text: Union[List[TextSegment], TextSegment] = None):
+    def __init__(self, text: Optional[Union[List[TextSegment], TextSegment]] = None) -> None:
         if text is None:
             self._segments = []
         elif isinstance(text, TextSegment):
@@ -29,10 +29,10 @@ class SegmentedTextLine:
             return self._default_color_pair
         return self._segments[-1].color_pair
 
-    def copy(self):
+    def copy(self) -> "SegmentedTextLine":
         return SegmentedTextLine([segment.copy() for segment in self._segments])
 
-    def reduce(self):
+    def reduce(self) -> None:
         """Combine all TextSegments with the same color pair"""
         reduced_segments = []
         for segment in self._segments:
@@ -46,24 +46,24 @@ class SegmentedTextLine:
                 reduced_segments.append(segment)
         self._segments = reduced_segments
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum((len(segment) for segment in self._segments))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "".join([str(segment) for segment in self._segments])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         items = [f"{repr(segment)}" for segment in self._segments]
         return f"SegmentedTextLine({items})"
 
-    def __eq__(self, other: "SegmentedTextLine"):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SegmentedTextLine):
             return False
         if len(self._segments) != len(other._segments):
             return False
         return all([self._segments[idx] == other._segments[idx] for idx in range(len(self._segments))])
 
-    def __add__(self, other: Union["SegmentedTextLine", TextSegment, str]):
+    def __add__(self, other: Union["SegmentedTextLine", TextSegment, str]) -> "SegmentedTextLine":
         if isinstance(other, SegmentedTextLine):
             return SegmentedTextLine(self._segments + other._segments)
         elif isinstance(other, TextSegment):
@@ -73,10 +73,10 @@ class SegmentedTextLine:
         else:
             raise ValueError(f"Cannot add SegmentedTextLine to {type(other)}")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[TextSegment]:
         return iter(self._segments)
 
-    def __contains__(self, item: str):
+    def __contains__(self, item: str) -> bool:
         if not isinstance(item, str):
             raise ValueError("SegmentedTextLine can only contain strings")
         return item in str(self)
