@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, List
 
 
 class KeyPressStateMachine:
@@ -7,13 +7,13 @@ class KeyPressStateMachine:
     Ex. pressing i enters insert mode immediately.  pressing d followed by d deletes the current line.
     """
 
-    def __init__(self, matching_sequence: str, action: Callabe[[], None]):
-        self._state = 0
-        self._key_sequence = []
-        self._key_sequence_string = ""
-        self._key_sequence_string_history = []
-        self._key_sequence_string_history_ptr = 0
-        self._key_sequence_string_history_max_size = 100
+    def __init__(self, matching_sequence: str, action: Callable[[], None]) -> None:
+        self._state: int = 0
+        self._key_sequence: List[str] = []
+        self._key_sequence_string: str = ""
+        self._key_sequence_string_history: List[str] = []
+        self._key_sequence_string_history_ptr: int = 0
+        self._key_sequence_string_history_max_size: int = 100
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"KeyPressStateMachine(state={self._state}, key_sequence={self._key_sequence})"

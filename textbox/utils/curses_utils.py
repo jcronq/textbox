@@ -1,12 +1,13 @@
 import curses
 import functools
+from typing import Callable, Any, TypeVar
 
 import logging
 
 logger = logging.getLogger()
 
 
-def curses_wrapper(func):
+def curses_wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
     """Wrapper function that initializes curses and calls another function,
     restoring normal keyboard/screen behavior on error.
     The callable object 'func' is then passed the main window 'stdscr'
@@ -15,7 +16,7 @@ def curses_wrapper(func):
     """
 
     @functools.wraps(func)
-    def run(*args, **kwargs):
+    def run(*args: Any, **kwargs: Any) -> Any:
         try:
             # State 0 means curses is not initialized
             # State 1 means curses is initialized

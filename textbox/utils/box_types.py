@@ -33,10 +33,10 @@ class Dimensions(NamedTuple):
     width: int
 
     @property
-    def area(self):
+    def area(self) -> int:
         return self.width * self.height
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Dimensions(height={self.height}, width={self.width})"
 
 
@@ -44,13 +44,13 @@ class Position(NamedTuple):
     lineno: int
     colno: int
 
-    def __add__(self, other: "Position"):
+    def __add__(self, other: "Position") -> "Position":
         return Position(self.lineno + other.lineno, self.colno + other.colno)
 
-    def __sub__(self, other: "Position"):
+    def __sub__(self, other: "Position") -> "Position":
         return Position(self.lineno - other.lineno, self.colno - other.colno)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Position(lineno={self.lineno}, colno={self.colno})"
 
 
@@ -61,54 +61,54 @@ class BoundingBox(NamedTuple):
     width: int
 
     @property
-    def area(self):
+    def area(self) -> int:
         return self.width * self.height
 
     @property
-    def first_lineno(self):
+    def first_lineno(self) -> int:
         return self.lineno
 
     @property
-    def last_lineno(self):
+    def last_lineno(self) -> int:
         if self.height == 0:
             return self.lineno
         return self.lineno + self.height - 1
 
     @property
-    def first_colno(self):
+    def first_colno(self) -> int:
         return self.colno
 
     @property
-    def last_colno(self):
+    def last_colno(self) -> int:
         if self.width == 0:
             return self.colno
         return self.colno + self.width - 1
 
     @property
-    def top_left(self):
+    def top_left(self) -> Position:
         return Position(self.first_lineno, self.first_colno)
 
     @property
-    def top_right(self):
+    def top_right(self) -> Position:
         return Position(self.first_lineno, self.last_colno)
 
     @property
-    def bottom_left(self):
+    def bottom_left(self) -> Position:
         return Position(self.last_lineno, self.first_colno)
 
     @property
-    def bottom_right(self):
+    def bottom_right(self) -> Position:
         return Position(self.last_lineno, self.last_colno)
 
     @property
-    def position(self):
+    def position(self) -> Position:
         return Position(self.lineno, self.colno)
 
     @property
-    def dimensions(self):
+    def dimensions(self) -> Dimensions:
         return Dimensions(self.height, self.width)
 
-    def __contains__(self, position: Union[Position, "BoundingBox"]):
+    def __contains__(self, position: Union[Position, "BoundingBox"]) -> bool:
         if isinstance(position, Position):
             return (
                 self.first_lineno <= position.lineno <= self.last_lineno
@@ -122,7 +122,7 @@ class BoundingBox(NamedTuple):
                 and self.first_colno <= position.last_colno <= self.last_colno
             )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"BoundingBox(lineno={self.lineno}, colno={self.colno}, height={self.height}, width={self.width})"
 
 
@@ -132,5 +132,5 @@ class LineSpan(NamedTuple):
     first_lineno: int
     last_lineno: int
 
-    def __contains__(self, lineno: int):
+    def __contains__(self, lineno: int) -> bool:
         return self.first_lineno <= lineno < self.last_lineno
