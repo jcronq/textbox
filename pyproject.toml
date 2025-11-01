@@ -64,8 +64,8 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jcronq/textbox"
-Documentation = "https://github.com/jcronq/textbox/tree/main/docs"
+Homepage = "https://jcronq.github.io/textbox"
+Documentation = "https://jcronq.github.io/textbox"
 Repository = "https://github.com/jcronq/textbox"
 Issues = "https://github.com/jcronq/textbox/issues"
 

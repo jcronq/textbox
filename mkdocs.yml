@@ -1,10 +1,10 @@
 site_name: Textbox
 site_description: A powerful, vim-inspired terminal UI library for Python
 site_author: Jason Cronquist
-site_url: https://jasoncronquist.github.io/textbox/
+site_url: https://jcronq.github.io/textbox/
 
-repo_name: jasoncronquist/textbox
-repo_url: https://github.com/jasoncronquist/textbox
+repo_name: jcronq/textbox
+repo_url: https://github.com/jcronq/textbox
 edit_uri: edit/main/docs/
 
 theme:
@@ -76,7 +76,6 @@ nav:
   - API Reference: api-reference.md
   - Development:
     - Architecture: architecture.md
-    - Contributing: ../CONTRIBUTING.md
     - Deployment: DEPLOYMENT_PLAN.md
 
 plugins:
@@ -88,6 +87,6 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/jasoncronquist/textbox
+      link: https://github.com/jcronq/textbox
   version:
     provider: mike
