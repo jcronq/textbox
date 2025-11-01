@@ -323,3 +323,63 @@ class PasteBeforeCommand(Command):
                 self.text._text_lines[self.text._line_ptr] = TextLine(new_text)
         # Restore column pointer
         self.text._column_ptr = self.original_column_ptr
+
+
+class VisualDeleteCommand(Command):
+    """Command to delete visual selection (visual mode d operation)."""
+
+    def __init__(self, text: 'Text'):
+        self.text = text
+        # Save selection state
+        self.selection_start = text.selection_start
+        self.selection_end = text.cursor_position
+        self.deleted_text = ""
+
+    def execute(self) -> None:
+        """Delete the selected text."""
+        self.deleted_text = self.text.delete_selection()
+
+    def undo(self) -> None:
+        """Restore the deleted text."""
+        if self.deleted_text and self.selection_start:
+            # Go to where selection started
+            self.text._line_ptr = self.selection_start.lineno
+            self.text._column_ptr = self.selection_start.colno
+            # Insert the deleted text
+            old_edit_mode = self.text.edit_mode
+            self.text.edit_mode = True
+            self.text.insert(self.deleted_text)
+            self.text.edit_mode = old_edit_mode
+            # Restore cursor to selection start
+            self.text._line_ptr = self.selection_start.lineno
+            self.text._column_ptr = self.selection_start.colno
+
+
+class VisualChangeCommand(Command):
+    """Command to change visual selection (visual mode c operation)."""
+
+    def __init__(self, text: 'Text'):
+        self.text = text
+        # Save selection state
+        self.selection_start = text.selection_start
+        self.selection_end = text.cursor_position
+        self.deleted_text = ""
+
+    def execute(self) -> None:
+        """Delete the selected text (change is delete + insert mode)."""
+        self.deleted_text = self.text.delete_selection()
+
+    def undo(self) -> None:
+        """Restore the deleted text."""
+        if self.deleted_text and self.selection_start:
+            # Go to where selection started
+            self.text._line_ptr = self.selection_start.lineno
+            self.text._column_ptr = self.selection_start.colno
+            # Insert the deleted text
+            old_edit_mode = self.text.edit_mode
+            self.text.edit_mode = True
+            self.text.insert(self.deleted_text)
+            self.text.edit_mode = old_edit_mode
+            # Restore cursor to selection start
+            self.text._line_ptr = self.selection_start.lineno
+            self.text._column_ptr = self.selection_start.colno

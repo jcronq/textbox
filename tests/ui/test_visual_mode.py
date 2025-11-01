@@ -485,3 +485,131 @@ class TestVisualModeEdgeCases:
         assert workspace.input_mode == INPUT_MODE.INSERT
         # Should have inserted 'v'
         assert 'v' in str(workspace.user_box.text)
+
+
+class TestVisualModeUndoRedo:
+    """Test undo/redo functionality for visual mode operations."""
+
+    @pytest.mark.asyncio
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
+    @patch('textbox.ui.workspace.curses')
+    async def test_visual_delete_can_be_undone(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
+        """Test that visual mode delete can be undone with 'u'."""
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
+        mock_input_mgr = MagicMock(spec=AsyncInputManager)
+
+        workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
+
+        # Set initial text
+        workspace.user_box.text.edit_mode = True
+        workspace.user_box.text.insert("hello world")
+        workspace.user_box.text.edit_mode = False
+        workspace.user_box.text.to_start_of_line()
+
+        # Enter visual mode
+        workspace.enter_visual_mode()
+
+        # Move cursor to select "hello"
+        for _ in range(5):
+            await workspace.handle_keypress(ord('l'))
+
+        # Delete selection
+        await workspace.handle_keypress(ord('d'))
+
+        # Should be in command mode now with " world" remaining
+        assert workspace.input_mode == INPUT_MODE.COMMAND
+        assert "world" in str(workspace.user_box.text)
+        assert "hello" not in str(workspace.user_box.text)
+
+        # Undo the delete
+        await workspace.handle_keypress(ord('u'))
+
+        # Text should be restored
+        assert "hello world" in str(workspace.user_box.text)
+
+    @pytest.mark.asyncio
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
+    @patch('textbox.ui.workspace.curses')
+    async def test_visual_change_can_be_undone(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
+        """Test that visual mode change can be undone with 'u'."""
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
+        mock_input_mgr = MagicMock(spec=AsyncInputManager)
+
+        workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
+
+        # Set initial text
+        workspace.user_box.text.edit_mode = True
+        workspace.user_box.text.insert("hello world")
+        workspace.user_box.text.edit_mode = False
+        workspace.user_box.text.to_start_of_line()
+
+        # Enter visual mode
+        workspace.enter_visual_mode()
+
+        # Move cursor to select "hello"
+        for _ in range(5):
+            await workspace.handle_keypress(ord('l'))
+
+        # Change selection (deletes and enters insert mode)
+        await workspace.handle_keypress(ord('c'))
+
+        # Should be in insert mode now with " world" remaining
+        assert workspace.input_mode == INPUT_MODE.INSERT
+        assert "world" in str(workspace.user_box.text)
+        assert "hello" not in str(workspace.user_box.text)
+
+        # Exit insert mode
+        await workspace.handle_keypress(27)  # ESC
+
+        # Undo the change
+        await workspace.handle_keypress(ord('u'))
+
+        # Text should be restored
+        assert "hello world" in str(workspace.user_box.text)
+
+    @pytest.mark.asyncio
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
+    @patch('textbox.ui.workspace.curses')
+    async def test_visual_line_delete_can_be_undone(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
+        """Test that visual line mode delete can be undone."""
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
+        mock_input_mgr = MagicMock(spec=AsyncInputManager)
+
+        workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
+
+        # Set initial text with multiple lines
+        workspace.user_box.text.edit_mode = True
+        workspace.user_box.text.insert("line 1\nline 2\nline 3")
+        workspace.user_box.text.edit_mode = False
+        workspace.user_box.text.to_start_of_text()
+
+        # Enter visual line mode
+        workspace.enter_visual_line_mode()
+
+        # Move down one line to select 2 lines
+        await workspace.handle_keypress(ord('j'))
+
+        # Delete lines
+        await workspace.handle_keypress(ord('d'))
+
+        # Should have one line remaining
+        assert "line 3" in str(workspace.user_box.text)
+        assert "line 1" not in str(workspace.user_box.text)
+        assert "line 2" not in str(workspace.user_box.text)
+
+        # Undo the delete
+        await workspace.handle_keypress(ord('u'))
+
+        # All lines should be restored
+        assert "line 1" in str(workspace.user_box.text)
+        assert "line 2" in str(workspace.user_box.text)
+        assert "line 3" in str(workspace.user_box.text)

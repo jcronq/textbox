@@ -18,6 +18,8 @@ from textbox.core.commands import (
     JoinLinesCommand,
     PasteAfterCommand,
     PasteBeforeCommand,
+    VisualDeleteCommand,
+    VisualChangeCommand,
 )
 from textbox.utils.box_types import BoundingBox
 from textbox.utils.signals import WindowQuit, DelayedRedraw
@@ -638,7 +640,11 @@ class InputOutputWorkspace:
         # Operations on selection
         elif key == ord("d"):
             logger.info("Command: d (delete selection)")
-            deleted = self.focused_box.text.delete_selection()
+            # Use Command pattern for undo/redo support
+            cmd = VisualDeleteCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            # Store deleted text in register
+            deleted = cmd.deleted_text
             self.register_manager.delete_to_register(self._pending_register, deleted)
             self._pending_register = None
             self.enter_command_mode()
@@ -653,7 +659,11 @@ class InputOutputWorkspace:
 
         elif key == ord("c"):
             logger.info("Command: c (change selection)")
-            deleted = self.focused_box.text.delete_selection()
+            # Use Command pattern for undo/redo support
+            cmd = VisualChangeCommand(self.focused_box.text)
+            self.command_history.execute_command(cmd)
+            # Store deleted text in register
+            deleted = cmd.deleted_text
             self.register_manager.delete_to_register(self._pending_register, deleted)
             self._pending_register = None
             self.enter_insert_mode()
@@ -708,8 +718,11 @@ class InputOutputWorkspace:
                 self.focused_box.text.goto(end)
                 self.focused_box.end_of_line()
 
-                # Delete the selection
-                deleted = self.focused_box.text.delete_selection()
+                # Use Command pattern for undo/redo support
+                cmd = VisualDeleteCommand(self.focused_box.text)
+                self.command_history.execute_command(cmd)
+                # Store deleted text in register
+                deleted = cmd.deleted_text
                 self.register_manager.delete_to_register(self._pending_register, deleted)
                 self._pending_register = None
             self.enter_command_mode()
