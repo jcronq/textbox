@@ -31,8 +31,8 @@ TOOLS = {
 
 
 def create_colored_text(text: str, color: ColorCode) -> Text:
-    """Create colored Text object."""
-    return Text([TextLine([TextSegment(text, color)])])
+    """Create colored Text object. Handles multi-line text."""
+    return create_text_from_string(text, color)
 
 
 def execute_mock_tool(tool_name: str, params: dict) -> str:

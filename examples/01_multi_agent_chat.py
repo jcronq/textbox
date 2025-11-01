@@ -40,8 +40,8 @@ MOCK_RESPONSES = {
 
 
 def create_colored_text(text: str, color: ColorCode) -> Text:
-    """Create colored Text object."""
-    return Text([TextLine([TextSegment(text, color)])])
+    """Create colored Text object. Handles multi-line text."""
+    return create_text_from_string(text, color)
 
 
 def get_mock_response(query: str, agent_id: str) -> str:
