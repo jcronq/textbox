@@ -209,8 +209,8 @@ class Window:
         Clears the window and releases references. Safe to call multiple times.
         Handles curses errors gracefully.
         """
-        if self._local_window is None:
-            return  # Already cleaned up
+        if not hasattr(self, '_local_window') or self._local_window is None:
+            return  # Already cleaned up or never initialized
 
         try:
             self._local_window.clear()
@@ -224,8 +224,9 @@ class Window:
     def __del__(self):
         """Cleanup when object is garbage collected."""
         self.cleanup()
-        for subwin in self.__children:
-            del subwin
+        if hasattr(self, '_Window__children'):
+            for subwin in self.__children:
+                del subwin
 
     def __repr__(self):
         return f"Window(x={self.start_lineno}, y={self.start_colno}, height={self.height}, width={self.width})"

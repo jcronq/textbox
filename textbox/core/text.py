@@ -28,6 +28,9 @@ class Text:
         self._edit_mode = False
         self._default_color_pair = None
         self._max_history_lines: Optional[int] = None  # No limit by default
+        self._is_selecting = False
+        self._selection_start: Optional[Position] = None
+        self._selection_end: Optional[Position] = None
 
         self.text = text
 
@@ -149,6 +152,72 @@ class Text:
             line_position = self.current_line.cursor_position(self.column_ptr, self._max_line_width)
 
             return offset_position + line_position
+
+    @property
+    def is_selecting(self) -> bool:
+        """Get whether the text is in selection mode (visual mode)."""
+        return self._is_selecting
+
+    @property
+    def selection_start(self) -> Optional[Position]:
+        """Get the start position of the visual selection."""
+        return self._selection_start
+
+    @property
+    def selection_end(self) -> Optional[Position]:
+        """Get the end position of the visual selection."""
+        if self._is_selecting:
+            # If actively selecting, use current cursor position as end
+            return self.cursor_position
+        return self._selection_end
+
+    def start_selection(self) -> None:
+        """Start a visual selection at the current cursor position."""
+        self._is_selecting = True
+        self._selection_start = self.cursor_position
+        self._selection_end = None
+        logger.debug(f"Started selection at {self._selection_start}")
+
+    def end_selection(self) -> None:
+        """End the visual selection and clear selection state."""
+        self._is_selecting = False
+        self._selection_start = None
+        self._selection_end = None
+        logger.debug("Ended selection")
+
+    def get_selected_text(self) -> str:
+        """Get the text within the current selection.
+
+        Returns:
+            str: The selected text, or empty string if no selection
+        """
+        if not self._is_selecting or self._selection_start is None:
+            return ""
+
+        start = self._selection_start
+        end = self.cursor_position
+
+        # Ensure start is before end
+        if start.lineno > end.lineno or (start.lineno == end.lineno and start.colno > end.colno):
+            start, end = end, start
+
+        if start.lineno == end.lineno:
+            # Same line selection
+            return str(self._text_lines[start.lineno])[start.colno:end.colno]
+        else:
+            # Multi-line selection
+            result = []
+            for line_idx in range(start.lineno, end.lineno + 1):
+                if line_idx >= len(self._text_lines):
+                    break
+                line = str(self._text_lines[line_idx])
+                if line_idx == start.lineno:
+                    result.append(line[start.colno:])
+                elif line_idx == end.lineno:
+                    result.append(line[:end.colno])
+                else:
+                    result.append(line)
+            return "\n".join(result)
 
     @property
     def lines(self) -> List[TextLine]:
@@ -411,6 +480,57 @@ class Text:
         else:
             self.current_line.backspace(self.column_ptr)
             self.decrement_column_ptr()
+
+    def delete_selection(self) -> str:
+        """Delete the text within the current selection.
+
+        Returns:
+            str: The deleted text
+        """
+        if not self._is_selecting or self._selection_start is None:
+            return ""
+
+        # Get the selected text before deleting
+        selected_text = self.get_selected_text()
+
+        start = self._selection_start
+        end = self.cursor_position
+
+        # Ensure start is before end
+        if start.lineno > end.lineno or (start.lineno == end.lineno and start.colno > end.colno):
+            start, end = end, start
+
+        # Delete the selection
+        if start.lineno == end.lineno:
+            # Same line selection
+            line = self._text_lines[start.lineno]
+            before = str(line)[:start.colno]
+            after = str(line)[end.colno:]
+            # Replace the line with before + after
+            self._text_lines[start.lineno] = TextLine(before + after)
+            # Position cursor at start of deletion
+            self._line_ptr = start.lineno
+            self._column_ptr = start.colno
+        else:
+            # Multi-line selection
+            # Keep the part before selection on first line and after selection on last line
+            first_line = str(self._text_lines[start.lineno])[:start.colno]
+            last_line = str(self._text_lines[end.lineno])[end.colno:]
+            # Combine them
+            new_line = TextLine(first_line + last_line)
+            # Replace first line with combined line
+            self._text_lines[start.lineno] = new_line
+            # Delete lines in between (including last line)
+            del self._text_lines[start.lineno + 1:end.lineno + 1]
+            # Position cursor at start of deletion
+            self._line_ptr = start.lineno
+            self._column_ptr = start.colno
+
+        # Clear selection state
+        self.end_selection()
+        logger.debug(f"Deleted selection: {repr(selected_text)}")
+
+        return selected_text
 
     @property
     def line_count(self):

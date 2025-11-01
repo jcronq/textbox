@@ -27,6 +27,8 @@ class INPUT_MODE(Enum):
     COMMAND = 2
     COMMAND_ENTRY = 3
     READ_ONLY = 4
+    VISUAL = 5
+    VISUAL_LINE = 6
 
 
 class InputOutputWorkspace:
@@ -57,6 +59,7 @@ class InputOutputWorkspace:
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
+        self.yank_register = ""  # Store yanked (copied) text
         input_manager.on_keypress = self.handle_keypress
         input_manager.redraw = self.redraw
 
@@ -182,6 +185,28 @@ class InputOutputWorkspace:
         logger.info("Input Mode: COMMAND_ENTRY")
         self.focused_box.redraw()
 
+    def enter_visual_mode(self) -> None:
+        """Enter VISUAL mode (character-wise selection)."""
+        curses.curs_set(1)
+        self.input_mode = INPUT_MODE.VISUAL
+        self.focused_box = self.user_box
+        self.focused_box.text.edit_mode = False
+        self.focused_box.text.start_selection()
+        self.command_box.set_text_to_str("-- VISUAL --")
+        logger.info("Input Mode: VISUAL")
+        self.focused_box.redraw(with_cursor=True)
+
+    def enter_visual_line_mode(self) -> None:
+        """Enter VISUAL LINE mode (line-wise selection)."""
+        curses.curs_set(1)
+        self.input_mode = INPUT_MODE.VISUAL_LINE
+        self.focused_box = self.user_box
+        self.focused_box.text.edit_mode = False
+        self.focused_box.text.start_selection()
+        self.command_box.set_text_to_str("-- VISUAL LINE --")
+        logger.info("Input Mode: VISUAL_LINE")
+        self.focused_box.redraw(with_cursor=True)
+
     async def handle_keypress(self, key: int):
         if key == curses.KEY_RESIZE:
             await self.resize()
@@ -195,6 +220,10 @@ class InputOutputWorkspace:
             self.command_entry_handler(key)
         elif self.input_mode == INPUT_MODE.READ_ONLY:
             self.read_only_handler(key)
+        elif self.input_mode == INPUT_MODE.VISUAL:
+            self.visual_mode_handler(key)
+        elif self.input_mode == INPUT_MODE.VISUAL_LINE:
+            self.visual_line_mode_handler(key)
 
     def submit(self):
         logger.info("Submit(print=%s)", print)
@@ -343,6 +372,14 @@ class InputOutputWorkspace:
             logger.info("Command: :")
             self.enter_command_entry_mode()
 
+        elif key == ord("v"):
+            logger.info("Command: v (visual mode)")
+            self.enter_visual_mode()
+
+        elif key == ord("V"):
+            logger.info("Command: V (visual line mode)")
+            self.enter_visual_line_mode()
+
         elif key == ord("\n") or key == ord("\r"):
             logger.info("Key: Enter")
             self.submit()
@@ -373,3 +410,129 @@ class InputOutputWorkspace:
 
         else:
             self.text_handler(key)
+
+    def visual_mode_handler(self, key: int):
+        """Handle keypresses in VISUAL mode (character-wise selection)."""
+        logger.debug("visual_mode_handler.key_pressed: %s", chr(key))
+
+        # Navigation keys - move cursor and extend selection
+        if key == ord("j") or key == curses.KEY_DOWN:
+            logger.info("Command: j (cursor down)")
+            self.focused_box.cursor_down()
+
+        elif key == ord("k") or key == curses.KEY_UP:
+            logger.info("Command: k (cursor up)")
+            self.focused_box.cursor_up()
+
+        elif key == ord("h") or key == curses.KEY_LEFT:
+            logger.info("Command: h (cursor left)")
+            self.focused_box.cursor_left()
+
+        elif key == ord("l") or key == curses.KEY_RIGHT:
+            logger.info("Command: l (cursor right)")
+            self.focused_box.cursor_right()
+
+        elif key == ord("w"):
+            logger.info("Command: w (word forward)")
+            self.focused_box.word_forward()
+
+        elif key == ord("b"):
+            logger.info("Command: b (word backward)")
+            self.focused_box.word_backward()
+
+        elif key == ord("$"):
+            logger.info("Command: $ (end of line)")
+            self.focused_box.end_of_line()
+
+        elif key == ord("0"):
+            logger.info("Command: 0 (start of line)")
+            self.focused_box.start_of_line()
+
+        # Operations on selection
+        elif key == ord("d"):
+            logger.info("Command: d (delete selection)")
+            self.yank_register = self.focused_box.text.delete_selection()
+            self.enter_command_mode()
+
+        elif key == ord("y"):
+            logger.info("Command: y (yank selection)")
+            self.yank_register = self.focused_box.text.get_selected_text()
+            self.focused_box.text.end_selection()
+            self.enter_command_mode()
+
+        elif key == ord("c"):
+            logger.info("Command: c (change selection)")
+            self.yank_register = self.focused_box.text.delete_selection()
+            self.enter_insert_mode()
+
+        # Exit visual mode
+        elif key == 27:  # Escape
+            logger.info("Command: Escape")
+            self.focused_box.text.end_selection()
+            self.enter_command_mode()
+
+        elif key == ord("v"):
+            # Pressing 'v' again exits visual mode
+            logger.info("Command: v (exit visual mode)")
+            self.focused_box.text.end_selection()
+            self.enter_command_mode()
+
+    def visual_line_mode_handler(self, key: int):
+        """Handle keypresses in VISUAL LINE mode (line-wise selection)."""
+        logger.debug("visual_line_mode_handler.key_pressed: %s", chr(key))
+
+        # Navigation keys - move cursor and extend selection (line-wise)
+        if key == ord("j") or key == curses.KEY_DOWN:
+            logger.info("Command: j (cursor down)")
+            self.focused_box.cursor_down()
+            # In visual line mode, ensure we select full lines
+            self.focused_box.start_of_line()
+
+        elif key == ord("k") or key == curses.KEY_UP:
+            logger.info("Command: k (cursor up)")
+            self.focused_box.cursor_up()
+            # In visual line mode, ensure we select full lines
+            self.focused_box.start_of_line()
+
+        # Line operations
+        elif key == ord("d"):
+            logger.info("Command: d (delete lines)")
+            # For line mode, we want to delete entire lines
+            # First, get selection range
+            if self.focused_box.text.is_selecting:
+                start = self.focused_box.text.selection_start
+                end = self.focused_box.text.cursor_position
+
+                # Ensure start is before end
+                if start.lineno > end.lineno:
+                    start, end = end, start
+
+                # Expand to full lines
+                self.focused_box.text.goto(start)
+                self.focused_box.start_of_line()
+                start = self.focused_box.text.cursor_position
+
+                self.focused_box.text.goto(end)
+                self.focused_box.end_of_line()
+
+                # Delete the selection
+                self.yank_register = self.focused_box.text.delete_selection()
+            self.enter_command_mode()
+
+        elif key == ord("y"):
+            logger.info("Command: y (yank lines)")
+            self.yank_register = self.focused_box.text.get_selected_text()
+            self.focused_box.text.end_selection()
+            self.enter_command_mode()
+
+        # Exit visual line mode
+        elif key == 27:  # Escape
+            logger.info("Command: Escape")
+            self.focused_box.text.end_selection()
+            self.enter_command_mode()
+
+        elif key == ord("V"):
+            # Pressing 'V' again exits visual line mode
+            logger.info("Command: V (exit visual line mode)")
+            self.focused_box.text.end_selection()
+            self.enter_command_mode()
