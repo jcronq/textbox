@@ -638,3 +638,156 @@ class Text:
     def __iter__(self):
         for line in self._text_lines:
             yield line
+
+    def delete_current_line(self) -> str:
+        """Delete the entire current line and return the deleted text.
+
+        Returns:
+            str: The deleted line text
+        """
+        if len(self._text_lines) == 0:
+            return ""
+
+        deleted_line = str(self._text_lines[self._line_ptr])
+
+        # Delete the line
+        self._text_lines.pop(self._line_ptr)
+
+        # If we deleted the last line and there are still lines, move up
+        if self._line_ptr > 0 and self._line_ptr >= len(self._text_lines):
+            self._line_ptr -= 1
+
+        # If we deleted all lines, create an empty line
+        if len(self._text_lines) == 0:
+            self._text_lines.append(TextLine())
+            self._line_ptr = 0
+
+        # Adjust column pointer if needed
+        if self.column_ptr > len(self.current_line):
+            self.to_end_of_line()
+
+        return deleted_line
+
+    def insert_line_below(self) -> None:
+        """Insert an empty line below the current line and move cursor to it."""
+        # Insert new empty line after current line
+        self._text_lines.insert(self._line_ptr + 1, TextLine())
+        # Move to the new line
+        self._line_ptr += 1
+        # Move cursor to start of line
+        self.to_start_of_line()
+
+    def insert_line_above(self) -> None:
+        """Insert an empty line above the current line and move cursor to it."""
+        # Insert new empty line before current line
+        self._text_lines.insert(self._line_ptr, TextLine())
+        # Cursor is already on the new line (same index, but content shifted down)
+        # Move cursor to start of line
+        self.to_start_of_line()
+
+    def join_with_next_line(self) -> None:
+        """Join the current line with the next line, adding a space between them."""
+        # If there's no next line, do nothing
+        if self._line_ptr >= len(self._text_lines) - 1:
+            return
+
+        current_line_text = str(self.current_line)
+        next_line_text = str(self.next_line)
+
+        # Join with a space
+        joined_text = current_line_text + " " + next_line_text
+
+        # Replace current line with joined text
+        self._text_lines[self._line_ptr] = TextLine(joined_text)
+
+        # Delete the next line
+        self._text_lines.pop(self._line_ptr + 1)
+
+    def get_current_line(self) -> str:
+        """Get the text of the current line.
+
+        Returns:
+            str: The current line text
+        """
+        if len(self._text_lines) == 0:
+            return ""
+        return str(self.current_line)
+
+    def paste_after(self, text: str) -> None:
+        """Paste text after the cursor position.
+
+        Args:
+            text: Text to paste
+        """
+        if not text:
+            return
+
+        current_line = self.current_line
+        current_text = str(current_line)
+
+        # Insert text after cursor position
+        # If at end of line, append
+        if self.column_ptr >= len(current_text):
+            new_text = current_text + text
+            new_cursor = len(current_text) + len(text)
+        else:
+            # Insert after current character
+            insert_pos = self.column_ptr + 1
+            new_text = current_text[:insert_pos] + text + current_text[insert_pos:]
+            new_cursor = insert_pos + len(text)
+
+        # Update line
+        self._text_lines[self._line_ptr] = TextLine(new_text)
+        self._column_ptr = new_cursor
+
+        # Move cursor to end of pasted text (vim behavior)
+        if self._column_ptr > 0:
+            self._column_ptr -= 1
+
+    def paste_before(self, text: str) -> None:
+        """Paste text before the cursor position.
+
+        Args:
+            text: Text to paste
+        """
+        if not text:
+            return
+
+        current_line = self.current_line
+        current_text = str(current_line)
+
+        # Insert text at cursor position
+        insert_pos = self.column_ptr
+        new_text = current_text[:insert_pos] + text + current_text[insert_pos:]
+
+        # Update line
+        self._text_lines[self._line_ptr] = TextLine(new_text)
+
+        # Move cursor to end of pasted text
+        self._column_ptr = insert_pos + len(text)
+
+        # Move cursor to end of pasted text (vim behavior)
+        if self._column_ptr > 0:
+            self._column_ptr -= 1
+
+    def delete_to_end_of_line(self) -> str:
+        """Delete from cursor position to end of current line.
+
+        Returns:
+            str: The deleted text
+        """
+        if len(self._text_lines) == 0:
+            return ""
+
+        current_line = self.current_line
+        deleted_text = str(current_line)[self.column_ptr:]
+
+        # Keep only the text before cursor
+        new_line_text = str(current_line)[:self.column_ptr]
+        self._text_lines[self._line_ptr] = TextLine(new_line_text)
+
+        # Adjust cursor if needed (shouldn't be necessary, but be safe)
+        if self.column_ptr > len(self.current_line):
+            self.to_end_of_line()
+
+        return deleted_text

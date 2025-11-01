@@ -1,4 +1,3 @@
-import asyncio
 import curses
 from enum import Enum
 from typing import Callable
@@ -8,9 +7,10 @@ from textbox.ui.input_manager import AsyncInputManager
 from textbox.ui.input_box import InputBox
 from textbox.ui.text_box import TextBox
 from textbox.core.text import Text
-from textbox.utils.box_types import BoundingBox, Dimensions
+from textbox.utils.box_types import BoundingBox
 from textbox.utils.signals import WindowQuit, DelayedRedraw
 from textbox.utils.color_code import ColorCode
+from textbox.utils.registers import RegisterManager
 
 import logging
 
@@ -59,7 +59,9 @@ class InputOutputWorkspace:
 
         self._focused_box: TextBox = self.user_box
         self.input_mode = INPUT_MODE.COMMAND
-        self.yank_register = ""  # Store yanked (copied) text
+        self.register_manager = RegisterManager()  # Vim-style registers for copy/paste
+        self._pending_register = None  # Register name specified by " prefix
+        self._last_command_key = None  # Track last key for double-key commands (dd, yy, cc, etc)
         input_manager.on_keypress = self.handle_keypress
         input_manager.redraw = self.redraw
 
@@ -305,6 +307,53 @@ class InputOutputWorkspace:
 
     def command_handler(self, key: int):
         logger.debug("command_handler.key_pressed: %s", chr(key))
+
+        # Handle register prefix first
+        if self._pending_register is True:
+            # The previous key was ", this key is the register name
+            register_char = chr(key)
+            if register_char in "abcdefghijklmnopqrstuvwxyz0123456789\"":
+                self._pending_register = register_char
+                logger.info(f"Register selected: {register_char}")
+                return
+            else:
+                # Invalid register, reset
+                logger.warning(f"Invalid register: {register_char}")
+                self._pending_register = None
+                return
+
+        # Handle double-key commands (dd, yy, cc)
+        if key == ord("d") and self._last_command_key == ord("d"):
+            logger.info("Command: dd (delete line)")
+            deleted = self.focused_box.text.delete_current_line()
+            self.register_manager.delete_to_register(self._pending_register, deleted)
+            self._pending_register = None
+            self.focused_box.redraw(with_cursor=True)
+            self._last_command_key = None
+            return
+
+        elif key == ord("y") and self._last_command_key == ord("y"):
+            logger.info("Command: yy (yank line)")
+            yanked = self.focused_box.text.get_current_line()
+            self.register_manager.yank_to_register(self._pending_register, yanked)
+            self._pending_register = None
+            self.focused_box.redraw(with_cursor=True)
+            self._last_command_key = None
+            return
+
+        elif key == ord("c") and self._last_command_key == ord("c"):
+            logger.info("Command: cc (change line)")
+            deleted = self.focused_box.text.delete_current_line()
+            self.register_manager.delete_to_register(self._pending_register, deleted)
+            self._pending_register = None
+            self.enter_insert_mode()
+            self._last_command_key = None
+            return
+
+        # Reset last command key if different key pressed
+        if key != self._last_command_key:
+            self._last_command_key = None
+
         if key == curses.KEY_UP:
             logger.info("Command: Up")
             self.focused_box.history_scroll_up()
@@ -334,12 +383,36 @@ class InputOutputWorkspace:
             self.focused_box.cursor_right()
 
         elif key == ord("a"):
-            logger.info("Command: i")
+            logger.info("Command: a (append)")
+            self.enter_insert_mode(append=True)
+            logger.info("Input Mode: %s", self.input_mode)
+
+        elif key == ord("A"):
+            logger.info("Command: A (append at end of line)")
+            self.focused_box.text.to_end_of_line()
             self.enter_insert_mode(append=True)
             logger.info("Input Mode: %s", self.input_mode)
 
         elif key == ord("i"):
-            logger.info("Command: i")
+            logger.info("Command: i (insert)")
+            self.enter_insert_mode()
+            logger.info("Input Mode: %s", self.input_mode)
+
+        elif key == ord("I"):
+            logger.info("Command: I (insert at beginning of line)")
+            self.focused_box.text.to_start_of_line()
+            self.enter_insert_mode()
+            logger.info("Input Mode: %s", self.input_mode)
+
+        elif key == ord("o"):
+            logger.info("Command: o (open line below)")
+            self.focused_box.text.insert_line_below()
+            self.enter_insert_mode()
+            logger.info("Input Mode: %s", self.input_mode)
+
+        elif key == ord("O"):
+            logger.info("Command: O (open line above)")
+            self.focused_box.text.insert_line_above()
             self.enter_insert_mode()
             logger.info("Input Mode: %s", self.input_mode)
 
@@ -360,13 +433,66 @@ class InputOutputWorkspace:
             self.focused_box.start_of_line()
 
         elif key == ord("R"):
-            logger.info("Command: R")
+            logger.info("Command: R (replace mode)")
             self.enter_replace_mode()
             logger.info("Input Mode: %s", self.input_mode)
 
         elif key == ord("x"):
-            logger.info("Command: x")
+            logger.info("Command: x (delete char)")
             self.focused_box.handle_backspace()
+
+        elif key == ord('"'):
+            logger.info("Command: \" (register prefix)")
+            self._pending_register = True  # Next key will be register name
+
+        elif key == ord("y"):
+            logger.info("Command: y (waiting for second y)")
+            self._last_command_key = ord("y")
+
+        elif key == ord("d"):
+            logger.info("Command: d (waiting for second d)")
+            self._last_command_key = ord("d")
+
+        elif key == ord("c"):
+            logger.info("Command: c (waiting for second c)")
+            self._last_command_key = ord("c")
+
+        elif key == ord("p"):
+            logger.info("Command: p (paste after)")
+            register = self._pending_register if self._pending_register and self._pending_register is not True else None
+            content = self.register_manager.get_register(register if register else '"')
+            if content:
+                self.focused_box.text.paste_after(content)
+                self.focused_box.redraw(with_cursor=True)
+            self._pending_register = None
+
+        elif key == ord("P"):
+            logger.info("Command: P (paste before)")
+            register = self._pending_register if self._pending_register and self._pending_register is not True else None
+            content = self.register_manager.get_register(register if register else '"')
+            if content:
+                self.focused_box.text.paste_before(content)
+                self.focused_box.redraw(with_cursor=True)
+            self._pending_register = None
+
+        elif key == ord("C"):
+            logger.info("Command: C (change to end of line)")
+            deleted = self.focused_box.text.delete_to_end_of_line()
+            self.register_manager.delete_to_register(self._pending_register, deleted)
+            self._pending_register = None
+            self.enter_insert_mode()
+
+        elif key == ord("D"):
+            logger.info("Command: D (delete to end of line)")
+            deleted = self.focused_box.text.delete_to_end_of_line()
+            self.register_manager.delete_to_register(self._pending_register, deleted)
+            self._pending_register = None
+            self.focused_box.redraw(with_cursor=True)
+
+        elif key == ord("J"):
+            logger.info("Command: J (join lines)")
+            self.focused_box.text.join_with_next_line()
+            self.focused_box.redraw(with_cursor=True)
 
         elif key == ord(":"):
             logger.info("Command: :")
@@ -451,18 +577,24 @@ class InputOutputWorkspace:
         # Operations on selection
         elif key == ord("d"):
             logger.info("Command: d (delete selection)")
-            self.yank_register = self.focused_box.text.delete_selection()
+            deleted = self.focused_box.text.delete_selection()
+            self.register_manager.delete_to_register(self._pending_register, deleted)
+            self._pending_register = None
             self.enter_command_mode()
 
         elif key == ord("y"):
             logger.info("Command: y (yank selection)")
-            self.yank_register = self.focused_box.text.get_selected_text()
+            yanked = self.focused_box.text.get_selected_text()
+            self.register_manager.yank_to_register(self._pending_register, yanked)
+            self._pending_register = None
             self.focused_box.text.end_selection()
             self.enter_command_mode()
 
         elif key == ord("c"):
             logger.info("Command: c (change selection)")
-            self.yank_register = self.focused_box.text.delete_selection()
+            deleted = self.focused_box.text.delete_selection()
+            self.register_manager.delete_to_register(self._pending_register, deleted)
+            self._pending_register = None
             self.enter_insert_mode()
 
         # Exit visual mode
@@ -516,12 +648,16 @@ class InputOutputWorkspace:
                 self.focused_box.end_of_line()
 
                 # Delete the selection
-                self.yank_register = self.focused_box.text.delete_selection()
+                deleted = self.focused_box.text.delete_selection()
+                self.register_manager.delete_to_register(self._pending_register, deleted)
+                self._pending_register = None
             self.enter_command_mode()
 
         elif key == ord("y"):
             logger.info("Command: y (yank lines)")
-            self.yank_register = self.focused_box.text.get_selected_text()
+            yanked = self.focused_box.text.get_selected_text()
+            self.register_manager.yank_to_register(self._pending_register, yanked)
+            self._pending_register = None
             self.focused_box.text.end_selection()
             self.enter_command_mode()
 
