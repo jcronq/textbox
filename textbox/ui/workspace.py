@@ -477,8 +477,13 @@ class InputOutputWorkspace:
 
         elif key == ord("C"):
             logger.info("Command: C (change to end of line)")
-            deleted = self.focused_box.text.delete_to_end_of_line()
-            self.register_manager.delete_to_register(self._pending_register, deleted)
+            # Check if cursor is already at end of line
+            text = self.focused_box.text
+            if text.column_ptr < text.last_column_on_line:
+                # Delete from cursor to end of line
+                deleted = text.delete_to_end_of_line()
+                self.register_manager.delete_to_register(self._pending_register, deleted)
+            # If already at end of line, don't delete anything, just enter INSERT mode
             self._pending_register = None
             self.enter_insert_mode()
 

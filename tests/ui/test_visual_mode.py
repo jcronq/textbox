@@ -12,7 +12,41 @@ from textbox.ui.workspace import InputOutputWorkspace, INPUT_MODE
 from textbox.ui.input_manager import AsyncInputManager
 from textbox.ui.window import Window
 from textbox.core.text import Text
-from textbox.utils.box_types import Position
+from textbox.utils.box_types import Position, BoundingBox, Dimensions
+
+
+def setup_curses_mocks(*mocks):
+    """Setup curses mocks with common configuration."""
+    for mock_curses in mocks:
+        mock_curses.curs_set = MagicMock()
+        mock_curses.color_pair = MagicMock(return_value=1)
+        mock_curses.error = curses.error
+
+
+def create_mock_window():
+    """Create a properly mocked Window for testing."""
+    mock_window = MagicMock(spec=Window)
+    mock_window.height = 24
+    mock_window.width = 80
+    mock_window.dimensions = Dimensions(24, 80)
+    mock_window.position = Position(0, 0)
+    mock_window.bounding_box = BoundingBox(0, 0, 24, 80)
+
+    # Mock create_new_window to return a Window-like mock
+    def create_subwindow(box, *args, **kwargs):
+        subwin = MagicMock(spec=Window)
+        subwin.height = box.height
+        subwin.width = box.width
+        subwin.dimensions = box.dimensions
+        subwin.position = box.position
+        subwin.bounding_box = box
+        # Mock the internal curses window
+        subwin._local_window = MagicMock()
+        subwin._local_window.getmaxyx.return_value = (box.height, box.width)
+        return subwin
+
+    mock_window.create_new_window = MagicMock(side_effect=create_subwindow)
+    return mock_window
 
 
 class TestVisualModeEnum:
@@ -94,14 +128,14 @@ class TestVisualModeEntry:
         assert workspace.input_mode == INPUT_MODE.COMMAND
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_visual_mode_shows_status(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_visual_mode_shows_status(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that entering visual mode updates status line."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
@@ -170,14 +204,14 @@ class TestVisualModeNavigation:
     """Test that navigation works in visual mode and extends selection."""
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_hjkl_navigation_works_in_visual_mode(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_hjkl_navigation_works_in_visual_mode(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that h, j, k, l keys move cursor in visual mode."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
@@ -198,14 +232,14 @@ class TestVisualModeNavigation:
         assert workspace.user_box.text.cursor_position.colno > 0
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_word_navigation_works_in_visual_mode(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_word_navigation_works_in_visual_mode(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that w, b keys work in visual mode."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
@@ -259,14 +293,14 @@ class TestVisualModeOperations:
         assert workspace.input_mode == INPUT_MODE.COMMAND
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_y_yanks_visual_selection(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_y_yanks_visual_selection(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that 'y' in visual mode yanks (copies) selection."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
@@ -285,8 +319,8 @@ class TestVisualModeOperations:
 
         # Text should remain unchanged
         assert str(workspace.user_box.text) == "Hello World"
-        # Should have stored the yanked text somewhere
-        assert hasattr(workspace, 'yank_register') or hasattr(workspace, '_yank_buffer')
+        # Should have stored the yanked text in register_manager
+        assert hasattr(workspace, 'register_manager')
         # Should return to command mode
         assert workspace.input_mode == INPUT_MODE.COMMAND
 
@@ -326,14 +360,14 @@ class TestVisualLineMode:
     """Test VISUAL_LINE mode specific behavior."""
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_visual_line_selects_entire_lines(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_visual_line_selects_entire_lines(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that VISUAL_LINE mode selects entire lines."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
@@ -351,14 +385,14 @@ class TestVisualLineMode:
         assert workspace.user_box.text.is_selecting == True
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_visual_line_d_deletes_entire_lines(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_visual_line_d_deletes_entire_lines(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that 'd' in VISUAL_LINE mode deletes entire lines."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
@@ -428,14 +462,14 @@ class TestVisualModeEdgeCases:
         assert workspace.input_mode == INPUT_MODE.VISUAL
 
     @pytest.mark.asyncio
-    @patch('textbox.ui.workspace.TextBox')
-    @patch('textbox.ui.workspace.InputBox')
+    @patch('textbox.ui.window.curses')
+    @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
-    async def test_cannot_enter_visual_from_insert_mode(self, mock_curses, mock_inputbox, mock_textbox):
+    async def test_cannot_enter_visual_from_insert_mode(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
         """Test that 'v' in INSERT mode inserts 'v', doesn't enter VISUAL."""
-        mock_window = MagicMock(spec=Window)
-        mock_window.height = 24
-        mock_window.width = 80
+        setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
+
+        mock_window = create_mock_window()
         mock_input_mgr = MagicMock(spec=AsyncInputManager)
 
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)

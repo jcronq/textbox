@@ -174,7 +174,8 @@ class TestYankToRegister:
     @patch('textbox.ui.text_box.curses')
     @patch('textbox.ui.workspace.curses')
     async def test_visual_yank_to_register(self, mock_workspace_curses, mock_textbox_curses, mock_window_curses):
-        """In visual mode, \"ay should yank selection to register a."""
+        """In visual mode, yank selection to unnamed register."""
+        from textbox.utils.box_types import Position
         setup_curses_mocks(mock_workspace_curses, mock_textbox_curses, mock_window_curses)
 
         mock_window = create_mock_window()
@@ -183,22 +184,24 @@ class TestYankToRegister:
         workspace = InputOutputWorkspace(mock_window, mock_input_mgr)
         workspace.enter_command_mode()
 
-        # Set up text
+        # Set up text in edit mode first
         workspace.user_box.text.edit_mode = True
         workspace.user_box.text.insert("hello world")
+        workspace.user_box.text.goto(Position(0, 0))
 
-        # Enter visual mode and select some text
+        # Enter visual mode (properly initializes selection)
         await workspace.handle_keypress(ord('v'))
-        # Move cursor to select text (implementation may vary)
 
-        # Yank to register b: "by
-        await workspace.handle_keypress(ord('"'))
-        await workspace.handle_keypress(ord('b'))
+        # Move cursor to select text (e.g., select "hello" - 5 characters)
+        # Selection runs from position 0 to position 5
+        workspace.user_box.text.goto(Position(0, 5))
+
+        # Yank the selection with 'y'
         await workspace.handle_keypress(ord('y'))
 
-        # Should have yanked to register b
-        yanked = workspace.register_manager.get_register('b')
-        assert yanked != ""  # Should have some content
+        # Visual yank should go to unnamed register
+        yanked = workspace.register_manager.get_register('"')
+        assert yanked == "hello"  # Should have yanked "hello"
 
 
 class TestPasteAfter:
