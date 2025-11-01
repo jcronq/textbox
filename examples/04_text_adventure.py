@@ -249,15 +249,16 @@ def main():
     first_run = [True]
 
     @app.on_submit
-    def handle_input(command: str):
+    def handle_input(command: Text):
         """Handle player commands."""
         if first_run[0]:
             first_run[0] = False
             app.print(create_colored_text(welcome_segments))
             app.print(look_room(state))
 
-        if command.strip():
-            result = parse_command(command, state, app)
+        command_str = command.text.strip()
+        if command_str:
+            result = parse_command(command_str, state, app)
             app.print(result)
 
     @app.command("restart", help="Restart the game")

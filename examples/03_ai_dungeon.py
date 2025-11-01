@@ -9,7 +9,7 @@ Requires: ANTHROPIC_API_KEY environment variable (falls back to mock mode if not
 import asyncio
 from textbox import App, Text, TextLine, TextSegment
 from textbox.utils.color_code import ColorCode
-from shared_helpers import COLORS, get_claude_client, has_api_key
+from shared_helpers import COLORS, get_claude_client, has_api_key, create_text_from_string
 
 # System prompt for dungeon master
 DUNGEON_SYSTEM_PROMPT = """You are a dungeon master for a fantasy text adventure game.
@@ -87,8 +87,8 @@ class GameState:
 
 
 def create_colored_text(text: str, color: ColorCode) -> Text:
-    """Create colored Text object."""
-    return Text([TextLine([TextSegment(text, color)])])
+    """Create colored Text object. Handles multi-line text."""
+    return create_text_from_string(text, color)
 
 
 def parse_mock_response(location: str, action: str, state: GameState) -> str:
@@ -242,20 +242,21 @@ Type "look" to begin your adventure!
     first_run = [True]
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
-            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
-        if user_input.strip().lower() == "inventory":
+        input_str = user_input.text.strip()
+        if input_str.lower() == "inventory":
             if state.inventory:
                 inv_text = "Inventory: " + ", ".join(state.inventory)
             else:
                 inv_text = "Inventory: Empty"
             app.print(create_colored_text(f"\n{inv_text}\n", COLORS["highlight"]))
-        elif user_input.strip():
-            asyncio.run(handle_action(user_input, state, app, client))
+        elif input_str:
+            asyncio.create_task(handle_action(input_str, state, app, client))
 
     @app.command("back", help="Undo last action")
     def undo_action(cmd):
@@ -286,7 +287,7 @@ Type "look" to begin your adventure!
         state.current_location = "start"
         first_run[0] = True  # Reset first run flag
         app.print(create_colored_text("\n=== Game Restarted ===\n", COLORS["system"]))
-        app.print(create_colored_text(welcome_text, COLORS["system"]))
+        app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
     @app.command("quit", "q", help="Exit the game")
     def quit_game(cmd):

@@ -11,7 +11,7 @@ import asyncio
 import random
 from textbox import App, Text, TextLine, TextSegment
 from textbox.utils.color_code import ColorCode
-from shared_helpers import COLORS, get_claude_client, has_api_key
+from shared_helpers import COLORS, get_claude_client, has_api_key, create_text_from_string
 
 # NPC definitions
 NPCS = {
@@ -56,8 +56,8 @@ LOCATION = {
 
 
 def create_colored_text(text: str, color: ColorCode) -> Text:
-    """Create colored Text object."""
-    return Text([TextLine([TextSegment(text, color)])])
+    """Create colored Text object. Handles multi-line text."""
+    return create_text_from_string(text, color)
 
 
 class MUDClient:
@@ -257,16 +257,17 @@ Note: NPCs will occasionally do things on their own!
     mud.start_ambient_events()
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
-            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            app.print(create_text_from_string(welcome_text, COLORS["system"]))
             # Show initial location
             parse_command("look", mud)
 
-        if user_input.strip():
-            parse_command(user_input, mud)
+        input_str = user_input.text.strip()
+        if input_str:
+            parse_command(input_str, mud)
 
     @app.command("quit", "q", help="Exit the game")
     def quit_game(cmd):

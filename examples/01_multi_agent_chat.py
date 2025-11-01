@@ -10,7 +10,7 @@ Requires: ANTHROPIC_API_KEY environment variable (falls back to mock mode if not
 import asyncio
 from textbox import App, Text, TextLine, TextSegment
 from textbox.utils.color_code import ColorCode
-from shared_helpers import COLORS, get_claude_client, has_api_key
+from shared_helpers import COLORS, get_claude_client, has_api_key, create_text_from_string
 
 # Agent configurations
 AGENTS = {
@@ -40,8 +40,8 @@ MOCK_RESPONSES = {
 
 
 def create_colored_text(text: str, color: ColorCode) -> Text:
-    """Create colored Text object."""
-    return Text([TextLine([TextSegment(text, color)])])
+    """Create colored Text object. Handles multi-line text."""
+    return create_text_from_string(text, color)
 
 
 def get_mock_response(query: str, agent_id: str) -> str:
@@ -133,16 +133,18 @@ Try asking: "What is Python?" or "Explain quantum computing"
     first_run = [True]  # Use list to allow modification in closure
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle user input."""
         # Print welcome on first run
         if first_run[0]:
             first_run[0] = False
-            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
-        if user_input.strip():
-            # Run async handler
-            asyncio.run(handle_user_query(user_input, app, client))
+        # Convert Text to string
+        input_str = user_input.text.strip()
+        if input_str:
+            # Schedule async handler
+            asyncio.create_task(handle_user_query(input_str, app, client))
 
     @app.command("clear", help="Clear conversation")
     def clear_conversation(cmd):

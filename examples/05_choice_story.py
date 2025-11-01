@@ -11,7 +11,7 @@ import asyncio
 import re
 from textbox import App, Text, TextLine, TextSegment
 from textbox.utils.color_code import ColorCode
-from shared_helpers import COLORS, get_claude_client, has_api_key
+from shared_helpers import COLORS, get_claude_client, has_api_key, create_text_from_string
 
 # System prompt for story generation
 STORY_SYSTEM_PROMPT = """You are a creative storyteller for an interactive fiction game.
@@ -93,8 +93,8 @@ class StoryState:
 
 
 def create_colored_text(text: str, color: ColorCode) -> Text:
-    """Create colored Text object."""
-    return Text([TextLine([TextSegment(text, color)])])
+    """Create colored Text object. Handles multi-line text."""
+    return create_text_from_string(text, color)
 
 
 def get_mock_story_node(history_tuple):
@@ -202,22 +202,22 @@ Let's begin your adventure!
     first_run = [True]
 
     @app.on_submit
-    def handle_input(user_input: str):
+    def handle_input(user_input: Text):
         """Handle player input."""
         if first_run[0]:
             first_run[0] = False
-            app.print(create_colored_text(welcome_text, COLORS["system"]))
+            app.print(create_text_from_string(welcome_text, COLORS["system"]))
             # Show initial scene
             if not client:
                 initial_node = get_mock_story_node(())
                 app.print(format_story_with_choices(initial_node["scene"], initial_node["choices"]))
 
-        user_input = user_input.strip()
+        input_str = user_input.text.strip()
 
         # Try to parse as number
         try:
-            choice = int(user_input)
-            asyncio.run(handle_choice(choice, state, app, client))
+            choice = int(input_str)
+            asyncio.create_task(handle_choice(choice, state, app, client))
         except ValueError:
             app.print(create_colored_text("\nPlease enter a number (1, 2, or 3).\n", COLORS["error"]))
 
@@ -243,7 +243,7 @@ Let's begin your adventure!
         state.choice_history.clear()
         first_run[0] = True  # Reset first run flag
         app.print(create_colored_text("\n=== Story Restarted ===\n", COLORS["system"]))
-        app.print(create_colored_text(welcome_text, COLORS["system"]))
+        app.print(create_text_from_string(welcome_text, COLORS["system"]))
 
         # Show initial scene
         if not client:
