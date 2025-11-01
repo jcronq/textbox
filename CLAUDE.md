@@ -6,6 +6,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `textbox` is a Python library for formatting and displaying text in a terminal using the curses library. It provides a vim-like terminal user interface with multiple input modes, text rendering, and rich text support.
 
+**Current Version**: 0.1.0
+**Test Coverage**: 82.38% (329 tests passing)
+**Status**: Production-ready foundation, actively developing v0.2.0 features
+
+## Documentation Structure
+
+### For Quick Context
+- **DOCUMENTATION_GUIDE.md** - Navigation hub for all documentation
+- **docs/PROJECT_HISTORY.md** - Consolidated project history and current state
+
+### For Development Planning
+- **claude-output/plan-v2/** - Current development plan
+  - IMPROVEMENT_SUMMARY.md - Executive summary (start here)
+  - IMPROVEMENT_PLAN.md - Detailed implementation guide
+  - ROADMAP.md - Version planning and progress tracking
+
+### For Historical Reference
+- **archive/** - Historical progress reports and old reviews (reference only)
+
+**IMPORTANT**: When creating new progress reports, plans, or summaries:
+- Use `claude-output/plan-v2/` for current planning documents
+- Update `docs/PROJECT_HISTORY.md` for major milestones
+- Update `claude-output/plan-v2/ROADMAP.md` for progress tracking
+- DO NOT create new progress reports in `docs/progress-reports/` (archived)
+- DO NOT create standalone reports (consolidate into existing documents)
+
 ## Development Commands
 
 ### Installation
@@ -21,16 +47,12 @@ python3 examples/print_colors.py  # Color rendering demo
 ```
 
 ### Running Tests
-Tests use standard Python unittest framework:
+Tests use pytest framework:
 ```bash
-python3 -m unittest discover textbox "*_test.py"
-```
-
-Individual test files can be run directly:
-```bash
-python3 textbox/text_test.py
-python3 textbox/text_line_test.py
-python3 textbox/box_types_test.py
+pytest tests/                          # Run all tests
+pytest tests/ -v                       # Verbose output
+pytest tests/ --cov=textbox           # With coverage report
+pytest tests/ --cov=textbox --cov-report=html  # HTML coverage report
 ```
 
 ### Code Formatting
@@ -52,7 +74,7 @@ make tag             # Create and push git tag for current version
 The `App` class in `textbox/__init__.py` is the main entry point:
 
 1. **Initialization**: `App()` creates the application with empty callbacks
-2. **Start**: `app.start()` or `app.astart()` initializes uvloop and curses, then calls `app.run()`
+2. **Start**: `app.start()` or `app.astart()` initializes asyncio and curses, then calls `app.run()`
 3. **Run Loop**: Creates `AsyncInputManager` and `InputOutputWorkspace`, enters insert mode, and begins event loop
 4. **User Interaction**: `InputOutputWorkspace` handles keypresses and manages three boxes (input, output, command)
 5. **Callbacks**: User-defined callbacks are invoked on submit or command entry
@@ -61,40 +83,42 @@ The `App` class in `textbox/__init__.py` is the main entry point:
 
 ```
 App (textbox/__init__.py)
-├── Window (textbox/window.py)
+├── Window (textbox/ui/window.py)
 │   └── Wraps curses.window with position/dimension tracking
 │
-├── AsyncInputManager (textbox/input_manager.py)
+├── AsyncInputManager (textbox/ui/input_manager.py)
 │   └── Async keyboard input handling
 │
-└── InputOutputWorkspace (textbox/input_output_workspace.py)
+└── InputOutputWorkspace (textbox/ui/workspace.py)
     ├── command_box (InputBox) - Status/command line at bottom
     ├── user_box (InputBox) - User input area (5 lines tall)
     └── output_box (TextBox) - Scrollable output area
 ```
 
-### Text Abstraction Layers
+### Package Structure
 
-The library uses a layered text abstraction system (from low to high level):
+The codebase is organized into three subpackages:
 
-1. **TextSegment** (`textbox/text_segment.py`): A string with color/style attributes
-2. **SegmentedTextLine** (`textbox/segmented_text_line.py`): A line composed of multiple TextSegments
-3. **TextLine** (`textbox/text_line.py`): Single line of text with no newlines, supports cursor operations
-4. **Text** (`textbox/text.py`): Multi-line text block with line/column pointers and edit operations
+**textbox/core/** - Text abstraction layers (low to high level):
+1. **TextSegment** - A string with color/style attributes
+2. **SegmentedTextLine** - A line composed of multiple TextSegments
+3. **TextLine** - Single line with cursor operations, word navigation
+4. **Text** - Multi-line text with insert/replace modes, wrapping
+5. **TextList** - Collection of Text objects
 
-Each layer adds functionality:
-- TextSegment: styling
-- SegmentedTextLine: combines segments
-- TextLine: cursor movement, word navigation, character operations
-- Text: multi-line editing, insert/replace modes, text wrapping
+**textbox/ui/** - User interface components:
+- **Window** - Curses window wrapper
+- **TextBox** - Scrollable text display
+- **InputBox** - Text input with history
+- **InputManager** - Async keyboard input handling
+- **Workspace** - Main UI coordinator with vim modes
 
-### Box Types and Positioning
-
-`textbox/box_types.py` defines coordinate system primitives:
-- **Position**: (lineno, colno) - A point in terminal space
-- **Dimensions**: (height, width) - Size specification
-- **BoundingBox**: (lineno, colno, height, width) - Rectangular area
-- **LineSpan**: (first_lineno, last_lineno) - Range of lines
+**textbox/utils/** - Utility modules:
+- **box_types.py** - Position, Dimensions, BoundingBox, LineSpan
+- **color_code.py** - ColorCode IntEnum for colors
+- **colors.py** - Color helper functions
+- **curses_utils.py** - Curses initialization and cleanup
+- **signals.py** - WindowQuit and DelayedRedraw signals
 
 ### Input Modes
 
@@ -134,7 +158,7 @@ Colors are defined in `textbox/color_code.py` and use curses color pairs. The `C
 ## Key Implementation Details
 
 ### Async Architecture
-- Uses `uvloop` for faster async event loop
+- Uses standard `asyncio` for event loop
 - `AsyncInputManager` runs keyboard input in background task
 - Curses operations remain synchronous but are called from async context
 
@@ -188,9 +212,23 @@ app.print(["Line 1", "Line 2", "Line 3"])
 
 ## Repository Structure
 
-- `textbox/` - Main library source code
-- `examples/` - Usage examples and demos
-- `textbox.bck/` - Legacy/backup code (not used)
-- `version.txt` - Current version number
-- `setup.py` - Package installation configuration
-- `requirements.txt` - Dependencies: termcolor, pyyaml, uvloop
+```
+textbox/
+├── textbox/              # Main library source code
+│   ├── core/            # Text abstraction layers
+│   ├── ui/              # User interface components
+│   └── utils/           # Utility modules
+├── tests/               # Test suite (pytest)
+│   ├── core/           # Core module tests
+│   ├── ui/             # UI component tests
+│   └── utils/          # Utility tests
+├── examples/            # Usage examples and demos
+├── docs/               # User documentation
+│   └── PROJECT_HISTORY.md  # Consolidated project history
+├── claude-output/      # Development planning
+│   └── plan-v2/        # Current development plan
+├── archive/            # Historical documentation (reference only)
+├── pyproject.toml      # Package configuration
+├── requirements.txt    # Dependencies: pyyaml
+└── CLAUDE.md          # This file
+```
