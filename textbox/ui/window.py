@@ -35,31 +35,31 @@ class Window:
                 )
 
     @property
-    def width(self):
+    def width(self) -> int:
         return self.dimensions.width
 
     @property
-    def height(self):
+    def height(self) -> int:
         return self.dimensions.height
 
     @property
-    def start_lineno(self):
+    def start_lineno(self) -> int:
         return self.position.lineno
 
     @property
-    def start_colno(self):
+    def start_colno(self) -> int:
         return self.position.colno
 
     @property
-    def bounding_box(self):
+    def bounding_box(self) -> BoundingBox:
         return BoundingBox(self.start_lineno, self.start_colno, self.height, self.width)
 
     @property
-    def local_box(self):
+    def local_box(self) -> BoundingBox:
         return BoundingBox(0, 0, self.height, self.width)
 
     @property
-    def main_window(self):
+    def main_window(self) -> curses.window:
         if self.__parent is None:
             return self
         return self.__parent.main_window
@@ -79,20 +79,20 @@ class Window:
         self.__children.append(new_window)
         return new_window
 
-    def refresh(self, verbose=False):
+    def refresh(self, verbose=False) -> None:
         self._local_window.refresh()
 
-    def refresh_all(self, verbose=False):
+    def refresh_all(self, verbose=False) -> None:
         self._local_window.refresh()
         for subwin in self.__children:
             subwin.refresh()
 
-    def erase(self, verbose=False):
+    def erase(self, verbose=False) -> None:
         if verbose:
             logger.info("Erased window")
         self._local_window.erase()
 
-    def addch(self, ch: str, position: Position = None, attributes: list = None, verbose=False):
+    def addch(self, ch: str, position: Position = None, attributes: list = None, verbose=False) -> None:
         if type(ch) is not str:
             raise ValueError(f"ch must be a string, not {type(ch)}")
         if len(ch) != 1:
@@ -110,7 +110,7 @@ class Window:
         else:
             self._local_window.addch(str(ch))
 
-    def addstr(self, text: str, position: Position = None, attributes: list = None, verbose=False):
+    def addstr(self, text: str, position: Position = None, attributes: list = None, verbose=False) -> None:
         if attributes is None:
             attributes = []
         if position is None:

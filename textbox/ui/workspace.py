@@ -96,7 +96,7 @@ class InputOutputWorkspace:
             width=self.main_window.width,
         )
 
-    async def resize(self):
+    async def resize(self) -> None:
         logger.info("Event: Resize")
         curses.update_lines_cols()
         curses.resize_term(curses.LINES, curses.COLS)
@@ -141,7 +141,7 @@ class InputOutputWorkspace:
         curses.curs_set(0)
         self.focused_box.refresh()
 
-    def enter_replace_mode(self):
+    def enter_replace_mode(self) -> None:
         curses.curs_set(1)
         self.input_mode = INPUT_MODE.REPLACE
         self.focused_box = self.user_box
@@ -161,7 +161,7 @@ class InputOutputWorkspace:
         logger.info("Input Mode: INSERT")
         self.focused_box.refresh()
 
-    def enter_command_mode(self):
+    def enter_command_mode(self) -> None:
         curses.curs_set(1)
         self.input_mode = INPUT_MODE.COMMAND
         self.command_box.set_text_to_str("")

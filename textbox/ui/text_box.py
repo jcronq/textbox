@@ -218,7 +218,7 @@ class TextBox:
         self.add_text(text)
         self.redraw()
 
-    def add_text(self, text: Text):
+    def add_text(self, text: Text) -> None:
         text.max_line_width = self.printable_width
         self._text_list.add_text(text)
         self.redraw()
@@ -235,7 +235,7 @@ class TextBox:
     #     self._text_list.add_text_segments(text)
     #     self.redraw()
 
-    def end_current_text(self):
+    def end_current_text(self) -> None:
         self._text_list.increment_text_ptr()
 
     def add_char(self, text: str):

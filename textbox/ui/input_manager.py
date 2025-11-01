@@ -9,7 +9,7 @@ logger = logging.getLogger()
 
 
 class AsyncInputManager:
-    def __init__(self, window: Window):
+    def __init__(self, window: Window) -> None:
         self.window = window
         self.on_keypress = lambda x: None
         self.redraw = lambda: None
@@ -49,5 +49,5 @@ class AsyncInputManager:
             except curses.error:
                 await asyncio.sleep(sleep_time)
 
-    def stop(self):
+    def stop(self) -> None:
         self.running = False
