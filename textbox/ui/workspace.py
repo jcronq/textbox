@@ -43,6 +43,7 @@ class INPUT_MODE(Enum):
     READ_ONLY = 4
     VISUAL = 5
     VISUAL_LINE = 6
+    SEARCH_ENTRY = 7
 
 
 class InputOutputWorkspace:
@@ -77,6 +78,13 @@ class InputOutputWorkspace:
         self.command_history = CommandHistory()  # Undo/redo history
         self._pending_register = None  # Register name specified by " prefix
         self._last_command_key = None  # Track last key for double-key commands (dd, yy, cc, etc)
+
+        # Search state
+        self._search_pattern = ""
+        self._search_forward = True  # True for '/', False for '?'
+        self._last_search_pattern = ""
+        self._last_search_forward = True
+
         input_manager.on_keypress = self.handle_keypress
         input_manager.redraw = self.redraw
 
@@ -241,6 +249,8 @@ class InputOutputWorkspace:
             self.visual_mode_handler(key)
         elif self.input_mode == INPUT_MODE.VISUAL_LINE:
             self.visual_line_mode_handler(key)
+        elif self.input_mode == INPUT_MODE.SEARCH_ENTRY:
+            self.search_entry_handler(key)
 
     def submit(self):
         logger.info("Submit(print=%s)", print)
@@ -561,6 +571,22 @@ class InputOutputWorkspace:
             logger.info("Command: :")
             self.enter_command_entry_mode()
 
+        elif key == ord("/"):
+            logger.info("Command: / (forward search)")
+            self.enter_search_mode(forward=True)
+
+        elif key == ord("?"):
+            logger.info("Command: ? (backward search)")
+            self.enter_search_mode(forward=False)
+
+        elif key == ord("n"):
+            logger.info("Command: n (next search result)")
+            self.search_next()
+
+        elif key == ord("N"):
+            logger.info("Command: N (previous search result)")
+            self.search_previous()
+
         elif key == ord("v"):
             logger.info("Command: v (visual mode)")
             self.enter_visual_mode()
@@ -746,3 +772,160 @@ class InputOutputWorkspace:
             logger.info("Command: V (exit visual line mode)")
             self.focused_box.text.end_selection()
             self.enter_command_mode()
+
+    def enter_search_mode(self, forward: bool = True):
+        """Enter search entry mode."""
+        self.input_mode = INPUT_MODE.SEARCH_ENTRY
+        self._search_forward = forward
+        self._search_pattern = ""
+        # Show search prompt in command box
+        prompt = "/" if forward else "?"
+        self.command_box.text.erase()
+        self.command_box.text.edit_mode = True
+        self.command_box.text.insert(prompt)
+        self.command_box.redraw(with_cursor=True)
+        logger.info("Input Mode: SEARCH_ENTRY (%s)", "forward" if forward else "backward")
+
+    def search_entry_handler(self, key: int):
+        """Handle keypresses in SEARCH_ENTRY mode."""
+        if key == ord('\n') or key == ord('\r'):
+            # Execute search
+            logger.info("Executing search: %s", self._search_pattern)
+            self.execute_search()
+        elif key == 27:  # ESC
+            # Cancel search
+            logger.info("Search cancelled")
+            self.command_box.text.erase()
+            self.enter_command_mode()
+        elif key == curses.KEY_BACKSPACE or key == 127 or key == 8:
+            # Handle backspace
+            if len(self._search_pattern) > 0:
+                self._search_pattern = self._search_pattern[:-1]
+                # Update command box
+                prompt = "/" if self._search_forward else "?"
+                self.command_box.text.erase()
+                self.command_box.text.edit_mode = True
+                self.command_box.text.insert(prompt + self._search_pattern)
+                self.command_box.redraw(with_cursor=True)
+        elif 32 <= key <= 126:  # Printable characters
+            # Add character to search pattern
+            self._search_pattern += chr(key)
+            # Update command box
+            self.command_box.text.insert(chr(key))
+            self.command_box.redraw(with_cursor=True)
+
+    def execute_search(self):
+        """Execute the current search and move cursor to first match."""
+        if not self._search_pattern:
+            self.enter_command_mode()
+            return
+
+        # Save search pattern for n/N commands
+        self._last_search_pattern = self._search_pattern
+        self._last_search_forward = self._search_forward
+
+        # Perform search
+        found = self._perform_search(self._search_pattern, self._search_forward)
+
+        # Return to command mode first
+        self.input_mode = INPUT_MODE.COMMAND
+        self.focused_box.text.edit_mode = False
+        curses.curs_set(1)
+        logger.info("Input Mode: COMMAND")
+
+        # Then set the message in command box
+        self.command_box.text.erase()
+        if found:
+            self.command_box.set_text_to_str(f"/{self._search_pattern}" if self._search_forward else f"?{self._search_pattern}")
+        else:
+            self.command_box.set_text_to_str(f"Pattern not found: {self._search_pattern}")
+
+    def search_next(self):
+        """Find next occurrence of last search pattern."""
+        if not self._last_search_pattern:
+            self.command_box.set_text_to_str("No previous search pattern")
+            return
+
+        found = self._perform_search(self._last_search_pattern, self._last_search_forward, skip_current=True)
+        if not found:
+            self.command_box.set_text_to_str("Search hit BOTTOM, continuing at TOP")
+
+    def search_previous(self):
+        """Find previous occurrence of last search pattern."""
+        if not self._last_search_pattern:
+            self.command_box.set_text_to_str("No previous search pattern")
+            return
+
+        # Reverse direction for N
+        found = self._perform_search(self._last_search_pattern, not self._last_search_forward, skip_current=True)
+        if not found:
+            self.command_box.set_text_to_str("Search hit TOP, continuing at BOTTOM")
+
+    def _perform_search(self, pattern: str, forward: bool = True, skip_current: bool = False) -> bool:
+        """Perform search and move cursor to match. Returns True if found."""
+        text = self.focused_box.text
+        current_line = text.line_ptr
+        current_col = text.column_ptr
+
+        # If skipping current position (for n/N), start from next/previous position
+        if skip_current:
+            if forward:
+                current_col += 1
+            else:
+                current_col -= 1
+
+        # Search from current position
+        if forward:
+            # Search forward
+            for line_idx in range(current_line, len(text._text_lines)):
+                line_text = str(text._text_lines[line_idx])
+                start_col = current_col if line_idx == current_line else 0
+                pos = line_text.find(pattern, start_col)
+                if pos != -1:
+                    text._line_ptr = line_idx
+                    text._column_ptr = pos
+                    self.focused_box.redraw(with_cursor=True)
+                    return True
+
+            # Wrap around to beginning
+            for line_idx in range(0, current_line):
+                line_text = str(text._text_lines[line_idx])
+                pos = line_text.find(pattern)
+                if pos != -1:
+                    text._line_ptr = line_idx
+                    text._column_ptr = pos
+                    self.focused_box.redraw(with_cursor=True)
+                    return True
+        else:
+            # Search backward
+            for line_idx in range(current_line, -1, -1):
+                line_text = str(text._text_lines[line_idx])
+                # For current line, only search up to current column
+                if line_idx == current_line:
+                    search_text = line_text[:current_col]
+                else:
+                    search_text = line_text
+                pos = search_text.rfind(pattern)
+                if pos != -1:
+                    # If on current line, ensure the match doesn't overlap with cursor
+                    if line_idx == current_line:
+                        # Match ends at pos + len(pattern)
+                        # If cursor is inside or right after the match, skip it
+                        if pos + len(pattern) > current_col:
+                            continue
+                    text._line_ptr = line_idx
+                    text._column_ptr = pos
+                    self.focused_box.redraw(with_cursor=True)
+                    return True
+
+            # Wrap around to end
+            for line_idx in range(len(text._text_lines) - 1, current_line, -1):
+                line_text = str(text._text_lines[line_idx])
+                pos = line_text.rfind(pattern)
+                if pos != -1:
+                    text._line_ptr = line_idx
+                    text._column_ptr = pos
+                    self.focused_box.redraw(with_cursor=True)
+                    return True
+
+        return False
