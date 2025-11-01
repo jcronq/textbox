@@ -41,12 +41,12 @@ class TestWorkspaceCreation:
 
         workspace = InputOutputWorkspace(mock_window, mock_input_manager)
 
-        assert workspace.window == mock_window
+        assert workspace.main_window == mock_window
 
     @patch('textbox.ui.workspace.InputBox')
     @patch('textbox.ui.workspace.TextBox')
-    def test_workspace_stores_input_manager(self, mock_textbox, mock_inputbox):
-        """Test that workspace stores input manager reference."""
+    def test_workspace_registers_with_input_manager(self, mock_textbox, mock_inputbox):
+        """Test that workspace registers handlers with input manager."""
         mock_window = MagicMock(spec=Window)
         mock_window.height = 24
         mock_window.width = 80
@@ -54,7 +54,9 @@ class TestWorkspaceCreation:
 
         workspace = InputOutputWorkspace(mock_window, mock_input_manager)
 
-        assert workspace.input_manager == mock_input_manager
+        # Workspace should set on_keypress and redraw on the input manager
+        assert mock_input_manager.on_keypress == workspace.handle_keypress
+        assert mock_input_manager.redraw == workspace.redraw
 
     @patch('textbox.ui.workspace.InputBox')
     @patch('textbox.ui.workspace.TextBox')
@@ -102,8 +104,8 @@ class TestWorkspaceCreation:
 
     @patch('textbox.ui.workspace.InputBox')
     @patch('textbox.ui.workspace.TextBox')
-    def test_workspace_initial_mode_is_read_only(self, mock_textbox, mock_inputbox):
-        """Test that workspace starts in READ_ONLY mode."""
+    def test_workspace_initial_mode_is_command(self, mock_textbox, mock_inputbox):
+        """Test that workspace starts in COMMAND mode."""
         mock_window = MagicMock(spec=Window)
         mock_window.height = 24
         mock_window.width = 80
@@ -111,7 +113,7 @@ class TestWorkspaceCreation:
 
         workspace = InputOutputWorkspace(mock_window, mock_input_manager)
 
-        assert workspace.mode == INPUT_MODE.READ_ONLY
+        assert workspace.input_mode == INPUT_MODE.COMMAND
 
     @patch('textbox.ui.workspace.InputBox')
     @patch('textbox.ui.workspace.TextBox')
@@ -124,8 +126,8 @@ class TestWorkspaceCreation:
 
         workspace = InputOutputWorkspace(mock_window, mock_input_manager)
 
-        # Should register handle_keypress as callback
-        mock_input_manager.register_keypress_handler.assert_called_once()
+        # Should set on_keypress attribute to handle_keypress method
+        assert mock_input_manager.on_keypress == workspace.handle_keypress
 
 
 class TestWorkspaceBoundingBoxes:
