@@ -21,13 +21,13 @@ logger = logging.getLogger()
 
 
 class App:
-    def __init__(self):
+    def __init__(self) -> None:
         self._submit_callbacks = []
         self._user_defined_commands = {"help": self._default_help}
         self._user_defined_commands_help = {"help": "Print this help message."}
         self.workspace: InputOutputWorkspace = None
 
-    def start(self):
+    def start(self) -> None:
         @curses_wrapper
         def main(stdscr: curses.window):
             window = Window(stdscr)
@@ -35,7 +35,7 @@ class App:
 
         main()
 
-    async def astart(self):
+    async def astart(self) -> None:
         @curses_wrapper
         async def main(stdscr: curses.window):
             window = Window(stdscr)
@@ -43,7 +43,7 @@ class App:
 
         await main()
 
-    async def run(self, window: Window):
+    async def run(self, window: Window) -> None:
         async with AsyncInputManager(window) as input_manager:
             try:
                 await asyncio.sleep(0.05)
@@ -60,18 +60,18 @@ class App:
                 raise e
         self.workspace = None
 
-    def _submit_callback(self, text: Text):
+    def _submit_callback(self, text: Text) -> None:
         for func in self._submit_callbacks:
             func(text)
 
-    def _command_callback(self, command_str: str):
+    def _command_callback(self, command_str: str) -> None:
         command = command_str.split(" ")[0]
         if command in self._user_defined_commands:
             self._user_defined_commands[command](command_str)
         else:
             self.print(f"Unknown command: {command}")
 
-    def on_submit(self, func: Callable[[Text], None]):
+    def on_submit(self, func: Callable[[Text], None]) -> Callable[[Text], None]:
         self._submit_callbacks.append(func)
         return func
 
@@ -98,7 +98,7 @@ class App:
         if end == "\n":
             self.workspace.output_box.end_current_text()
 
-    def command(self, name: str, *alt_names, help: str = None):
+    def command(self, name: str, *alt_names, help: str = None) -> Callable:
         def decorator(func):
             self._user_defined_commands[name] = func
             for alt_name in alt_names:
@@ -108,12 +108,12 @@ class App:
 
         return decorator
 
-    def _default_help(self, command_str: str):
+    def _default_help(self, command_str: str) -> None:
         self.print("Commands:")
         for command, help in self._user_defined_commands_help.items():
             self.print(f"  {command}: {help}")
 
-    def stop(self):
+    def stop(self) -> None:
         raise WindowQuit()
 
 
