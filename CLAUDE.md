@@ -32,6 +32,52 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - DO NOT create new progress reports in `docs/progress-reports/` (archived)
 - DO NOT create standalone reports (consolidate into existing documents)
 
+## Pull Request & Git Workflow
+
+**IMPORTANT**: This is a solo-developer project with human-AI collaboration. The PR process is different from team projects:
+
+### PR Philosophy
+- **PRs are milestones, not review requests** - The human (Jason) reviews code as Claude writes it
+- **Large refactors in single PRs are OK** - Major restructures (like the core/ui/utils split) ship as one unit
+- **Commit history tells the story** - 30+ well-documented commits are better than artificial PR splitting
+- **Write PR descriptions for future reference** - Summarize the "why" for future-you, not for approval
+
+### When to Create a PR
+- **Feature complete** - All tests pass, docs updated, examples work
+- **Cohesive change** - Related changes that form a logical unit
+- **Major milestone** - Architecture changes, new subsystems, major features
+
+### PR Description Template
+When creating a PR, include:
+```markdown
+## Summary
+Brief overview of what changed and why
+
+## Key Changes
+- Bullet list of major changes
+- Focus on "what" and "why", not "how"
+
+## Testing
+- Test coverage impact (e.g., "53% → 82%")
+- New test files or suites added
+
+## Breaking Changes
+- List any API changes
+- Migration examples if needed
+
+## Examples
+- Link to examples or demos
+- Screenshots for UI changes
+```
+
+### What NOT to Do
+- ❌ Don't artificially split cohesive refactors into tiny PRs
+- ❌ Don't leave PR descriptions empty (future-you will curse past-you)
+- ❌ Don't merge failing tests or incomplete features
+- ✅ DO write commits as if explaining to a colleague
+- ✅ DO document breaking changes clearly
+- ✅ DO update tests and docs in the same PR as code changes
+
 ## Development Process - TDD (Test-Driven Development)
 
 **CRITICAL**: Always use TDD principles when developing new features or improvements:
